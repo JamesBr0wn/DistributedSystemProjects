@@ -4,7 +4,8 @@ package multiple_rpc;
 
 service InfoService{
     rpc GetServerInfo (User) returns (stream Address){}
-    rpc RegisterServer(Address) returns (Message){}
+    rpc SetServerInfo(Address) returns (Message){}
+    rpc UnsetServerInfo(Address) returns (Message){}
 }
 
 service GreetingService{

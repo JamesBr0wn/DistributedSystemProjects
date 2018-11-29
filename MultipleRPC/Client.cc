@@ -12,10 +12,10 @@ using grpc::ClientContext;
 using grpc::ClientReader;
 using grpc::Status;
 using multiple_rpc::InfoService;
-using multiple_rpc::Address;
 using multiple_rpc::GreetingService;
-using multiple_rpc::User;
 using multiple_rpc::Address;
+using multiple_rpc::User;
+using multiple_rpc::Message;
 
 class MultipleRPCClient {
 public:
@@ -24,7 +24,7 @@ public:
 
     // Assembles the client's payload, sends it and presents the response back
     // from the server.
-    void GetServerInfo() {
+    std::vector<std::string> GetServerInfo() {
         // Data we are sending to the server.
         User request;
         request.set_name("James");
@@ -40,9 +40,10 @@ public:
         std::unique_ptr<ClientReader<Address> > reader(
                 info_stub->GetServerInfo(&context, request));
 
+        std::vector<std::string> greeting_server_list;
         while (reader->Read(&reply)) {
-            std::cout << "Get server info: "
-                      << reply.address() << std::endl;
+            greeting_server_list.push_back(reply.address());
+            std::cout << "Get server info: " << reply.address() << std::endl;
         }
         Status status = reader->Finish();
 
@@ -53,11 +54,35 @@ public:
             std::cout << status.error_code() << ": " << status.error_message()
                       << std::endl;
         }
+        return greeting_server_list;
+    }
+
+    void SayHello(){
+        std::unique_ptr<GreetingService::Stub> greeting_sub;
+        std::vector<std::string> greeting_server_list = GetServerInfo();
+        for (auto &greeting_server : greeting_server_list) {
+            std::shared_ptr<Channel> channel = grpc::CreateChannel(greeting_server, grpc::InsecureChannelCredentials());
+            greeting_sub  = GreetingService::NewStub(channel);
+            User request;
+            request.set_name("James");
+            Message reply;
+            ClientContext context;
+            Status status;
+            status = greeting_sub->SayHello(&context, request, &reply);
+            if (status.ok()) {
+                std::cout << reply.message() << std::endl;
+            } else {
+                std::cout << status.error_code() << ": " << status.error_message() << std::endl;
+                std::cout << "RPC failed" << std::endl;
+                exit(-1);
+            }
+        }
+        std::cout << "SayHello rpc succeeded." << std::endl;
     }
 
 private:
     std::unique_ptr<InfoService::Stub> info_stub;
-    std::unique_ptr<GreetingService::Stub> greeting_stub;
+
 };
 
 int main(int argc, char** argv) {
@@ -68,7 +93,7 @@ int main(int argc, char** argv) {
     strcpy(SERVER_ADDRESS, argv[1]);
     MultipleRPCClient client(grpc::CreateChannel(
             std::string(SERVER_ADDRESS), grpc::InsecureChannelCredentials()));
-    client.GetServerInfo();
+    client.SayHello();
     std::cout << "RPC finished." << std::endl;
 
     return 0;

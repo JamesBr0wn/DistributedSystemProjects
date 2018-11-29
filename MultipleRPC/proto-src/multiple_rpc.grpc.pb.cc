@@ -20,6 +20,8 @@ namespace multiple_rpc {
 
 static const char* InfoService_method_names[] = {
   "/multiple_rpc.InfoService/GetServerInfo",
+  "/multiple_rpc.InfoService/SetServerInfo",
+  "/multiple_rpc.InfoService/UnsetServerInfo",
 };
 
 std::unique_ptr< InfoService::Stub> InfoService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -30,6 +32,8 @@ std::unique_ptr< InfoService::Stub> InfoService::NewStub(const std::shared_ptr< 
 
 InfoService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
   : channel_(channel), rpcmethod_GetServerInfo_(InfoService_method_names[0], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_SetServerInfo_(InfoService_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_UnsetServerInfo_(InfoService_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::ClientReader< ::multiple_rpc::Address>* InfoService::Stub::GetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request) {
@@ -44,12 +48,54 @@ InfoService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   return ::grpc::internal::ClientAsyncReaderFactory< ::multiple_rpc::Address>::Create(channel_.get(), cq, rpcmethod_GetServerInfo_, context, request, false, nullptr);
 }
 
+::grpc::Status InfoService::Stub::SetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::multiple_rpc::Message* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_SetServerInfo_, context, request, response);
+}
+
+void InfoService::Stub::experimental_async::SetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_SetServerInfo_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* InfoService::Stub::AsyncSetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), cq, rpcmethod_SetServerInfo_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* InfoService::Stub::PrepareAsyncSetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), cq, rpcmethod_SetServerInfo_, context, request, false);
+}
+
+::grpc::Status InfoService::Stub::UnsetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::multiple_rpc::Message* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_UnsetServerInfo_, context, request, response);
+}
+
+void InfoService::Stub::experimental_async::UnsetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_UnsetServerInfo_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* InfoService::Stub::AsyncUnsetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), cq, rpcmethod_UnsetServerInfo_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* InfoService::Stub::PrepareAsyncUnsetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), cq, rpcmethod_UnsetServerInfo_, context, request, false);
+}
+
 InfoService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       InfoService_method_names[0],
       ::grpc::internal::RpcMethod::SERVER_STREAMING,
       new ::grpc::internal::ServerStreamingHandler< InfoService::Service, ::multiple_rpc::User, ::multiple_rpc::Address>(
           std::mem_fn(&InfoService::Service::GetServerInfo), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      InfoService_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< InfoService::Service, ::multiple_rpc::Address, ::multiple_rpc::Message>(
+          std::mem_fn(&InfoService::Service::SetServerInfo), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      InfoService_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< InfoService::Service, ::multiple_rpc::Address, ::multiple_rpc::Message>(
+          std::mem_fn(&InfoService::Service::UnsetServerInfo), this)));
 }
 
 InfoService::Service::~Service() {
@@ -59,6 +105,20 @@ InfoService::Service::~Service() {
   (void) context;
   (void) request;
   (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status InfoService::Service::SetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status InfoService::Service::UnsetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) {
+  (void) context;
+  (void) request;
+  (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 

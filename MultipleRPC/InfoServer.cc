@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <vector>
 #include <cstdlib>
 #include <cstring>
 
@@ -15,6 +16,7 @@ using grpc::ServerWriter;
 using multiple_rpc::InfoService;
 using multiple_rpc::User;
 using multiple_rpc::Address;
+using multiple_rpc::Message;
 
 char SERVER_ADDRESS[32];
 
@@ -23,19 +25,37 @@ class InfoServiceImp final : public InfoService::Service {
 public:
     Status GetServerInfo(ServerContext* context, const User* request,
                          ServerWriter<Address>* reply_writer) override {
-        Address in_addr, out_addr;
-        in_addr.set_address(context->peer());
-        std::cout << "Request from " << in_addr.address()
-            << " start!" << std::endl;
-        for(int i = 0; i < 3; i++){
-            out_addr.set_address("127.0.0.1:8888");
-
-            reply_writer->Write(out_addr);
+        Address client, server;
+        client.set_address(context->peer());
+        std::cout << "Request from user " << request->name() << ":" << client.address() << std::endl;
+        for(int i = 0; i < server_list.size(); i++){
+            reply_writer->Write(server_list[i]);
         }
-        std::cout << "Request from " << in_addr.address()
-            << " finish!" << std::endl;
         return Status::OK;
     }
+
+    Status SetServerInfo(ServerContext* context, const Address* request,
+                        Message* message) override{
+        server_list.push_back(*request);
+        message->set_message("Server " + request->address() + " set successful");
+        std::cout <<  message->message() << std::endl;
+        return Status::OK;
+    }
+
+    Status UnsetServerInfo(ServerContext* context, const Address* request,
+                         Message* message) override{
+        for(auto iter = server_list.begin(); iter != server_list.end(); iter++){
+            if(iter->address() == request->address()){
+                server_list.erase(iter);
+                message->set_message("Server " + request->address() + " unset successful");
+                std::cout <<  message->message() << std::endl;
+                return Status::OK;
+            }
+        }
+        return Status::CANCELLED;
+    }
+private:
+    std::vector<Address> server_list;
 };
 
 void RunServer() {
@@ -50,7 +70,7 @@ void RunServer() {
     builder.RegisterService(&service);
     // Finally assemble the server.
     std::unique_ptr<Server> server(builder.BuildAndStart());
-    std::cout << "Server listening on " << server_address << std::endl;
+    std::cout << "Info server listening on " << server_address << std::endl;
 
     // Wait for the server to shutdown. Note that some other thread must be
     // responsible for shutting down the server for this call to ever return.
