@@ -18,24 +18,35 @@ include_directories(${PROTO_SRC_DIR})
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 
-# Building server
-add_executable(multiple_rpc_server
-        ${CMAKE_CURRENT_SOURCE_DIR}/multiple_rpc_server.cc
+# Building info server
+add_executable(info_server
+        ${CMAKE_CURRENT_SOURCE_DIR}/InfoServer.cc
         ${PROTO_SRCS}
         ${GRPC_SRCS}
         )
-target_link_libraries(multiple_rpc_server
+target_link_libraries(info_server
+        gRPC::grpc++_reflection
+        protobuf::libprotobuf
+        )
+
+# Building greeting server
+add_executable(greeting_server
+        ${CMAKE_CURRENT_SOURCE_DIR}/GreetingServer.cc
+        ${PROTO_SRCS}
+        ${GRPC_SRCS}
+        )
+target_link_libraries(greeting_server
         gRPC::grpc++_reflection
         protobuf::libprotobuf
         )
 
 # Building client
-add_executable(multiple_rpc_client
-        ${CMAKE_CURRENT_SOURCE_DIR}/multiple_rpc_client.cc
+add_executable(client
+        ${CMAKE_CURRENT_SOURCE_DIR}/Client.cc
         ${PROTO_SRCS}
         ${GRPC_SRCS}
         )
-target_link_libraries(multiple_rpc_client
+target_link_libraries(client
         gRPC::grpc++_reflection
         protobuf::libprotobuf
         )

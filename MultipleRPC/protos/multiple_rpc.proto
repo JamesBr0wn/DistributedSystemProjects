@@ -3,10 +3,22 @@ syntax = "proto3";
 package multiple_rpc;
 
 service InfoService{
-    rpc GetServerInfo (Address) returns (stream Address){}
+    rpc GetServerInfo (User) returns (stream Address){}
+    rpc RegisterServer(Address) returns (Message){}
+}
+
+service GreetingService{
+    rpc SayHello (User) returns (Message){}
+}
+
+message User{
+    string name = 1;
 }
 
 message Address{
-    string ip = 1;
-    int32 port = 2;
+    string address=1;
+}
+
+message Message{
+    string message = 1;
 }

@@ -5,40 +5,30 @@
 #include <grpc++/grpc++.h>
 #include <multiple_rpc.grpc.pb.h>
 
-#define SERVER_IP "0.0.0.0"
-#define SERVER_PORT 2333
-
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
-using grpc::ServerWriter;
-using multiple_rpc::InfoService;
-using multiple_rpc::Address;
+using multiple_rpc::GreetingService;
+using multiple_rpc::User;
+using multiple_rpc::Message;
+
+char SERVER_ADDRESS[32];
 
 // Logic and data behind the server's behavior.
-class InfoServiceImp final : public InfoService::Service {
-    Status GetServerInfo(ServerContext* context, const Address* request,
-                         ServerWriter<Address>* reply_writer) override {
-        Address in_addr, out_addr;
-        in_addr.set_ip(request->ip());
-        in_addr.set_port(request->port());
-        std::cout << "Request from " << in_addr.ip() << " " << in_addr.port()
-            << " start!" << std::endl;
-        for(int i = 0; i < 3; i++){
-            out_addr.set_ip("192.168.137." + std::to_string(i));
-            out_addr.set_port(10086);
-            reply_writer->Write(out_addr);
-        }
-        std::cout << "Request from " << in_addr.ip() << " " << in_addr.port()
-            << " finish!" << std::endl;
+class GreetingServiceImp final : public GreetingService::Service {
+public:
+    Status SayHello(ServerContext* context, const User* request,
+                         Message* reply) override {
+        std::string prefix("Hello, ");
+        reply->set_message(prefix + request->name());
         return Status::OK;
     }
 };
 
 void RunServer() {
-    std::string server_address(std::string(SERVER_IP) + std::string(":") + std::to_string(SERVER_PORT));
-    InfoServiceImp service;
+    std::string server_address(SERVER_ADDRESS);
+    GreetingServiceImp service;
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
@@ -56,6 +46,7 @@ void RunServer() {
 }
 
 int main(int argc, char** argv) {
+    strcpy(SERVER_ADDRESS, argv[1]);
     RunServer();
 
     return 0;

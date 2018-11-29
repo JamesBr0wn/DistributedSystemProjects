@@ -32,15 +32,15 @@ InfoService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   : channel_(channel), rpcmethod_GetServerInfo_(InfoService_method_names[0], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   {}
 
-::grpc::ClientReader< ::multiple_rpc::Address>* InfoService::Stub::GetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request) {
+::grpc::ClientReader< ::multiple_rpc::Address>* InfoService::Stub::GetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request) {
   return ::grpc::internal::ClientReaderFactory< ::multiple_rpc::Address>::Create(channel_.get(), rpcmethod_GetServerInfo_, context, request);
 }
 
-::grpc::ClientAsyncReader< ::multiple_rpc::Address>* InfoService::Stub::AsyncGetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq, void* tag) {
+::grpc::ClientAsyncReader< ::multiple_rpc::Address>* InfoService::Stub::AsyncGetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq, void* tag) {
   return ::grpc::internal::ClientAsyncReaderFactory< ::multiple_rpc::Address>::Create(channel_.get(), cq, rpcmethod_GetServerInfo_, context, request, true, tag);
 }
 
-::grpc::ClientAsyncReader< ::multiple_rpc::Address>* InfoService::Stub::PrepareAsyncGetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncReader< ::multiple_rpc::Address>* InfoService::Stub::PrepareAsyncGetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) {
   return ::grpc::internal::ClientAsyncReaderFactory< ::multiple_rpc::Address>::Create(channel_.get(), cq, rpcmethod_GetServerInfo_, context, request, false, nullptr);
 }
 
@@ -48,17 +48,66 @@ InfoService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       InfoService_method_names[0],
       ::grpc::internal::RpcMethod::SERVER_STREAMING,
-      new ::grpc::internal::ServerStreamingHandler< InfoService::Service, ::multiple_rpc::Address, ::multiple_rpc::Address>(
+      new ::grpc::internal::ServerStreamingHandler< InfoService::Service, ::multiple_rpc::User, ::multiple_rpc::Address>(
           std::mem_fn(&InfoService::Service::GetServerInfo), this)));
 }
 
 InfoService::Service::~Service() {
 }
 
-::grpc::Status InfoService::Service::GetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::grpc::ServerWriter< ::multiple_rpc::Address>* writer) {
+::grpc::Status InfoService::Service::GetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Address>* writer) {
   (void) context;
   (void) request;
   (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+
+static const char* GreetingService_method_names[] = {
+  "/multiple_rpc.GreetingService/SayHello",
+};
+
+std::unique_ptr< GreetingService::Stub> GreetingService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+  (void)options;
+  std::unique_ptr< GreetingService::Stub> stub(new GreetingService::Stub(channel));
+  return stub;
+}
+
+GreetingService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
+  : channel_(channel), rpcmethod_SayHello_(GreetingService_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  {}
+
+::grpc::Status GreetingService::Stub::SayHello(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::multiple_rpc::Message* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_SayHello_, context, request, response);
+}
+
+void GreetingService::Stub::experimental_async::SayHello(::grpc::ClientContext* context, const ::multiple_rpc::User* request, ::multiple_rpc::Message* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_SayHello_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* GreetingService::Stub::AsyncSayHelloRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), cq, rpcmethod_SayHello_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* GreetingService::Stub::PrepareAsyncSayHelloRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), cq, rpcmethod_SayHello_, context, request, false);
+}
+
+GreetingService::Service::Service() {
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      GreetingService_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< GreetingService::Service, ::multiple_rpc::User, ::multiple_rpc::Message>(
+          std::mem_fn(&GreetingService::Service::SayHello), this)));
+}
+
+GreetingService::Service::~Service() {
+}
+
+::grpc::Status GreetingService::Service::SayHello(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::multiple_rpc::Message* response) {
+  (void) context;
+  (void) request;
+  (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
