@@ -11,7 +11,7 @@ using grpc::Channel;
 using grpc::ClientContext;
 using grpc::ClientReader;
 using grpc::Status;
-using multiple_rpc::InfoService;
+using multiple_rpc::ProxyService;
 using multiple_rpc::GreetingService;
 using multiple_rpc::Address;
 using multiple_rpc::User;
@@ -20,25 +20,18 @@ using multiple_rpc::Message;
 class MultipleRPCClient {
 public:
     MultipleRPCClient(std::shared_ptr<Channel> channel)
-            : info_stub(InfoService::NewStub(channel)) {}
-
-    // Assembles the client's payload, sends it and presents the response back
-    // from the server.
+            : proxy_stub(ProxyService::NewStub(channel)) {}
+            
     std::vector<std::string> GetServerInfo() {
-        // Data we are sending to the server.
         User request;
         request.set_name("James");
 
-        // Container for the data we expect from the server.
         Address reply;
 
-        // Context for the client. It could be used to convey extra information to
-        // the server and/or tweak certain RPC behaviors.
         ClientContext context;
-
-        // The actual RPC.
+        
         std::unique_ptr<ClientReader<Address> > reader(
-                info_stub->GetServerInfo(&context, request));
+                proxy_stub->GetServerInfo(&context, request));
 
         std::vector<std::string> greeting_server_list;
         while (reader->Read(&reply)) {
@@ -47,7 +40,6 @@ public:
         }
         Status status = reader->Finish();
 
-        // Act upon its status.
         if (status.ok()) {
             std::cout << "GetServerInfo rpc succeeded." << std::endl;
         } else {
@@ -58,30 +50,32 @@ public:
     }
 
     void SayHello(){
-        std::unique_ptr<GreetingService::Stub> greeting_sub;
-        std::vector<std::string> greeting_server_list = GetServerInfo();
-        for (auto &greeting_server : greeting_server_list) {
-            std::shared_ptr<Channel> channel = grpc::CreateChannel(greeting_server, grpc::InsecureChannelCredentials());
-            greeting_sub  = GreetingService::NewStub(channel);
-            User request;
-            request.set_name("James");
-            Message reply;
-            ClientContext context;
-            Status status;
-            status = greeting_sub->SayHello(&context, request, &reply);
-            if (status.ok()) {
-                std::cout << reply.message() << std::endl;
-            } else {
-                std::cout << status.error_code() << ": " << status.error_message() << std::endl;
-                std::cout << "RPC failed" << std::endl;
-                exit(-1);
-            }
+        User request;
+        request.set_name("James");
+
+        Message reply;
+        
+        ClientContext context;
+
+        std::unique_ptr<ClientReader<Message> > reader(
+                proxy_stub->SayHello(&context, request));
+
+        std::vector<std::string> greeting_server_list;
+        while (reader->Read(&reply)) {
+            std::cout << reply.message() << std::endl;
         }
-        std::cout << "SayHello rpc succeeded." << std::endl;
+        Status status = reader->Finish();
+
+        if (status.ok()) {
+            std::cout << "SayHello rpc succeeded." << std::endl;
+        } else {
+            std::cout << status.error_code() << ": " << status.error_message()
+                      << std::endl;
+        }
     }
 
 private:
-    std::unique_ptr<InfoService::Stub> info_stub;
+    std::unique_ptr<ProxyService::Stub> proxy_stub;
 
 };
 

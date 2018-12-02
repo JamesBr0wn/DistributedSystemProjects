@@ -12,7 +12,7 @@ using grpc::ServerContext;
 using grpc::ClientContext;
 using grpc::Status;
 using multiple_rpc::GreetingService;
-using multiple_rpc::InfoService;
+using multiple_rpc::ProxyService;
 using multiple_rpc::User;
 using multiple_rpc::Address;
 using multiple_rpc::Message;
@@ -24,13 +24,13 @@ char INFO_ADDRESS[32];
 class GreetingServiceImp final : public GreetingService::Service {
 public:
     GreetingServiceImp(std::shared_ptr<Channel> channel)
-            : info_stub(InfoService::NewStub(channel)) {
+            : proxy_stub(ProxyService::NewStub(channel)) {
         Address request;
         Message reply;
         ClientContext context;
         Status status;
         request.set_address(SERVER_ADDRESS);
-        status = info_stub->SetServerInfo(&context, request, &reply);
+        status = proxy_stub->SetServerInfo(&context, request, &reply);
         if (status.ok()) {
             std::cout << reply.message() << std::endl;
         } else {
@@ -47,7 +47,7 @@ public:
         ClientContext context;
         Status status;
         request.set_address(SERVER_ADDRESS);
-        status = info_stub->UnsetServerInfo(&context, request, &reply);
+        status = proxy_stub->UnsetServerInfo(&context, request, &reply);
         if (status.ok()) {
             std::cout << reply.message() << std::endl;
         } else {
@@ -70,7 +70,7 @@ public:
         return Status::OK;
     }
 private:
-    std::unique_ptr<InfoService::Stub> info_stub;
+    std::unique_ptr<ProxyService::Stub> proxy_stub;
 };
 
 void RunServer() {

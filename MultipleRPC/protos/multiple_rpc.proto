@@ -2,24 +2,25 @@ syntax = "proto3";
 
 package multiple_rpc;
 
-service InfoService{
+service ProxyService {
     rpc GetServerInfo (User) returns (stream Address){}
     rpc SetServerInfo(Address) returns (Message){}
     rpc UnsetServerInfo(Address) returns (Message){}
+    rpc SayHello (User) returns (stream Message){}
 }
 
-service GreetingService{
+service GreetingService {
     rpc SayHello (User) returns (Message){}
 }
 
-message User{
+message User {
     string name = 1;
 }
 
-message Address{
+message Address {
     string address=1;
 }
 
-message Message{
+message Message {
     string message = 1;
 }

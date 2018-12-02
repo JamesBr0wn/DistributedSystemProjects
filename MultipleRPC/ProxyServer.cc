@@ -8,12 +8,15 @@
 #include <grpc++/grpc++.h>
 #include <multiple_rpc.grpc.pb.h>
 
+using grpc::Channel;
+using grpc::ClientContext;
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
 using grpc::ServerWriter;
-using multiple_rpc::InfoService;
+using multiple_rpc::ProxyService;
+using multiple_rpc::GreetingService;
 using multiple_rpc::User;
 using multiple_rpc::Address;
 using multiple_rpc::Message;
@@ -21,7 +24,7 @@ using multiple_rpc::Message;
 char SERVER_ADDRESS[32];
 
 // Logic and data behind the server's behavior.
-class InfoServiceImp final : public InfoService::Service {
+class ProxyServiceImp final : public ProxyService::Service {
 public:
     Status GetServerInfo(ServerContext* context, const User* request,
                          ServerWriter<Address>* reply_writer) override {
@@ -54,13 +57,40 @@ public:
         }
         return Status::CANCELLED;
     }
+
+    Status SayHello(ServerContext* context, const User* request,
+                    ServerWriter<Message>* reply_writer) override{
+        Address client;
+        client.set_address(context->peer());
+        std::cout << "Request from user " << request->name() << ":" << client.address() << std::endl;
+        std::unique_ptr<GreetingService::Stub> greeting_sub;
+        for (auto &greeting_server : server_list) {
+            std::shared_ptr<Channel> channel = grpc::CreateChannel(greeting_server.address(), grpc::InsecureChannelCredentials());
+            std::cout << greeting_server.address() << std::endl;
+            greeting_sub  = GreetingService::NewStub(channel);
+            User user;
+            user.set_name(request->name());
+            Message message;
+            ClientContext context;
+            Status status;
+            status = greeting_sub->SayHello(&context, *request, &message);
+            if (status.ok()) {
+                std::cout << message.message() << std::endl;
+                reply_writer->Write(message);
+            } else {
+                return Status::CANCELLED;
+            }
+        }
+        return Status::OK;
+    }
+
 private:
     std::vector<Address> server_list;
 };
 
 void RunServer() {
     std::string server_address(SERVER_ADDRESS);
-    InfoServiceImp service;
+    ProxyServiceImp service;
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
