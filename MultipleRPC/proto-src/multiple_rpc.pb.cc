@@ -142,14 +142,19 @@ void AddDescriptorsImpl() {
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
       "\n\022multiple_rpc.proto\022\014multiple_rpc\"\024\n\004Us"
       "er\022\014\n\004name\030\001 \001(\t\"\032\n\007Address\022\017\n\007address\030\001"
-      " \001(\t\"\032\n\007Message\022\017\n\007message\030\001 \001(\t2M\n\013Info"
-      "Service\022>\n\rGetServerInfo\022\022.multiple_rpc."
-      "User\032\025.multiple_rpc.Address\"\0000\0012J\n\017Greet"
-      "ingService\0227\n\010SayHello\022\022.multiple_rpc.Us"
-      "er\032\025.multiple_rpc.Message\"\000b\006proto3"
+      " \001(\t\"\032\n\007Message\022\017\n\007message\030\001 \001(\t2\215\002\n\014Pro"
+      "xyService\022>\n\rGetServerInfo\022\022.multiple_rp"
+      "c.User\032\025.multiple_rpc.Address\"\0000\001\022\?\n\rSet"
+      "ServerInfo\022\025.multiple_rpc.Address\032\025.mult"
+      "iple_rpc.Message\"\000\022A\n\017UnsetServerInfo\022\025."
+      "multiple_rpc.Address\032\025.multiple_rpc.Mess"
+      "age\"\000\0229\n\010SayHello\022\022.multiple_rpc.User\032\025."
+      "multiple_rpc.Message\"\0000\0012J\n\017GreetingServ"
+      "ice\0227\n\010SayHello\022\022.multiple_rpc.User\032\025.mu"
+      "ltiple_rpc.Message\"\000b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 275);
+      descriptor, 468);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "multiple_rpc.proto", &protobuf_RegisterTypes);
 }

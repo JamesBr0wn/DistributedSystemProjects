@@ -18,13 +18,13 @@ include_directories(${PROTO_SRC_DIR})
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 
-# Building info server
-add_executable(info_server
-        ${CMAKE_CURRENT_SOURCE_DIR}/InfoServer.cc
+# Building proxy server
+add_executable(proxy_server
+        ${CMAKE_CURRENT_SOURCE_DIR}/ProxyServer.cc
         ${PROTO_SRCS}
         ${GRPC_SRCS}
         )
-target_link_libraries(info_server
+target_link_libraries(proxy_server
         gRPC::grpc++_reflection
         protobuf::libprotobuf
         )

@@ -18,44 +18,130 @@
 #include <grpcpp/impl/codegen/sync_stream.h>
 namespace multiple_rpc {
 
-static const char* InfoService_method_names[] = {
-  "/multiple_rpc.InfoService/GetServerInfo",
+static const char* ProxyService_method_names[] = {
+  "/multiple_rpc.ProxyService/GetServerInfo",
+  "/multiple_rpc.ProxyService/SetServerInfo",
+  "/multiple_rpc.ProxyService/UnsetServerInfo",
+  "/multiple_rpc.ProxyService/SayHello",
 };
 
-std::unique_ptr< InfoService::Stub> InfoService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+std::unique_ptr< ProxyService::Stub> ProxyService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
   (void)options;
-  std::unique_ptr< InfoService::Stub> stub(new InfoService::Stub(channel));
+  std::unique_ptr< ProxyService::Stub> stub(new ProxyService::Stub(channel));
   return stub;
 }
 
-InfoService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
-  : channel_(channel), rpcmethod_GetServerInfo_(InfoService_method_names[0], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+ProxyService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
+  : channel_(channel), rpcmethod_GetServerInfo_(ProxyService_method_names[0], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_SetServerInfo_(ProxyService_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_UnsetServerInfo_(ProxyService_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_SayHello_(ProxyService_method_names[3], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   {}
 
-::grpc::ClientReader< ::multiple_rpc::Address>* InfoService::Stub::GetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request) {
+::grpc::ClientReader< ::multiple_rpc::Address>* ProxyService::Stub::GetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request) {
   return ::grpc::internal::ClientReaderFactory< ::multiple_rpc::Address>::Create(channel_.get(), rpcmethod_GetServerInfo_, context, request);
 }
 
-::grpc::ClientAsyncReader< ::multiple_rpc::Address>* InfoService::Stub::AsyncGetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq, void* tag) {
+::grpc::ClientAsyncReader< ::multiple_rpc::Address>* ProxyService::Stub::AsyncGetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq, void* tag) {
   return ::grpc::internal::ClientAsyncReaderFactory< ::multiple_rpc::Address>::Create(channel_.get(), cq, rpcmethod_GetServerInfo_, context, request, true, tag);
 }
 
-::grpc::ClientAsyncReader< ::multiple_rpc::Address>* InfoService::Stub::PrepareAsyncGetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) {
+::grpc::ClientAsyncReader< ::multiple_rpc::Address>* ProxyService::Stub::PrepareAsyncGetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) {
   return ::grpc::internal::ClientAsyncReaderFactory< ::multiple_rpc::Address>::Create(channel_.get(), cq, rpcmethod_GetServerInfo_, context, request, false, nullptr);
 }
 
-InfoService::Service::Service() {
+::grpc::Status ProxyService::Stub::SetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::multiple_rpc::Message* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_SetServerInfo_, context, request, response);
+}
+
+void ProxyService::Stub::experimental_async::SetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_SetServerInfo_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* ProxyService::Stub::AsyncSetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), cq, rpcmethod_SetServerInfo_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* ProxyService::Stub::PrepareAsyncSetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), cq, rpcmethod_SetServerInfo_, context, request, false);
+}
+
+::grpc::Status ProxyService::Stub::UnsetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::multiple_rpc::Message* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_UnsetServerInfo_, context, request, response);
+}
+
+void ProxyService::Stub::experimental_async::UnsetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_UnsetServerInfo_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* ProxyService::Stub::AsyncUnsetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), cq, rpcmethod_UnsetServerInfo_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* ProxyService::Stub::PrepareAsyncUnsetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), cq, rpcmethod_UnsetServerInfo_, context, request, false);
+}
+
+::grpc::ClientReader< ::multiple_rpc::Message>* ProxyService::Stub::SayHelloRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request) {
+  return ::grpc::internal::ClientReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), rpcmethod_SayHello_, context, request);
+}
+
+::grpc::ClientAsyncReader< ::multiple_rpc::Message>* ProxyService::Stub::AsyncSayHelloRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), cq, rpcmethod_SayHello_, context, request, true, tag);
+}
+
+::grpc::ClientAsyncReader< ::multiple_rpc::Message>* ProxyService::Stub::PrepareAsyncSayHelloRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::multiple_rpc::Message>::Create(channel_.get(), cq, rpcmethod_SayHello_, context, request, false, nullptr);
+}
+
+ProxyService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      InfoService_method_names[0],
+      ProxyService_method_names[0],
       ::grpc::internal::RpcMethod::SERVER_STREAMING,
-      new ::grpc::internal::ServerStreamingHandler< InfoService::Service, ::multiple_rpc::User, ::multiple_rpc::Address>(
-          std::mem_fn(&InfoService::Service::GetServerInfo), this)));
+      new ::grpc::internal::ServerStreamingHandler< ProxyService::Service, ::multiple_rpc::User, ::multiple_rpc::Address>(
+          std::mem_fn(&ProxyService::Service::GetServerInfo), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      ProxyService_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< ProxyService::Service, ::multiple_rpc::Address, ::multiple_rpc::Message>(
+          std::mem_fn(&ProxyService::Service::SetServerInfo), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      ProxyService_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< ProxyService::Service, ::multiple_rpc::Address, ::multiple_rpc::Message>(
+          std::mem_fn(&ProxyService::Service::UnsetServerInfo), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      ProxyService_method_names[3],
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< ProxyService::Service, ::multiple_rpc::User, ::multiple_rpc::Message>(
+          std::mem_fn(&ProxyService::Service::SayHello), this)));
 }
 
-InfoService::Service::~Service() {
+ProxyService::Service::~Service() {
 }
 
-::grpc::Status InfoService::Service::GetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Address>* writer) {
+::grpc::Status ProxyService::Service::GetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Address>* writer) {
+  (void) context;
+  (void) request;
+  (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status ProxyService::Service::SetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status ProxyService::Service::UnsetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status ProxyService::Service::SayHello(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Message>* writer) {
   (void) context;
   (void) request;
   (void) writer;

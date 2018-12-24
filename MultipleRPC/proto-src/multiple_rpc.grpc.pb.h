@@ -28,10 +28,10 @@ class ServerContext;
 
 namespace multiple_rpc {
 
-class InfoService final {
+class ProxyService final {
  public:
   static constexpr char const* service_full_name() {
-    return "multiple_rpc.InfoService";
+    return "multiple_rpc.ProxyService";
   }
   class StubInterface {
    public:
@@ -45,15 +45,47 @@ class InfoService final {
     std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::multiple_rpc::Address>> PrepareAsyncGetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::multiple_rpc::Address>>(PrepareAsyncGetServerInfoRaw(context, request, cq));
     }
+    virtual ::grpc::Status SetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::multiple_rpc::Message* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::multiple_rpc::Message>> AsyncSetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::multiple_rpc::Message>>(AsyncSetServerInfoRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::multiple_rpc::Message>> PrepareAsyncSetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::multiple_rpc::Message>>(PrepareAsyncSetServerInfoRaw(context, request, cq));
+    }
+    virtual ::grpc::Status UnsetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::multiple_rpc::Message* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::multiple_rpc::Message>> AsyncUnsetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::multiple_rpc::Message>>(AsyncUnsetServerInfoRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::multiple_rpc::Message>> PrepareAsyncUnsetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::multiple_rpc::Message>>(PrepareAsyncUnsetServerInfoRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::multiple_rpc::Message>> SayHello(::grpc::ClientContext* context, const ::multiple_rpc::User& request) {
+      return std::unique_ptr< ::grpc::ClientReaderInterface< ::multiple_rpc::Message>>(SayHelloRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::multiple_rpc::Message>> AsyncSayHello(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::multiple_rpc::Message>>(AsyncSayHelloRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::multiple_rpc::Message>> PrepareAsyncSayHello(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::multiple_rpc::Message>>(PrepareAsyncSayHelloRaw(context, request, cq));
+    }
     class experimental_async_interface {
      public:
       virtual ~experimental_async_interface() {}
+      virtual void SetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void UnsetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response, std::function<void(::grpc::Status)>) = 0;
     };
     virtual class experimental_async_interface* experimental_async() { return nullptr; }
   private:
     virtual ::grpc::ClientReaderInterface< ::multiple_rpc::Address>* GetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::multiple_rpc::Address>* AsyncGetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::multiple_rpc::Address>* PrepareAsyncGetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::multiple_rpc::Message>* AsyncSetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::multiple_rpc::Message>* PrepareAsyncSetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::multiple_rpc::Message>* AsyncUnsetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::multiple_rpc::Message>* PrepareAsyncUnsetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::multiple_rpc::Message>* SayHelloRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::multiple_rpc::Message>* AsyncSayHelloRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::multiple_rpc::Message>* PrepareAsyncSayHelloRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -67,9 +99,34 @@ class InfoService final {
     std::unique_ptr< ::grpc::ClientAsyncReader< ::multiple_rpc::Address>> PrepareAsyncGetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncReader< ::multiple_rpc::Address>>(PrepareAsyncGetServerInfoRaw(context, request, cq));
     }
+    ::grpc::Status SetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::multiple_rpc::Message* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>> AsyncSetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>>(AsyncSetServerInfoRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>> PrepareAsyncSetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>>(PrepareAsyncSetServerInfoRaw(context, request, cq));
+    }
+    ::grpc::Status UnsetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::multiple_rpc::Message* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>> AsyncUnsetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>>(AsyncUnsetServerInfoRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>> PrepareAsyncUnsetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>>(PrepareAsyncUnsetServerInfoRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientReader< ::multiple_rpc::Message>> SayHello(::grpc::ClientContext* context, const ::multiple_rpc::User& request) {
+      return std::unique_ptr< ::grpc::ClientReader< ::multiple_rpc::Message>>(SayHelloRaw(context, request));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::multiple_rpc::Message>> AsyncSayHello(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::multiple_rpc::Message>>(AsyncSayHelloRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::multiple_rpc::Message>> PrepareAsyncSayHello(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::multiple_rpc::Message>>(PrepareAsyncSayHelloRaw(context, request, cq));
+    }
     class experimental_async final :
       public StubInterface::experimental_async_interface {
      public:
+      void SetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response, std::function<void(::grpc::Status)>) override;
+      void UnsetServerInfo(::grpc::ClientContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response, std::function<void(::grpc::Status)>) override;
      private:
       friend class Stub;
       explicit experimental_async(Stub* stub): stub_(stub) { }
@@ -84,7 +141,17 @@ class InfoService final {
     ::grpc::ClientReader< ::multiple_rpc::Address>* GetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request) override;
     ::grpc::ClientAsyncReader< ::multiple_rpc::Address>* AsyncGetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncReader< ::multiple_rpc::Address>* PrepareAsyncGetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* AsyncSetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* PrepareAsyncSetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* AsyncUnsetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::multiple_rpc::Message>* PrepareAsyncUnsetServerInfoRaw(::grpc::ClientContext* context, const ::multiple_rpc::Address& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReader< ::multiple_rpc::Message>* SayHelloRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request) override;
+    ::grpc::ClientAsyncReader< ::multiple_rpc::Message>* AsyncSayHelloRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReader< ::multiple_rpc::Message>* PrepareAsyncSayHelloRaw(::grpc::ClientContext* context, const ::multiple_rpc::User& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_GetServerInfo_;
+    const ::grpc::internal::RpcMethod rpcmethod_SetServerInfo_;
+    const ::grpc::internal::RpcMethod rpcmethod_UnsetServerInfo_;
+    const ::grpc::internal::RpcMethod rpcmethod_SayHello_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -93,6 +160,9 @@ class InfoService final {
     Service();
     virtual ~Service();
     virtual ::grpc::Status GetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Address>* writer);
+    virtual ::grpc::Status SetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response);
+    virtual ::grpc::Status UnsetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response);
+    virtual ::grpc::Status SayHello(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Message>* writer);
   };
   template <class BaseClass>
   class WithAsyncMethod_GetServerInfo : public BaseClass {
@@ -114,7 +184,67 @@ class InfoService final {
       ::grpc::Service::RequestAsyncServerStreaming(0, context, request, writer, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_GetServerInfo<Service > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_SetServerInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_SetServerInfo() {
+      ::grpc::Service::MarkMethodAsync(1);
+    }
+    ~WithAsyncMethod_SetServerInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSetServerInfo(::grpc::ServerContext* context, ::multiple_rpc::Address* request, ::grpc::ServerAsyncResponseWriter< ::multiple_rpc::Message>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_UnsetServerInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_UnsetServerInfo() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_UnsetServerInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnsetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestUnsetServerInfo(::grpc::ServerContext* context, ::multiple_rpc::Address* request, ::grpc::ServerAsyncResponseWriter< ::multiple_rpc::Message>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_SayHello : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_SayHello() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_SayHello() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SayHello(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Message>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSayHello(::grpc::ServerContext* context, ::multiple_rpc::User* request, ::grpc::ServerAsyncWriter< ::multiple_rpc::Message>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_GetServerInfo<WithAsyncMethod_SetServerInfo<WithAsyncMethod_UnsetServerInfo<WithAsyncMethod_SayHello<Service > > > > AsyncService;
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_GetServerInfo : public BaseClass {
    private:
@@ -131,7 +261,73 @@ class InfoService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
-  typedef ExperimentalWithCallbackMethod_GetServerInfo<Service > ExperimentalCallbackService;
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SetServerInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithCallbackMethod_SetServerInfo() {
+      ::grpc::Service::experimental().MarkMethodCallback(1,
+        new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithCallbackMethod_SetServerInfo<BaseClass>, ::multiple_rpc::Address, ::multiple_rpc::Message>(
+          [this](::grpc::ServerContext* context,
+                 const ::multiple_rpc::Address* request,
+                 ::multiple_rpc::Message* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   this->SetServerInfo(context, request, response, controller);
+                 }, this));
+    }
+    ~ExperimentalWithCallbackMethod_SetServerInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void SetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_UnsetServerInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithCallbackMethod_UnsetServerInfo() {
+      ::grpc::Service::experimental().MarkMethodCallback(2,
+        new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithCallbackMethod_UnsetServerInfo<BaseClass>, ::multiple_rpc::Address, ::multiple_rpc::Message>(
+          [this](::grpc::ServerContext* context,
+                 const ::multiple_rpc::Address* request,
+                 ::multiple_rpc::Message* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   this->UnsetServerInfo(context, request, response, controller);
+                 }, this));
+    }
+    ~ExperimentalWithCallbackMethod_UnsetServerInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnsetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void UnsetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_SayHello : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithCallbackMethod_SayHello() {
+    }
+    ~ExperimentalWithCallbackMethod_SayHello() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SayHello(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Message>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  typedef ExperimentalWithCallbackMethod_GetServerInfo<ExperimentalWithCallbackMethod_SetServerInfo<ExperimentalWithCallbackMethod_UnsetServerInfo<ExperimentalWithCallbackMethod_SayHello<Service > > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_GetServerInfo : public BaseClass {
    private:
@@ -145,6 +341,57 @@ class InfoService final {
     }
     // disable synchronous version of this method
     ::grpc::Status GetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Address>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_SetServerInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_SetServerInfo() {
+      ::grpc::Service::MarkMethodGeneric(1);
+    }
+    ~WithGenericMethod_SetServerInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_UnsetServerInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_UnsetServerInfo() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_UnsetServerInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnsetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_SayHello : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_SayHello() {
+      ::grpc::Service::MarkMethodGeneric(3);
+    }
+    ~WithGenericMethod_SayHello() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SayHello(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Message>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -170,6 +417,66 @@ class InfoService final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_SetServerInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_SetServerInfo() {
+      ::grpc::Service::MarkMethodRaw(1);
+    }
+    ~WithRawMethod_SetServerInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSetServerInfo(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_UnsetServerInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_UnsetServerInfo() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_UnsetServerInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnsetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestUnsetServerInfo(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_SayHello : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_SayHello() {
+      ::grpc::Service::MarkMethodRaw(3);
+    }
+    ~WithRawMethod_SayHello() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SayHello(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Message>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestSayHello(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class ExperimentalWithRawCallbackMethod_GetServerInfo : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
@@ -185,7 +492,113 @@ class InfoService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
-  typedef Service StreamedUnaryService;
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SetServerInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SetServerInfo() {
+      ::grpc::Service::experimental().MarkMethodRawCallback(1,
+        new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithRawCallbackMethod_SetServerInfo<BaseClass>, ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          [this](::grpc::ServerContext* context,
+                 const ::grpc::ByteBuffer* request,
+                 ::grpc::ByteBuffer* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   this->SetServerInfo(context, request, response, controller);
+                 }, this));
+    }
+    ~ExperimentalWithRawCallbackMethod_SetServerInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void SetServerInfo(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_UnsetServerInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithRawCallbackMethod_UnsetServerInfo() {
+      ::grpc::Service::experimental().MarkMethodRawCallback(2,
+        new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithRawCallbackMethod_UnsetServerInfo<BaseClass>, ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          [this](::grpc::ServerContext* context,
+                 const ::grpc::ByteBuffer* request,
+                 ::grpc::ByteBuffer* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   this->UnsetServerInfo(context, request, response, controller);
+                 }, this));
+    }
+    ~ExperimentalWithRawCallbackMethod_UnsetServerInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status UnsetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void UnsetServerInfo(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_SayHello : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithRawCallbackMethod_SayHello() {
+    }
+    ~ExperimentalWithRawCallbackMethod_SayHello() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status SayHello(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Message>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_SetServerInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithStreamedUnaryMethod_SetServerInfo() {
+      ::grpc::Service::MarkMethodStreamed(1,
+        new ::grpc::internal::StreamedUnaryHandler< ::multiple_rpc::Address, ::multiple_rpc::Message>(std::bind(&WithStreamedUnaryMethod_SetServerInfo<BaseClass>::StreamedSetServerInfo, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_SetServerInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status SetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedSetServerInfo(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::multiple_rpc::Address,::multiple_rpc::Message>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_UnsetServerInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithStreamedUnaryMethod_UnsetServerInfo() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::StreamedUnaryHandler< ::multiple_rpc::Address, ::multiple_rpc::Message>(std::bind(&WithStreamedUnaryMethod_UnsetServerInfo<BaseClass>::StreamedUnsetServerInfo, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_UnsetServerInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status UnsetServerInfo(::grpc::ServerContext* context, const ::multiple_rpc::Address* request, ::multiple_rpc::Message* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedUnsetServerInfo(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::multiple_rpc::Address,::multiple_rpc::Message>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_SetServerInfo<WithStreamedUnaryMethod_UnsetServerInfo<Service > > StreamedUnaryService;
   template <class BaseClass>
   class WithSplitStreamingMethod_GetServerInfo : public BaseClass {
    private:
@@ -206,8 +619,28 @@ class InfoService final {
     // replace default version of method with split streamed
     virtual ::grpc::Status StreamedGetServerInfo(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::multiple_rpc::User,::multiple_rpc::Address>* server_split_streamer) = 0;
   };
-  typedef WithSplitStreamingMethod_GetServerInfo<Service > SplitStreamedService;
-  typedef WithSplitStreamingMethod_GetServerInfo<Service > StreamedService;
+  template <class BaseClass>
+  class WithSplitStreamingMethod_SayHello : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithSplitStreamingMethod_SayHello() {
+      ::grpc::Service::MarkMethodStreamed(3,
+        new ::grpc::internal::SplitServerStreamingHandler< ::multiple_rpc::User, ::multiple_rpc::Message>(std::bind(&WithSplitStreamingMethod_SayHello<BaseClass>::StreamedSayHello, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithSplitStreamingMethod_SayHello() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status SayHello(::grpc::ServerContext* context, const ::multiple_rpc::User* request, ::grpc::ServerWriter< ::multiple_rpc::Message>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with split streamed
+    virtual ::grpc::Status StreamedSayHello(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::multiple_rpc::User,::multiple_rpc::Message>* server_split_streamer) = 0;
+  };
+  typedef WithSplitStreamingMethod_GetServerInfo<WithSplitStreamingMethod_SayHello<Service > > SplitStreamedService;
+  typedef WithSplitStreamingMethod_GetServerInfo<WithStreamedUnaryMethod_SetServerInfo<WithStreamedUnaryMethod_UnsetServerInfo<WithSplitStreamingMethod_SayHello<Service > > > > StreamedService;
 };
 
 class GreetingService final {
