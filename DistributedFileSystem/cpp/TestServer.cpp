@@ -21,6 +21,7 @@ using grpc::ClientContext;
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
+using grpc::ServerReader;
 using grpc::ServerWriter;
 using grpc::Status;
 using DataServer::DataService;
@@ -60,21 +61,29 @@ public:
             SHA256_Init(&stx);
 
             for(unsigned long i = 0; i < unitNum; i++){
-                fs.read(unitData + i * unitSize, unitSize);
+                fs.read(unitData, unitSize);
                 SHA256_Update(&stx, unitData, (size_t)unitSize);
                 unit.set_filename(request->filename());
                 unit.set_blockidx(request->blockidx());
                 unit.set_unitidx(i);
                 unit.set_unitdata(unitData, (size_t)unitSize);
+                if(blockSize % unitSize == 0 && i == unitNum - 1){
+                    unit.set_lastunit(true);
+                }else{
+                    unit.set_lastunit(false);
+                }
+                cout << "$ Block " << blockName << " read unit " << i << endl;
                 reply_writer->Write(unit);
             }
             if(blockSize % unitSize != 0){
-                fs.read(unitData + unitNum * unitSize, blockSize % unitSize);
+                fs.read(unitData, blockSize % unitSize);
                 SHA256_Update(&stx, unitData, (size_t)(blockSize % unitSize));
                 unit.set_filename(request->filename());
                 unit.set_blockidx(request->blockidx());
                 unit.set_unitidx(unitNum);
-                unit.set_unitdata(unitData, (size_t)unitSize);
+                unit.set_unitdata(unitData, (size_t)blockSize % unitSize);
+                unit.set_lastunit(true);
+                cout << "$ Block " << blockName << " read unit " << unitNum << endl;
                 reply_writer->Write(unit);
             }
 
@@ -91,23 +100,21 @@ public:
                 return Status::CANCELLED;
             }
 
-            // 返回文件块
-            reply->set_filename(request->filename());
-            reply->set_blocknum(request->blocknum());
-            reply->set_blocksize(request->blocksize());
-            reply->set_blockdata(blockData, (size_t)blockSize);
-            reply->set_blockhash(request->blockhash());
-
-            delete[] blockData;
+            // 完成RPC
+            delete[] unitData;
             fs.close();
-
+            cout << "$ Block " << blockName << " read finished!" << endl;
             return Status::OK;
-
         }else{
             cout << "# Block " << blockName << " open failed!" << endl;
             return Status::CANCELLED;
         }
 
+    }
+
+    Status WriteBlock(ServerContext* context, ServerReader<BlockUnit>* request,
+                     BlockInfo* reply_writer) override {
+        return Status::OK;
     }
 private:
     string storeDirectory;
@@ -116,7 +123,7 @@ private:
 
 void RunServer() {
     std::string server_address(SERVER_ADDRESS);
-    DataServerImp service("BlockStore/");
+    DataServerImp service("BlockStore/", 1024 * 1024);
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.

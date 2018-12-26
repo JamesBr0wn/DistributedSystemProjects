@@ -7,6 +7,7 @@
 #include <cstring>
 #include <grpc++/grpc++.h>
 #include <openssl/sha.h>
+#include <DataServer.pb.h>
 #include "DataServer.grpc.pb.h"
 
 using std::string;
@@ -23,7 +24,8 @@ using grpc::ClientContext;
 using grpc::ClientReader;
 using grpc::Status;
 using DataServer::DataService;
-using DataServer::Block;
+using DataServer::BlockInfo;
+using DataServer::BlockUnit;
 
 char SERVER_ADDRESS[16];
 
@@ -33,10 +35,10 @@ public:
         : _stub(DataService::NewStub(channel)) {}
 
     bool ReadBlockTest(){
-        Block request;
+        BlockInfo request;
         request.set_filename("block");
-        request.set_blocknum(0);
-        string blockName = request.filename() + '_' + to_string(request.blocknum());
+        request.set_blockidx(0);
+        string blockName = request.filename() + '_' + to_string(request.blockidx());
         ifstream ifs(blockName, ios::in | ios::binary | ios::ate);
         if(ifs.is_open()){
             long blockSize = ifs.tellg();
@@ -59,27 +61,34 @@ public:
             }
             cout << dec << endl;
             request.set_blockhash((char*)hash);
+            delete[] blockData;
+            ifs.close();
 
-            Block reply;
+            BlockUnit unit;
             ClientContext context;
+            std::unique_ptr<ClientReader<BlockUnit>> reader(
+                    _stub->ReadBlock(&context, request));
             Status status;
-            status = _stub->ReadBlock(&context, request, &reply);
+
+            string fileName = "receieved";
+            ofstream ofs;
+            unsigned long i = 0;
+            ofs.open(fileName);
+            while (reader->Read(&unit)) {
+                ofs.write(unit.unitdata().data(), unit.unitdata().length());
+                cout << "$ Block " << blockName << " read unit " << i << endl;
+                i++;
+            }
+            ofs.close();
+            status = reader->Finish();
 
             if (status.ok()) {
-                cout << "$ Block " << blockName << " received!" << endl;
-                string fileName = "receieved.zip";
-                ofstream ofs;
-                ofs.open(fileName);
-                ofs.write(reply.blockdata().data(), reply.blocksize());
-                ofs.close();
-                cout << "$ Block " << blockName << " written!" << endl;
+                cout << "$ Block " << blockName << " read finished!" << endl;
+                return true;
             } else {
                 cout << "# Block " << blockName << " read failed!" << endl;
                 return false;
             }
-
-            delete[] blockData;
-            ifs.close();
         }else{
             cout << "# Block " << blockName << " open failed!" << endl;
             return false;

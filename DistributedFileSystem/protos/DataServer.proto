@@ -19,4 +19,5 @@ message BlockUnit{
     uint64 blockIdx = 2;
     uint64 unitIdx = 3;
     bytes unitData = 4;
+    bool lastUnit = 5;
 }
