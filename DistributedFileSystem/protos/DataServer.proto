@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package DataServer;
+
+service DataService{
+    rpc ReadBlock(Block) returns (Block) {}
+    rpc WriteBlock(Block) returns (Block) {}
+}
+
+
+message Block{
+    string fileName = 1;
+    uint32 blockNum = 2;
+    uint64 blockSize = 3;
+    bytes blockData = 4;
+    bytes blockHash = 5;
+}

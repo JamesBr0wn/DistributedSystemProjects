@@ -41,12 +41,12 @@ target_link_libraries(greeting_server
         )
 
 # Building client
-add_executable(client
+add_executable(greeting_client
         ${CMAKE_CURRENT_SOURCE_DIR}/Client.cc
         ${PROTO_SRCS}
         ${GRPC_SRCS}
         )
-target_link_libraries(client
+target_link_libraries(greeting_client
         gRPC::grpc++_reflection
         protobuf::libprotobuf
         )

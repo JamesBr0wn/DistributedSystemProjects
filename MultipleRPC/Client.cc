@@ -76,7 +76,6 @@ public:
 
 private:
     std::unique_ptr<ProxyService::Stub> proxy_stub;
-
 };
 
 int main(int argc, char** argv) {

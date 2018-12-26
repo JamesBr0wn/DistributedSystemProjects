@@ -1,0 +1,14 @@
+//
+// Created by JamesBrown on 2018/12/26.
+//
+
+#ifndef DISTRIBUTEDSYSTEMPROJECTS_CLIENT_H
+#define DISTRIBUTEDSYSTEMPROJECTS_CLIENT_H
+
+
+class Client {
+
+};
+
+
+#endif //DISTRIBUTEDSYSTEMPROJECTS_CLIENT_H
