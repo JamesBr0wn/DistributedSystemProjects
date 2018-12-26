@@ -124,14 +124,15 @@ void AddDescriptorsImpl() {
       "\021\n\tblockSize\030\003 \001(\004\022\021\n\tblockHash\030\004 \001(\014\"d\n"
       "\tBlockUnit\022\020\n\010fileName\030\001 \001(\t\022\020\n\010blockIdx"
       "\030\002 \001(\004\022\017\n\007unitIdx\030\003 \001(\004\022\020\n\010unitData\030\004 \001("
-      "\014\022\020\n\010lastUnit\030\005 \001(\0102\214\001\n\013DataService\022=\n\tR"
+      "\014\022\020\n\010lastUnit\030\005 \001(\0102\313\001\n\013DataService\022=\n\tR"
       "eadBlock\022\025.DataServer.BlockInfo\032\025.DataSe"
       "rver.BlockUnit\"\0000\001\022>\n\nWriteBlock\022\025.DataS"
       "erver.BlockUnit\032\025.DataServer.BlockInfo\"\000"
-      "(\001b\006proto3"
+      "(\001\022=\n\013RemoveBlock\022\025.DataServer.BlockInfo"
+      "\032\025.DataServer.BlockInfo\"\000b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 370);
+      descriptor, 433);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "DataServer.proto", &protobuf_RegisterTypes);
 }

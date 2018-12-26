@@ -21,6 +21,7 @@ namespace DataServer {
 static const char* DataService_method_names[] = {
   "/DataServer.DataService/ReadBlock",
   "/DataServer.DataService/WriteBlock",
+  "/DataServer.DataService/RemoveBlock",
 };
 
 std::unique_ptr< DataService::Stub> DataService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -32,6 +33,7 @@ std::unique_ptr< DataService::Stub> DataService::NewStub(const std::shared_ptr< 
 DataService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
   : channel_(channel), rpcmethod_ReadBlock_(DataService_method_names[0], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   , rpcmethod_WriteBlock_(DataService_method_names[1], ::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
+  , rpcmethod_RemoveBlock_(DataService_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::ClientReader< ::DataServer::BlockUnit>* DataService::Stub::ReadBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request) {
@@ -58,6 +60,22 @@ DataService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   return ::grpc::internal::ClientAsyncWriterFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_WriteBlock_, context, response, false, nullptr);
 }
 
+::grpc::Status DataService::Stub::RemoveBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::DataServer::BlockInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_RemoveBlock_, context, request, response);
+}
+
+void DataService::Stub::experimental_async::RemoveBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_RemoveBlock_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::DataServer::BlockInfo>* DataService::Stub::AsyncRemoveBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DataServer::BlockInfo>::Create(channel_.get(), cq, rpcmethod_RemoveBlock_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::DataServer::BlockInfo>* DataService::Stub::PrepareAsyncRemoveBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DataServer::BlockInfo>::Create(channel_.get(), cq, rpcmethod_RemoveBlock_, context, request, false);
+}
+
 DataService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       DataService_method_names[0],
@@ -69,6 +87,11 @@ DataService::Service::Service() {
       ::grpc::internal::RpcMethod::CLIENT_STREAMING,
       new ::grpc::internal::ClientStreamingHandler< DataService::Service, ::DataServer::BlockUnit, ::DataServer::BlockInfo>(
           std::mem_fn(&DataService::Service::WriteBlock), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      DataService_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< DataService::Service, ::DataServer::BlockInfo, ::DataServer::BlockInfo>(
+          std::mem_fn(&DataService::Service::RemoveBlock), this)));
 }
 
 DataService::Service::~Service() {
@@ -84,6 +107,13 @@ DataService::Service::~Service() {
 ::grpc::Status DataService::Service::WriteBlock(::grpc::ServerContext* context, ::grpc::ServerReader< ::DataServer::BlockUnit>* reader, ::DataServer::BlockInfo* response) {
   (void) context;
   (void) reader;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status DataService::Service::RemoveBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response) {
+  (void) context;
+  (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }

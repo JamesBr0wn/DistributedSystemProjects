@@ -5,6 +5,7 @@ package DataServer;
 service DataService{
     rpc ReadBlock(BlockInfo) returns (stream BlockUnit) {}
     rpc WriteBlock(stream BlockUnit) returns (BlockInfo) {}
+    rpc RemoveBlock(BlockInfo) returns (BlockInfo) {}
 }
 
 message BlockInfo{

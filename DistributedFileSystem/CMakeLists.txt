@@ -22,25 +22,26 @@ grpc_generate_cpp(GRPC_SRCS GRPC_HDRS ${PROTO_SRC_DIR} ${PROTOS})
 find_package(OpenSSL REQUIRED)
 
 # Building server
-add_executable(TestServer
-        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/TestServer.cpp
+add_executable(DataServer
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DataServer.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/DataServer.h
         ${PROTO_SRCS}
         ${GRPC_SRCS}
         )
-target_link_libraries(TestServer
+target_link_libraries(DataServer
         gRPC::grpc++_reflection
         protobuf::libprotobuf
         OpenSSL::SSL
         )
 
-
 # Building client
-add_executable(TestClient
-        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/TestClient.cpp
+add_executable(Client
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/Client.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/Client.h
         ${PROTO_SRCS}
         ${GRPC_SRCS}
         )
-target_link_libraries(TestClient
+target_link_libraries(Client
         gRPC::grpc++_reflection
         protobuf::libprotobuf
         OpenSSL::SSL

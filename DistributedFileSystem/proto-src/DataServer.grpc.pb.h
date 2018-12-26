@@ -54,9 +54,17 @@ class DataService final {
     std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::DataServer::BlockUnit>> PrepareAsyncWriteBlock(::grpc::ClientContext* context, ::DataServer::BlockInfo* response, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncWriterInterface< ::DataServer::BlockUnit>>(PrepareAsyncWriteBlockRaw(context, response, cq));
     }
+    virtual ::grpc::Status RemoveBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::DataServer::BlockInfo* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DataServer::BlockInfo>> AsyncRemoveBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DataServer::BlockInfo>>(AsyncRemoveBlockRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DataServer::BlockInfo>> PrepareAsyncRemoveBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DataServer::BlockInfo>>(PrepareAsyncRemoveBlockRaw(context, request, cq));
+    }
     class experimental_async_interface {
      public:
       virtual ~experimental_async_interface() {}
+      virtual void RemoveBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response, std::function<void(::grpc::Status)>) = 0;
     };
     virtual class experimental_async_interface* experimental_async() { return nullptr; }
   private:
@@ -66,6 +74,8 @@ class DataService final {
     virtual ::grpc::ClientWriterInterface< ::DataServer::BlockUnit>* WriteBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response) = 0;
     virtual ::grpc::ClientAsyncWriterInterface< ::DataServer::BlockUnit>* AsyncWriteBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientAsyncWriterInterface< ::DataServer::BlockUnit>* PrepareAsyncWriteBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::DataServer::BlockInfo>* AsyncRemoveBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::DataServer::BlockInfo>* PrepareAsyncRemoveBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -88,9 +98,17 @@ class DataService final {
     std::unique_ptr< ::grpc::ClientAsyncWriter< ::DataServer::BlockUnit>> PrepareAsyncWriteBlock(::grpc::ClientContext* context, ::DataServer::BlockInfo* response, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncWriter< ::DataServer::BlockUnit>>(PrepareAsyncWriteBlockRaw(context, response, cq));
     }
+    ::grpc::Status RemoveBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::DataServer::BlockInfo* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DataServer::BlockInfo>> AsyncRemoveBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DataServer::BlockInfo>>(AsyncRemoveBlockRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DataServer::BlockInfo>> PrepareAsyncRemoveBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DataServer::BlockInfo>>(PrepareAsyncRemoveBlockRaw(context, request, cq));
+    }
     class experimental_async final :
       public StubInterface::experimental_async_interface {
      public:
+      void RemoveBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response, std::function<void(::grpc::Status)>) override;
      private:
       friend class Stub;
       explicit experimental_async(Stub* stub): stub_(stub) { }
@@ -108,8 +126,11 @@ class DataService final {
     ::grpc::ClientWriter< ::DataServer::BlockUnit>* WriteBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response) override;
     ::grpc::ClientAsyncWriter< ::DataServer::BlockUnit>* AsyncWriteBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncWriter< ::DataServer::BlockUnit>* PrepareAsyncWriteBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::DataServer::BlockInfo>* AsyncRemoveBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::DataServer::BlockInfo>* PrepareAsyncRemoveBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_ReadBlock_;
     const ::grpc::internal::RpcMethod rpcmethod_WriteBlock_;
+    const ::grpc::internal::RpcMethod rpcmethod_RemoveBlock_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -119,6 +140,7 @@ class DataService final {
     virtual ~Service();
     virtual ::grpc::Status ReadBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::grpc::ServerWriter< ::DataServer::BlockUnit>* writer);
     virtual ::grpc::Status WriteBlock(::grpc::ServerContext* context, ::grpc::ServerReader< ::DataServer::BlockUnit>* reader, ::DataServer::BlockInfo* response);
+    virtual ::grpc::Status RemoveBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_ReadBlock : public BaseClass {
@@ -160,7 +182,27 @@ class DataService final {
       ::grpc::Service::RequestAsyncClientStreaming(1, context, reader, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_ReadBlock<WithAsyncMethod_WriteBlock<Service > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_RemoveBlock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_RemoveBlock() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_RemoveBlock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RemoveBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestRemoveBlock(::grpc::ServerContext* context, ::DataServer::BlockInfo* request, ::grpc::ServerAsyncResponseWriter< ::DataServer::BlockInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_ReadBlock<WithAsyncMethod_WriteBlock<WithAsyncMethod_RemoveBlock<Service > > > AsyncService;
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_ReadBlock : public BaseClass {
    private:
@@ -193,7 +235,32 @@ class DataService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
-  typedef ExperimentalWithCallbackMethod_ReadBlock<ExperimentalWithCallbackMethod_WriteBlock<Service > > ExperimentalCallbackService;
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_RemoveBlock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithCallbackMethod_RemoveBlock() {
+      ::grpc::Service::experimental().MarkMethodCallback(2,
+        new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithCallbackMethod_RemoveBlock<BaseClass>, ::DataServer::BlockInfo, ::DataServer::BlockInfo>(
+          [this](::grpc::ServerContext* context,
+                 const ::DataServer::BlockInfo* request,
+                 ::DataServer::BlockInfo* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   this->RemoveBlock(context, request, response, controller);
+                 }, this));
+    }
+    ~ExperimentalWithCallbackMethod_RemoveBlock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RemoveBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void RemoveBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  typedef ExperimentalWithCallbackMethod_ReadBlock<ExperimentalWithCallbackMethod_WriteBlock<ExperimentalWithCallbackMethod_RemoveBlock<Service > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_ReadBlock : public BaseClass {
    private:
@@ -224,6 +291,23 @@ class DataService final {
     }
     // disable synchronous version of this method
     ::grpc::Status WriteBlock(::grpc::ServerContext* context, ::grpc::ServerReader< ::DataServer::BlockUnit>* reader, ::DataServer::BlockInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_RemoveBlock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_RemoveBlock() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_RemoveBlock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RemoveBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -269,6 +353,26 @@ class DataService final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_RemoveBlock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_RemoveBlock() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_RemoveBlock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RemoveBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestRemoveBlock(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class ExperimentalWithRawCallbackMethod_ReadBlock : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
@@ -300,7 +404,52 @@ class DataService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
   };
-  typedef Service StreamedUnaryService;
+  template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_RemoveBlock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithRawCallbackMethod_RemoveBlock() {
+      ::grpc::Service::experimental().MarkMethodRawCallback(2,
+        new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithRawCallbackMethod_RemoveBlock<BaseClass>, ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          [this](::grpc::ServerContext* context,
+                 const ::grpc::ByteBuffer* request,
+                 ::grpc::ByteBuffer* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   this->RemoveBlock(context, request, response, controller);
+                 }, this));
+    }
+    ~ExperimentalWithRawCallbackMethod_RemoveBlock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RemoveBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void RemoveBlock(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_RemoveBlock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithStreamedUnaryMethod_RemoveBlock() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::StreamedUnaryHandler< ::DataServer::BlockInfo, ::DataServer::BlockInfo>(std::bind(&WithStreamedUnaryMethod_RemoveBlock<BaseClass>::StreamedRemoveBlock, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_RemoveBlock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status RemoveBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedRemoveBlock(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::DataServer::BlockInfo,::DataServer::BlockInfo>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_RemoveBlock<Service > StreamedUnaryService;
   template <class BaseClass>
   class WithSplitStreamingMethod_ReadBlock : public BaseClass {
    private:
@@ -322,7 +471,7 @@ class DataService final {
     virtual ::grpc::Status StreamedReadBlock(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::DataServer::BlockInfo,::DataServer::BlockUnit>* server_split_streamer) = 0;
   };
   typedef WithSplitStreamingMethod_ReadBlock<Service > SplitStreamedService;
-  typedef WithSplitStreamingMethod_ReadBlock<Service > StreamedService;
+  typedef WithSplitStreamingMethod_ReadBlock<WithStreamedUnaryMethod_RemoveBlock<Service > > StreamedService;
 };
 
 }  // namespace DataServer
