@@ -30,68 +30,60 @@ std::unique_ptr< DataService::Stub> DataService::NewStub(const std::shared_ptr< 
 }
 
 DataService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
-  : channel_(channel), rpcmethod_ReadBlock_(DataService_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_WriteBlock_(DataService_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  : channel_(channel), rpcmethod_ReadBlock_(DataService_method_names[0], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_WriteBlock_(DataService_method_names[1], ::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
   {}
 
-::grpc::Status DataService::Stub::ReadBlock(::grpc::ClientContext* context, const ::DataServer::Block& request, ::DataServer::Block* response) {
-  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_ReadBlock_, context, request, response);
+::grpc::ClientReader< ::DataServer::BlockUnit>* DataService::Stub::ReadBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request) {
+  return ::grpc::internal::ClientReaderFactory< ::DataServer::BlockUnit>::Create(channel_.get(), rpcmethod_ReadBlock_, context, request);
 }
 
-void DataService::Stub::experimental_async::ReadBlock(::grpc::ClientContext* context, const ::DataServer::Block* request, ::DataServer::Block* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_ReadBlock_, context, request, response, std::move(f));
+::grpc::ClientAsyncReader< ::DataServer::BlockUnit>* DataService::Stub::AsyncReadBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_ReadBlock_, context, request, true, tag);
 }
 
-::grpc::ClientAsyncResponseReader< ::DataServer::Block>* DataService::Stub::AsyncReadBlockRaw(::grpc::ClientContext* context, const ::DataServer::Block& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DataServer::Block>::Create(channel_.get(), cq, rpcmethod_ReadBlock_, context, request, true);
+::grpc::ClientAsyncReader< ::DataServer::BlockUnit>* DataService::Stub::PrepareAsyncReadBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_ReadBlock_, context, request, false, nullptr);
 }
 
-::grpc::ClientAsyncResponseReader< ::DataServer::Block>* DataService::Stub::PrepareAsyncReadBlockRaw(::grpc::ClientContext* context, const ::DataServer::Block& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DataServer::Block>::Create(channel_.get(), cq, rpcmethod_ReadBlock_, context, request, false);
+::grpc::ClientWriter< ::DataServer::BlockUnit>* DataService::Stub::WriteBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response) {
+  return ::grpc::internal::ClientWriterFactory< ::DataServer::BlockUnit>::Create(channel_.get(), rpcmethod_WriteBlock_, context, response);
 }
 
-::grpc::Status DataService::Stub::WriteBlock(::grpc::ClientContext* context, const ::DataServer::Block& request, ::DataServer::Block* response) {
-  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_WriteBlock_, context, request, response);
+::grpc::ClientAsyncWriter< ::DataServer::BlockUnit>* DataService::Stub::AsyncWriteBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncWriterFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_WriteBlock_, context, response, true, tag);
 }
 
-void DataService::Stub::experimental_async::WriteBlock(::grpc::ClientContext* context, const ::DataServer::Block* request, ::DataServer::Block* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_WriteBlock_, context, request, response, std::move(f));
-}
-
-::grpc::ClientAsyncResponseReader< ::DataServer::Block>* DataService::Stub::AsyncWriteBlockRaw(::grpc::ClientContext* context, const ::DataServer::Block& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DataServer::Block>::Create(channel_.get(), cq, rpcmethod_WriteBlock_, context, request, true);
-}
-
-::grpc::ClientAsyncResponseReader< ::DataServer::Block>* DataService::Stub::PrepareAsyncWriteBlockRaw(::grpc::ClientContext* context, const ::DataServer::Block& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DataServer::Block>::Create(channel_.get(), cq, rpcmethod_WriteBlock_, context, request, false);
+::grpc::ClientAsyncWriter< ::DataServer::BlockUnit>* DataService::Stub::PrepareAsyncWriteBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncWriterFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_WriteBlock_, context, response, false, nullptr);
 }
 
 DataService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       DataService_method_names[0],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< DataService::Service, ::DataServer::Block, ::DataServer::Block>(
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< DataService::Service, ::DataServer::BlockInfo, ::DataServer::BlockUnit>(
           std::mem_fn(&DataService::Service::ReadBlock), this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       DataService_method_names[1],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< DataService::Service, ::DataServer::Block, ::DataServer::Block>(
+      ::grpc::internal::RpcMethod::CLIENT_STREAMING,
+      new ::grpc::internal::ClientStreamingHandler< DataService::Service, ::DataServer::BlockUnit, ::DataServer::BlockInfo>(
           std::mem_fn(&DataService::Service::WriteBlock), this)));
 }
 
 DataService::Service::~Service() {
 }
 
-::grpc::Status DataService::Service::ReadBlock(::grpc::ServerContext* context, const ::DataServer::Block* request, ::DataServer::Block* response) {
+::grpc::Status DataService::Service::ReadBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::grpc::ServerWriter< ::DataServer::BlockUnit>* writer) {
   (void) context;
   (void) request;
-  (void) response;
+  (void) writer;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status DataService::Service::WriteBlock(::grpc::ServerContext* context, const ::DataServer::Block* request, ::DataServer::Block* response) {
+::grpc::Status DataService::Service::WriteBlock(::grpc::ServerContext* context, ::grpc::ServerReader< ::DataServer::BlockUnit>* reader, ::DataServer::BlockInfo* response) {
   (void) context;
-  (void) request;
+  (void) reader;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }

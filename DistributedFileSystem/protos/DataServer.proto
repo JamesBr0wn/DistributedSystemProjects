@@ -3,15 +3,20 @@ syntax = "proto3";
 package DataServer;
 
 service DataService{
-    rpc ReadBlock(Block) returns (Block) {}
-    rpc WriteBlock(Block) returns (Block) {}
+    rpc ReadBlock(BlockInfo) returns (stream BlockUnit) {}
+    rpc WriteBlock(stream BlockUnit) returns (BlockInfo) {}
 }
 
-
-message Block{
+message BlockInfo{
     string fileName = 1;
-    uint32 blockNum = 2;
+    uint64 blockIdx = 2;
     uint64 blockSize = 3;
-    bytes blockData = 4;
-    bytes blockHash = 5;
+    bytes blockHash = 4;
+}
+
+message BlockUnit{
+    string fileName = 1;
+    uint64 blockIdx = 2;
+    uint64 unitIdx = 3;
+    bytes unitData = 4;
 }

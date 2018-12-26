@@ -20,51 +20,82 @@
 // @@protoc_insertion_point(includes)
 
 namespace DataServer {
-class BlockDefaultTypeInternal {
+class BlockInfoDefaultTypeInternal {
  public:
-  ::google::protobuf::internal::ExplicitlyConstructed<Block>
+  ::google::protobuf::internal::ExplicitlyConstructed<BlockInfo>
       _instance;
-} _Block_default_instance_;
+} _BlockInfo_default_instance_;
+class BlockUnitDefaultTypeInternal {
+ public:
+  ::google::protobuf::internal::ExplicitlyConstructed<BlockUnit>
+      _instance;
+} _BlockUnit_default_instance_;
 }  // namespace DataServer
 namespace protobuf_DataServer_2eproto {
-static void InitDefaultsBlock() {
+static void InitDefaultsBlockInfo() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
-    void* ptr = &::DataServer::_Block_default_instance_;
-    new (ptr) ::DataServer::Block();
+    void* ptr = &::DataServer::_BlockInfo_default_instance_;
+    new (ptr) ::DataServer::BlockInfo();
     ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
   }
-  ::DataServer::Block::InitAsDefaultInstance();
+  ::DataServer::BlockInfo::InitAsDefaultInstance();
 }
 
-::google::protobuf::internal::SCCInfo<0> scc_info_Block =
-    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsBlock}, {}};
+::google::protobuf::internal::SCCInfo<0> scc_info_BlockInfo =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsBlockInfo}, {}};
+
+static void InitDefaultsBlockUnit() {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  {
+    void* ptr = &::DataServer::_BlockUnit_default_instance_;
+    new (ptr) ::DataServer::BlockUnit();
+    ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
+  }
+  ::DataServer::BlockUnit::InitAsDefaultInstance();
+}
+
+::google::protobuf::internal::SCCInfo<0> scc_info_BlockUnit =
+    {{ATOMIC_VAR_INIT(::google::protobuf::internal::SCCInfoBase::kUninitialized), 0, InitDefaultsBlockUnit}, {}};
 
 void InitDefaults() {
-  ::google::protobuf::internal::InitSCC(&scc_info_Block.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_BlockInfo.base);
+  ::google::protobuf::internal::InitSCC(&scc_info_BlockUnit.base);
 }
 
-::google::protobuf::Metadata file_level_metadata[1];
+::google::protobuf::Metadata file_level_metadata[2];
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::Block, _internal_metadata_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::BlockInfo, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::Block, filename_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::Block, blocknum_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::Block, blocksize_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::Block, blockdata_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::Block, blockhash_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::BlockInfo, filename_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::BlockInfo, blockidx_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::BlockInfo, blocksize_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::BlockInfo, blockhash_),
+  ~0u,  // no _has_bits_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::BlockUnit, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::BlockUnit, filename_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::BlockUnit, blockidx_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::BlockUnit, unitidx_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::BlockUnit, unitdata_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::DataServer::BlockUnit, lastunit_),
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, sizeof(::DataServer::Block)},
+  { 0, -1, sizeof(::DataServer::BlockInfo)},
+  { 9, -1, sizeof(::DataServer::BlockUnit)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::google::protobuf::Message*>(&::DataServer::_Block_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::DataServer::_BlockInfo_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::DataServer::_BlockUnit_default_instance_),
 };
 
 void protobuf_AssignDescriptors() {
@@ -82,22 +113,25 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_PROTOBUF_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 1);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 2);
 }
 
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\020DataServer.proto\022\nDataServer\"d\n\005Block\022"
-      "\020\n\010fileName\030\001 \001(\t\022\020\n\010blockNum\030\002 \001(\r\022\021\n\tb"
-      "lockSize\030\003 \001(\004\022\021\n\tblockData\030\004 \001(\014\022\021\n\tblo"
-      "ckHash\030\005 \001(\0142x\n\013DataService\0223\n\tReadBlock"
-      "\022\021.DataServer.Block\032\021.DataServer.Block\"\000"
-      "\0224\n\nWriteBlock\022\021.DataServer.Block\032\021.Data"
-      "Server.Block\"\000b\006proto3"
+      "\n\020DataServer.proto\022\nDataServer\"U\n\tBlockI"
+      "nfo\022\020\n\010fileName\030\001 \001(\t\022\020\n\010blockIdx\030\002 \001(\004\022"
+      "\021\n\tblockSize\030\003 \001(\004\022\021\n\tblockHash\030\004 \001(\014\"d\n"
+      "\tBlockUnit\022\020\n\010fileName\030\001 \001(\t\022\020\n\010blockIdx"
+      "\030\002 \001(\004\022\017\n\007unitIdx\030\003 \001(\004\022\020\n\010unitData\030\004 \001("
+      "\014\022\020\n\010lastUnit\030\005 \001(\0102\214\001\n\013DataService\022=\n\tR"
+      "eadBlock\022\025.DataServer.BlockInfo\032\025.DataSe"
+      "rver.BlockUnit\"\0000\001\022>\n\nWriteBlock\022\025.DataS"
+      "erver.BlockUnit\032\025.DataServer.BlockInfo\"\000"
+      "(\001b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 262);
+      descriptor, 370);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "DataServer.proto", &protobuf_RegisterTypes);
 }
@@ -117,24 +151,23 @@ namespace DataServer {
 
 // ===================================================================
 
-void Block::InitAsDefaultInstance() {
+void BlockInfo::InitAsDefaultInstance() {
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int Block::kFileNameFieldNumber;
-const int Block::kBlockNumFieldNumber;
-const int Block::kBlockSizeFieldNumber;
-const int Block::kBlockDataFieldNumber;
-const int Block::kBlockHashFieldNumber;
+const int BlockInfo::kFileNameFieldNumber;
+const int BlockInfo::kBlockIdxFieldNumber;
+const int BlockInfo::kBlockSizeFieldNumber;
+const int BlockInfo::kBlockHashFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
-Block::Block()
+BlockInfo::BlockInfo()
   : ::google::protobuf::Message(), _internal_metadata_(NULL) {
   ::google::protobuf::internal::InitSCC(
-      &protobuf_DataServer_2eproto::scc_info_Block.base);
+      &protobuf_DataServer_2eproto::scc_info_BlockInfo.base);
   SharedCtor();
-  // @@protoc_insertion_point(constructor:DataServer.Block)
+  // @@protoc_insertion_point(constructor:DataServer.BlockInfo)
 }
-Block::Block(const Block& from)
+BlockInfo::BlockInfo(const BlockInfo& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
@@ -142,74 +175,67 @@ Block::Block(const Block& from)
   if (from.filename().size() > 0) {
     filename_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.filename_);
   }
-  blockdata_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  if (from.blockdata().size() > 0) {
-    blockdata_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.blockdata_);
-  }
   blockhash_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   if (from.blockhash().size() > 0) {
     blockhash_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.blockhash_);
   }
-  ::memcpy(&blocksize_, &from.blocksize_,
-    static_cast<size_t>(reinterpret_cast<char*>(&blocknum_) -
-    reinterpret_cast<char*>(&blocksize_)) + sizeof(blocknum_));
-  // @@protoc_insertion_point(copy_constructor:DataServer.Block)
+  ::memcpy(&blockidx_, &from.blockidx_,
+    static_cast<size_t>(reinterpret_cast<char*>(&blocksize_) -
+    reinterpret_cast<char*>(&blockidx_)) + sizeof(blocksize_));
+  // @@protoc_insertion_point(copy_constructor:DataServer.BlockInfo)
 }
 
-void Block::SharedCtor() {
+void BlockInfo::SharedCtor() {
   filename_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  blockdata_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   blockhash_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(&blocksize_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&blocknum_) -
-      reinterpret_cast<char*>(&blocksize_)) + sizeof(blocknum_));
+  ::memset(&blockidx_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&blocksize_) -
+      reinterpret_cast<char*>(&blockidx_)) + sizeof(blocksize_));
 }
 
-Block::~Block() {
-  // @@protoc_insertion_point(destructor:DataServer.Block)
+BlockInfo::~BlockInfo() {
+  // @@protoc_insertion_point(destructor:DataServer.BlockInfo)
   SharedDtor();
 }
 
-void Block::SharedDtor() {
+void BlockInfo::SharedDtor() {
   filename_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  blockdata_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   blockhash_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
-void Block::SetCachedSize(int size) const {
+void BlockInfo::SetCachedSize(int size) const {
   _cached_size_.Set(size);
 }
-const ::google::protobuf::Descriptor* Block::descriptor() {
+const ::google::protobuf::Descriptor* BlockInfo::descriptor() {
   ::protobuf_DataServer_2eproto::protobuf_AssignDescriptorsOnce();
   return ::protobuf_DataServer_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
 }
 
-const Block& Block::default_instance() {
-  ::google::protobuf::internal::InitSCC(&protobuf_DataServer_2eproto::scc_info_Block.base);
+const BlockInfo& BlockInfo::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_DataServer_2eproto::scc_info_BlockInfo.base);
   return *internal_default_instance();
 }
 
 
-void Block::Clear() {
-// @@protoc_insertion_point(message_clear_start:DataServer.Block)
+void BlockInfo::Clear() {
+// @@protoc_insertion_point(message_clear_start:DataServer.BlockInfo)
   ::google::protobuf::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
   filename_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  blockdata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   blockhash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
-  ::memset(&blocksize_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&blocknum_) -
-      reinterpret_cast<char*>(&blocksize_)) + sizeof(blocknum_));
+  ::memset(&blockidx_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&blocksize_) -
+      reinterpret_cast<char*>(&blockidx_)) + sizeof(blocksize_));
   _internal_metadata_.Clear();
 }
 
-bool Block::MergePartialFromCodedStream(
+bool BlockInfo::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:DataServer.Block)
+  // @@protoc_insertion_point(parse_start:DataServer.BlockInfo)
   for (;;) {
     ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -224,21 +250,21 @@ bool Block::MergePartialFromCodedStream(
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
             this->filename().data(), static_cast<int>(this->filename().length()),
             ::google::protobuf::internal::WireFormatLite::PARSE,
-            "DataServer.Block.fileName"));
+            "DataServer.BlockInfo.fileName"));
         } else {
           goto handle_unusual;
         }
         break;
       }
 
-      // uint32 blockNum = 2;
+      // uint64 blockIdx = 2;
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
 
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
-                 input, &blocknum_)));
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &blockidx_)));
         } else {
           goto handle_unusual;
         }
@@ -259,22 +285,10 @@ bool Block::MergePartialFromCodedStream(
         break;
       }
 
-      // bytes blockData = 4;
+      // bytes blockHash = 4;
       case 4: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(34u /* 34 & 0xFF */)) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
-                input, this->mutable_blockdata()));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      // bytes blockHash = 5;
-      case 5: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(42u /* 42 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_blockhash()));
         } else {
@@ -295,17 +309,17 @@ bool Block::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:DataServer.Block)
+  // @@protoc_insertion_point(parse_success:DataServer.BlockInfo)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:DataServer.Block)
+  // @@protoc_insertion_point(parse_failure:DataServer.BlockInfo)
   return false;
 #undef DO_
 }
 
-void Block::SerializeWithCachedSizes(
+void BlockInfo::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:DataServer.Block)
+  // @@protoc_insertion_point(serialize_start:DataServer.BlockInfo)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -314,14 +328,14 @@ void Block::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->filename().data(), static_cast<int>(this->filename().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "DataServer.Block.fileName");
+      "DataServer.BlockInfo.fileName");
     ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
       1, this->filename(), output);
   }
 
-  // uint32 blockNum = 2;
-  if (this->blocknum() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt32(2, this->blocknum(), output);
+  // uint64 blockIdx = 2;
+  if (this->blockidx() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(2, this->blockidx(), output);
   }
 
   // uint64 blockSize = 3;
@@ -329,29 +343,23 @@ void Block::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteUInt64(3, this->blocksize(), output);
   }
 
-  // bytes blockData = 4;
-  if (this->blockdata().size() > 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
-      4, this->blockdata(), output);
-  }
-
-  // bytes blockHash = 5;
+  // bytes blockHash = 4;
   if (this->blockhash().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
-      5, this->blockhash(), output);
+      4, this->blockhash(), output);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
   }
-  // @@protoc_insertion_point(serialize_end:DataServer.Block)
+  // @@protoc_insertion_point(serialize_end:DataServer.BlockInfo)
 }
 
-::google::protobuf::uint8* Block::InternalSerializeWithCachedSizesToArray(
+::google::protobuf::uint8* BlockInfo::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:DataServer.Block)
+  // @@protoc_insertion_point(serialize_to_array_start:DataServer.BlockInfo)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -360,15 +368,15 @@ void Block::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
       this->filename().data(), static_cast<int>(this->filename().length()),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
-      "DataServer.Block.fileName");
+      "DataServer.BlockInfo.fileName");
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
         1, this->filename(), target);
   }
 
-  // uint32 blockNum = 2;
-  if (this->blocknum() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt32ToArray(2, this->blocknum(), target);
+  // uint64 blockIdx = 2;
+  if (this->blockidx() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(2, this->blockidx(), target);
   }
 
   // uint64 blockSize = 3;
@@ -376,30 +384,23 @@ void Block::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(3, this->blocksize(), target);
   }
 
-  // bytes blockData = 4;
-  if (this->blockdata().size() > 0) {
-    target =
-      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
-        4, this->blockdata(), target);
-  }
-
-  // bytes blockHash = 5;
+  // bytes blockHash = 4;
   if (this->blockhash().size() > 0) {
     target =
       ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
-        5, this->blockhash(), target);
+        4, this->blockhash(), target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:DataServer.Block)
+  // @@protoc_insertion_point(serialize_to_array_end:DataServer.BlockInfo)
   return target;
 }
 
-size_t Block::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:DataServer.Block)
+size_t BlockInfo::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:DataServer.BlockInfo)
   size_t total_size = 0;
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -414,18 +415,18 @@ size_t Block::ByteSizeLong() const {
         this->filename());
   }
 
-  // bytes blockData = 4;
-  if (this->blockdata().size() > 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::BytesSize(
-        this->blockdata());
-  }
-
-  // bytes blockHash = 5;
+  // bytes blockHash = 4;
   if (this->blockhash().size() > 0) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::BytesSize(
         this->blockhash());
+  }
+
+  // uint64 blockIdx = 2;
+  if (this->blockidx() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
+        this->blockidx());
   }
 
   // uint64 blockSize = 3;
@@ -435,35 +436,28 @@ size_t Block::ByteSizeLong() const {
         this->blocksize());
   }
 
-  // uint32 blockNum = 2;
-  if (this->blocknum() != 0) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::UInt32Size(
-        this->blocknum());
-  }
-
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
 }
 
-void Block::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:DataServer.Block)
+void BlockInfo::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:DataServer.BlockInfo)
   GOOGLE_DCHECK_NE(&from, this);
-  const Block* source =
-      ::google::protobuf::internal::DynamicCastToGenerated<const Block>(
+  const BlockInfo* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const BlockInfo>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:DataServer.Block)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:DataServer.BlockInfo)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:DataServer.Block)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:DataServer.BlockInfo)
     MergeFrom(*source);
   }
 }
 
-void Block::MergeFrom(const Block& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:DataServer.Block)
+void BlockInfo::MergeFrom(const BlockInfo& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:DataServer.BlockInfo)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -473,58 +467,455 @@ void Block::MergeFrom(const Block& from) {
 
     filename_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.filename_);
   }
-  if (from.blockdata().size() > 0) {
-
-    blockdata_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.blockdata_);
-  }
   if (from.blockhash().size() > 0) {
 
     blockhash_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.blockhash_);
   }
+  if (from.blockidx() != 0) {
+    set_blockidx(from.blockidx());
+  }
   if (from.blocksize() != 0) {
     set_blocksize(from.blocksize());
   }
-  if (from.blocknum() != 0) {
-    set_blocknum(from.blocknum());
-  }
 }
 
-void Block::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:DataServer.Block)
+void BlockInfo::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:DataServer.BlockInfo)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-void Block::CopyFrom(const Block& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:DataServer.Block)
+void BlockInfo::CopyFrom(const BlockInfo& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:DataServer.BlockInfo)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
-bool Block::IsInitialized() const {
+bool BlockInfo::IsInitialized() const {
   return true;
 }
 
-void Block::Swap(Block* other) {
+void BlockInfo::Swap(BlockInfo* other) {
   if (other == this) return;
   InternalSwap(other);
 }
-void Block::InternalSwap(Block* other) {
+void BlockInfo::InternalSwap(BlockInfo* other) {
   using std::swap;
   filename_.Swap(&other->filename_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
-  blockdata_.Swap(&other->blockdata_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-    GetArenaNoVirtual());
   blockhash_.Swap(&other->blockhash_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
+  swap(blockidx_, other->blockidx_);
   swap(blocksize_, other->blocksize_);
-  swap(blocknum_, other->blocknum_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
-::google::protobuf::Metadata Block::GetMetadata() const {
+::google::protobuf::Metadata BlockInfo::GetMetadata() const {
+  protobuf_DataServer_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_DataServer_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+
+// ===================================================================
+
+void BlockUnit::InitAsDefaultInstance() {
+}
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int BlockUnit::kFileNameFieldNumber;
+const int BlockUnit::kBlockIdxFieldNumber;
+const int BlockUnit::kUnitIdxFieldNumber;
+const int BlockUnit::kUnitDataFieldNumber;
+const int BlockUnit::kLastUnitFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+BlockUnit::BlockUnit()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  ::google::protobuf::internal::InitSCC(
+      &protobuf_DataServer_2eproto::scc_info_BlockUnit.base);
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:DataServer.BlockUnit)
+}
+BlockUnit::BlockUnit(const BlockUnit& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  filename_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.filename().size() > 0) {
+    filename_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.filename_);
+  }
+  unitdata_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.unitdata().size() > 0) {
+    unitdata_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.unitdata_);
+  }
+  ::memcpy(&blockidx_, &from.blockidx_,
+    static_cast<size_t>(reinterpret_cast<char*>(&lastunit_) -
+    reinterpret_cast<char*>(&blockidx_)) + sizeof(lastunit_));
+  // @@protoc_insertion_point(copy_constructor:DataServer.BlockUnit)
+}
+
+void BlockUnit::SharedCtor() {
+  filename_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  unitdata_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(&blockidx_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&lastunit_) -
+      reinterpret_cast<char*>(&blockidx_)) + sizeof(lastunit_));
+}
+
+BlockUnit::~BlockUnit() {
+  // @@protoc_insertion_point(destructor:DataServer.BlockUnit)
+  SharedDtor();
+}
+
+void BlockUnit::SharedDtor() {
+  filename_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  unitdata_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+
+void BlockUnit::SetCachedSize(int size) const {
+  _cached_size_.Set(size);
+}
+const ::google::protobuf::Descriptor* BlockUnit::descriptor() {
+  ::protobuf_DataServer_2eproto::protobuf_AssignDescriptorsOnce();
+  return ::protobuf_DataServer_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const BlockUnit& BlockUnit::default_instance() {
+  ::google::protobuf::internal::InitSCC(&protobuf_DataServer_2eproto::scc_info_BlockUnit.base);
+  return *internal_default_instance();
+}
+
+
+void BlockUnit::Clear() {
+// @@protoc_insertion_point(message_clear_start:DataServer.BlockUnit)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  filename_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  unitdata_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  ::memset(&blockidx_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&lastunit_) -
+      reinterpret_cast<char*>(&blockidx_)) + sizeof(lastunit_));
+  _internal_metadata_.Clear();
+}
+
+bool BlockUnit::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:DataServer.BlockUnit)
+  for (;;) {
+    ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // string fileName = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_filename()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->filename().data(), static_cast<int>(this->filename().length()),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "DataServer.BlockUnit.fileName"));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // uint64 blockIdx = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &blockidx_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // uint64 unitIdx = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(24u /* 24 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &unitidx_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // bytes unitData = 4;
+      case 4: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(34u /* 34 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
+                input, this->mutable_unitdata()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // bool lastUnit = 5;
+      case 5: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(40u /* 40 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &lastunit_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:DataServer.BlockUnit)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:DataServer.BlockUnit)
+  return false;
+#undef DO_
+}
+
+void BlockUnit::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:DataServer.BlockUnit)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string fileName = 1;
+  if (this->filename().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->filename().data(), static_cast<int>(this->filename().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "DataServer.BlockUnit.fileName");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->filename(), output);
+  }
+
+  // uint64 blockIdx = 2;
+  if (this->blockidx() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(2, this->blockidx(), output);
+  }
+
+  // uint64 unitIdx = 3;
+  if (this->unitidx() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(3, this->unitidx(), output);
+  }
+
+  // bytes unitData = 4;
+  if (this->unitdata().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBytesMaybeAliased(
+      4, this->unitdata(), output);
+  }
+
+  // bool lastUnit = 5;
+  if (this->lastunit() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(5, this->lastunit(), output);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
+  }
+  // @@protoc_insertion_point(serialize_end:DataServer.BlockUnit)
+}
+
+::google::protobuf::uint8* BlockUnit::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:DataServer.BlockUnit)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string fileName = 1;
+  if (this->filename().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->filename().data(), static_cast<int>(this->filename().length()),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "DataServer.BlockUnit.fileName");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->filename(), target);
+  }
+
+  // uint64 blockIdx = 2;
+  if (this->blockidx() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(2, this->blockidx(), target);
+  }
+
+  // uint64 unitIdx = 3;
+  if (this->unitidx() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(3, this->unitidx(), target);
+  }
+
+  // bytes unitData = 4;
+  if (this->unitdata().size() > 0) {
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteBytesToArray(
+        4, this->unitdata(), target);
+  }
+
+  // bool lastUnit = 5;
+  if (this->lastunit() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(5, this->lastunit(), target);
+  }
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:DataServer.BlockUnit)
+  return target;
+}
+
+size_t BlockUnit::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:DataServer.BlockUnit)
+  size_t total_size = 0;
+
+  if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()));
+  }
+  // string fileName = 1;
+  if (this->filename().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->filename());
+  }
+
+  // bytes unitData = 4;
+  if (this->unitdata().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::BytesSize(
+        this->unitdata());
+  }
+
+  // uint64 blockIdx = 2;
+  if (this->blockidx() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
+        this->blockidx());
+  }
+
+  // uint64 unitIdx = 3;
+  if (this->unitidx() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::UInt64Size(
+        this->unitidx());
+  }
+
+  // bool lastUnit = 5;
+  if (this->lastunit() != 0) {
+    total_size += 1 + 1;
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  SetCachedSize(cached_size);
+  return total_size;
+}
+
+void BlockUnit::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:DataServer.BlockUnit)
+  GOOGLE_DCHECK_NE(&from, this);
+  const BlockUnit* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const BlockUnit>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:DataServer.BlockUnit)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:DataServer.BlockUnit)
+    MergeFrom(*source);
+  }
+}
+
+void BlockUnit::MergeFrom(const BlockUnit& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:DataServer.BlockUnit)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (from.filename().size() > 0) {
+
+    filename_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.filename_);
+  }
+  if (from.unitdata().size() > 0) {
+
+    unitdata_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.unitdata_);
+  }
+  if (from.blockidx() != 0) {
+    set_blockidx(from.blockidx());
+  }
+  if (from.unitidx() != 0) {
+    set_unitidx(from.unitidx());
+  }
+  if (from.lastunit() != 0) {
+    set_lastunit(from.lastunit());
+  }
+}
+
+void BlockUnit::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:DataServer.BlockUnit)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void BlockUnit::CopyFrom(const BlockUnit& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:DataServer.BlockUnit)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool BlockUnit::IsInitialized() const {
+  return true;
+}
+
+void BlockUnit::Swap(BlockUnit* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void BlockUnit::InternalSwap(BlockUnit* other) {
+  using std::swap;
+  filename_.Swap(&other->filename_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  unitdata_.Swap(&other->unitdata_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  swap(blockidx_, other->blockidx_);
+  swap(unitidx_, other->unitidx_);
+  swap(lastunit_, other->lastunit_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+}
+
+::google::protobuf::Metadata BlockUnit::GetMetadata() const {
   protobuf_DataServer_2eproto::protobuf_AssignDescriptorsOnce();
   return ::protobuf_DataServer_2eproto::file_level_metadata[kIndexInFileMessages];
 }
@@ -534,8 +925,11 @@ void Block::InternalSwap(Block* other) {
 }  // namespace DataServer
 namespace google {
 namespace protobuf {
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::DataServer::Block* Arena::CreateMaybeMessage< ::DataServer::Block >(Arena* arena) {
-  return Arena::CreateInternal< ::DataServer::Block >(arena);
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::DataServer::BlockInfo* Arena::CreateMaybeMessage< ::DataServer::BlockInfo >(Arena* arena) {
+  return Arena::CreateInternal< ::DataServer::BlockInfo >(arena);
+}
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::DataServer::BlockUnit* Arena::CreateMaybeMessage< ::DataServer::BlockUnit >(Arena* arena) {
+  return Arena::CreateInternal< ::DataServer::BlockUnit >(arena);
 }
 }  // namespace protobuf
 }  // namespace google
