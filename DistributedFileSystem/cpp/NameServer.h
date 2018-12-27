@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 #include <grpc++/grpc++.h>
 #include <openssl/sha.h>
 #include "NameServer.grpc.pb.h"
@@ -18,7 +19,11 @@ using std::to_string;
 using std::cout;
 using std::endl;
 using std::vector;
+using std::pair;
 using std::sort;
+using std::ios;
+using std::ifstream;
+using std::ofstream;
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Server;
@@ -28,17 +33,28 @@ using grpc::ServerReader;
 using grpc::ServerWriter;
 using grpc::Status;
 using NameServer::NameService;
-using NameServer::NodeInfo;
+using NameServer::ServerInfo;
+using NameServer::FileInfo;
+using NameServer::BlockInfo;
+using NameServer::BlockStore;
 
 char SERVER_ADDRESS[32];
 
+struct FileMetaData{
+    FileInfo fileInfo;
+    vector<BlockStore> storeList;
+};
+
 class NameServerImp final: public NameService::Service {
 public:
-    NameServerImp() {}
-    Status StartServer(ServerContext* context, const NodeInfo* request, NodeInfo* reply) override;
-    Status TerminateServer(ServerContext* context, const NodeInfo* request, NodeInfo* reply) override;
+    NameServerImp();
+    Status startServer(ServerContext* context, const ServerInfo* request, ServerInfo* reply) override;
+    Status terminateServer(ServerContext* context, const ServerInfo* request, ServerInfo* reply) override;
+    Status beginGetTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter) override;
+    Status commitGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
 private:
-    vector<NodeInfo> serverList;
+    vector<ServerInfo> serverList;
+    vector<FileMetaData> fileList;
 };
 
 

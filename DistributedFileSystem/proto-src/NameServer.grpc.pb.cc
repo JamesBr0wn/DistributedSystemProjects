@@ -19,8 +19,10 @@
 namespace NameServer {
 
 static const char* NameService_method_names[] = {
-  "/NameServer.NameService/StartServer",
-  "/NameServer.NameService/TerminateServer",
+  "/NameServer.NameService/startServer",
+  "/NameServer.NameService/terminateServer",
+  "/NameServer.NameService/beginGetTransaction",
+  "/NameServer.NameService/commitGetTransaction",
 };
 
 std::unique_ptr< NameService::Stub> NameService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -30,66 +32,120 @@ std::unique_ptr< NameService::Stub> NameService::NewStub(const std::shared_ptr< 
 }
 
 NameService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
-  : channel_(channel), rpcmethod_StartServer_(NameService_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_TerminateServer_(NameService_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  : channel_(channel), rpcmethod_startServer_(NameService_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_terminateServer_(NameService_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_beginGetTransaction_(NameService_method_names[2], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_commitGetTransaction_(NameService_method_names[3], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc::Status NameService::Stub::StartServer(::grpc::ClientContext* context, const ::NameServer::NodeInfo& request, ::NameServer::NodeInfo* response) {
-  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_StartServer_, context, request, response);
+::grpc::Status NameService::Stub::startServer(::grpc::ClientContext* context, const ::NameServer::ServerInfo& request, ::NameServer::ServerInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_startServer_, context, request, response);
 }
 
-void NameService::Stub::experimental_async::StartServer(::grpc::ClientContext* context, const ::NameServer::NodeInfo* request, ::NameServer::NodeInfo* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_StartServer_, context, request, response, std::move(f));
+void NameService::Stub::experimental_async::startServer(::grpc::ClientContext* context, const ::NameServer::ServerInfo* request, ::NameServer::ServerInfo* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_startServer_, context, request, response, std::move(f));
 }
 
-::grpc::ClientAsyncResponseReader< ::NameServer::NodeInfo>* NameService::Stub::AsyncStartServerRaw(::grpc::ClientContext* context, const ::NameServer::NodeInfo& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::NodeInfo>::Create(channel_.get(), cq, rpcmethod_StartServer_, context, request, true);
+::grpc::ClientAsyncResponseReader< ::NameServer::ServerInfo>* NameService::Stub::AsyncstartServerRaw(::grpc::ClientContext* context, const ::NameServer::ServerInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::ServerInfo>::Create(channel_.get(), cq, rpcmethod_startServer_, context, request, true);
 }
 
-::grpc::ClientAsyncResponseReader< ::NameServer::NodeInfo>* NameService::Stub::PrepareAsyncStartServerRaw(::grpc::ClientContext* context, const ::NameServer::NodeInfo& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::NodeInfo>::Create(channel_.get(), cq, rpcmethod_StartServer_, context, request, false);
+::grpc::ClientAsyncResponseReader< ::NameServer::ServerInfo>* NameService::Stub::PrepareAsyncstartServerRaw(::grpc::ClientContext* context, const ::NameServer::ServerInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::ServerInfo>::Create(channel_.get(), cq, rpcmethod_startServer_, context, request, false);
 }
 
-::grpc::Status NameService::Stub::TerminateServer(::grpc::ClientContext* context, const ::NameServer::NodeInfo& request, ::NameServer::NodeInfo* response) {
-  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_TerminateServer_, context, request, response);
+::grpc::Status NameService::Stub::terminateServer(::grpc::ClientContext* context, const ::NameServer::ServerInfo& request, ::NameServer::ServerInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_terminateServer_, context, request, response);
 }
 
-void NameService::Stub::experimental_async::TerminateServer(::grpc::ClientContext* context, const ::NameServer::NodeInfo* request, ::NameServer::NodeInfo* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_TerminateServer_, context, request, response, std::move(f));
+void NameService::Stub::experimental_async::terminateServer(::grpc::ClientContext* context, const ::NameServer::ServerInfo* request, ::NameServer::ServerInfo* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_terminateServer_, context, request, response, std::move(f));
 }
 
-::grpc::ClientAsyncResponseReader< ::NameServer::NodeInfo>* NameService::Stub::AsyncTerminateServerRaw(::grpc::ClientContext* context, const ::NameServer::NodeInfo& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::NodeInfo>::Create(channel_.get(), cq, rpcmethod_TerminateServer_, context, request, true);
+::grpc::ClientAsyncResponseReader< ::NameServer::ServerInfo>* NameService::Stub::AsyncterminateServerRaw(::grpc::ClientContext* context, const ::NameServer::ServerInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::ServerInfo>::Create(channel_.get(), cq, rpcmethod_terminateServer_, context, request, true);
 }
 
-::grpc::ClientAsyncResponseReader< ::NameServer::NodeInfo>* NameService::Stub::PrepareAsyncTerminateServerRaw(::grpc::ClientContext* context, const ::NameServer::NodeInfo& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::NodeInfo>::Create(channel_.get(), cq, rpcmethod_TerminateServer_, context, request, false);
+::grpc::ClientAsyncResponseReader< ::NameServer::ServerInfo>* NameService::Stub::PrepareAsyncterminateServerRaw(::grpc::ClientContext* context, const ::NameServer::ServerInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::ServerInfo>::Create(channel_.get(), cq, rpcmethod_terminateServer_, context, request, false);
+}
+
+::grpc::ClientReader< ::NameServer::BlockStore>* NameService::Stub::beginGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request) {
+  return ::grpc::internal::ClientReaderFactory< ::NameServer::BlockStore>::Create(channel_.get(), rpcmethod_beginGetTransaction_, context, request);
+}
+
+::grpc::ClientAsyncReader< ::NameServer::BlockStore>* NameService::Stub::AsyncbeginGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::NameServer::BlockStore>::Create(channel_.get(), cq, rpcmethod_beginGetTransaction_, context, request, true, tag);
+}
+
+::grpc::ClientAsyncReader< ::NameServer::BlockStore>* NameService::Stub::PrepareAsyncbeginGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::NameServer::BlockStore>::Create(channel_.get(), cq, rpcmethod_beginGetTransaction_, context, request, false, nullptr);
+}
+
+::grpc::Status NameService::Stub::commitGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::NameServer::FileInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_commitGetTransaction_, context, request, response);
+}
+
+void NameService::Stub::experimental_async::commitGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_commitGetTransaction_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>* NameService::Stub::AsynccommitGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::FileInfo>::Create(channel_.get(), cq, rpcmethod_commitGetTransaction_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>* NameService::Stub::PrepareAsynccommitGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::FileInfo>::Create(channel_.get(), cq, rpcmethod_commitGetTransaction_, context, request, false);
 }
 
 NameService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       NameService_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< NameService::Service, ::NameServer::NodeInfo, ::NameServer::NodeInfo>(
-          std::mem_fn(&NameService::Service::StartServer), this)));
+      new ::grpc::internal::RpcMethodHandler< NameService::Service, ::NameServer::ServerInfo, ::NameServer::ServerInfo>(
+          std::mem_fn(&NameService::Service::startServer), this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       NameService_method_names[1],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< NameService::Service, ::NameServer::NodeInfo, ::NameServer::NodeInfo>(
-          std::mem_fn(&NameService::Service::TerminateServer), this)));
+      new ::grpc::internal::RpcMethodHandler< NameService::Service, ::NameServer::ServerInfo, ::NameServer::ServerInfo>(
+          std::mem_fn(&NameService::Service::terminateServer), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      NameService_method_names[2],
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< NameService::Service, ::NameServer::FileInfo, ::NameServer::BlockStore>(
+          std::mem_fn(&NameService::Service::beginGetTransaction), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      NameService_method_names[3],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< NameService::Service, ::NameServer::FileInfo, ::NameServer::FileInfo>(
+          std::mem_fn(&NameService::Service::commitGetTransaction), this)));
 }
 
 NameService::Service::~Service() {
 }
 
-::grpc::Status NameService::Service::StartServer(::grpc::ServerContext* context, const ::NameServer::NodeInfo* request, ::NameServer::NodeInfo* response) {
+::grpc::Status NameService::Service::startServer(::grpc::ServerContext* context, const ::NameServer::ServerInfo* request, ::NameServer::ServerInfo* response) {
   (void) context;
   (void) request;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status NameService::Service::TerminateServer(::grpc::ServerContext* context, const ::NameServer::NodeInfo* request, ::NameServer::NodeInfo* response) {
+::grpc::Status NameService::Service::terminateServer(::grpc::ServerContext* context, const ::NameServer::ServerInfo* request, ::NameServer::ServerInfo* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status NameService::Service::beginGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::grpc::ServerWriter< ::NameServer::BlockStore>* writer) {
+  (void) context;
+  (void) request;
+  (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status NameService::Service::commitGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response) {
   (void) context;
   (void) request;
   (void) response;

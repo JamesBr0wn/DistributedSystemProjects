@@ -2,13 +2,14 @@
 // Created by JamesBrown on 2018/12/26.
 //
 
+#include <NameServer.pb.h>
 #include "Client.h"
 
-Status ClientImp::ReadBlock(const BlockInfo request){
+Status ClientImp::getBlock(const BlockInfo request){
     BlockUnit unit;
     ClientContext context;
     std::unique_ptr<ClientReader<BlockUnit>> reader(
-            _stub->ReadBlock(&context, request));
+            dataStub->getBlock(&context, request));
     Status status;
 
     string blockName = request.filename() + '_' + to_string(request.blockidx());
@@ -21,26 +22,26 @@ Status ClientImp::ReadBlock(const BlockInfo request){
     unsigned long i = 0;
     while (reader->Read(&unit)) {
         ofs.write(unit.unitdata().data(), unit.unitdata().length());
-        cout << "$ Block " << blockName << " read unit " << i << endl;
+        cout << "$ Block " << blockName << " get unit " << i << endl;
         i++;
     }
     ofs.close();
     status = reader->Finish();
 
     if (status.ok()) {
-        cout << "$ Block " << blockName << " read finished!" << endl << endl;
+        cout << "$ Block " << blockName << " get finished!" << endl << endl;
         return Status::OK;
     } else {
-        cout << "# Block " << blockName << " read failed!" << endl << endl;
+        cout << "# Block " << blockName << " get failed!" << endl << endl;
         return Status::CANCELLED;
     }
 }
 
-Status ClientImp::WriteBlock(const BlockInfo request){
+Status ClientImp::putBlock(const BlockInfo request){
     BlockInfo reply;
     ClientContext context;
     Status status;
-    std::unique_ptr<ClientWriter<BlockUnit>> writer(_stub->WriteBlock(&context, &reply));
+    std::unique_ptr<ClientWriter<BlockUnit>> writer(dataStub->putBlock(&context, &reply));
 
     string fileName = request.filename();
     unsigned long blockIdx = request.blockidx();
@@ -75,7 +76,7 @@ Status ClientImp::WriteBlock(const BlockInfo request){
         unit.set_unitidx(i);
         unit.set_unitdata(unitData, (size_t)unitSize);
         unit.set_lastunit(blockSize % unitSize == 0 && i == unitNum - 1);
-        cout << "$ Block " << blockName << " write unit " << i << endl;
+        cout << "$ Block " << blockName << " put unit " << i << endl;
         writer->Write(unit);
     }
     if(blockSize % unitSize != 0){
@@ -86,7 +87,7 @@ Status ClientImp::WriteBlock(const BlockInfo request){
         unit.set_unitidx(unitNum);
         unit.set_unitdata(unitData, (size_t)blockSize % unitSize);
         unit.set_lastunit(true);
-        cout << "$ Block " << blockName << " write unit " << unitNum << endl;
+        cout << "$ Block " << blockName << " put unit " << unitNum << endl;
         writer->Write(unit);
     }
 
@@ -115,28 +116,67 @@ Status ClientImp::WriteBlock(const BlockInfo request){
             return Status::CANCELLED;
         }
 
-        cout << "$ Block " << blockName << " write finished!" << endl << endl;
+        cout << "$ Block " << blockName << " put finished!" << endl << endl;
         return Status::CANCELLED;
     } else {
-        cout << "# Block " << blockName << " write failed!" << endl << endl;
+        cout << "# Block " << blockName << " put failed!" << endl << endl;
         return Status::CANCELLED;
     }
 }
 
-Status ClientImp::RemoveBlock(const BlockInfo request){
+Status ClientImp::rmBlock(const BlockInfo request){
     BlockInfo reply;
     ClientContext context;
     Status status;
+    string blockName = request.filename() + '_' + to_string(request.blockidx());
 
-    status = _stub->RemoveBlock(&context, request, &reply);
+    status = dataStub->rmBlock(&context, request, &reply);
+    if(status.ok()){
+        cout << "$ Block " << blockName << " rm finished!" << endl << endl;
+    }else{
+        cout << "$ Block " << blockName << " rm failed!" << endl << endl;
+    }
     return status;
+}
+
+Status ClientImp::get(const string fileName){
+    FileInfo fileInfo;
+    fileInfo.set_filename(fileName);
+    BlockStore blockStore;
+    ClientContext context;
+    std::unique_ptr<ClientReader<BlockStore>> blockStoreReader(
+            nameStub->beginGetTransaction(&context, fileInfo));
+    Status status;
+    unsigned long i = 0;
+    vector<BlockStore> storeList;
+    while (blockStoreReader->Read(&blockStore)) {
+        storeList.push_back(blockStore);
+        i++;
+    }
+    status = blockStoreReader->Finish();
+    if(!status.ok()){
+        cout << "# File " << fileInfo.filename() << " get block list fail!" << endl;
+    }
+
+    BlockInfo temp;
+    for(auto it = storeList.begin(); it != storeList.end(); it++){
+        dataStub = DataService::NewStub(grpc::CreateChannel(it->serverinfo().address(), grpc::InsecureChannelCredentials()));
+        temp.set_filename(it->blockinfo().filename());
+        temp.set_blockidx(it->blockinfo().blockidx());
+        temp.set_blocksize(it->blockinfo().blocksize());
+        temp.set_blockhash(it->blockinfo().blockhash());
+        if(!getBlock(temp).ok()){
+            return Status::CANCELLED;
+        }
+    }
+    return Status::OK;
 }
 
 class TestClient {
 public:
     TestClient(string dir, size_t sz) : clientImp(grpc::CreateChannel(std::string(SERVER_ADDRESS), grpc::InsecureChannelCredentials()), dir, sz){}
 
-    bool ReadBlockTest(){
+    bool getBlockTest(){
         BlockInfo request;
         request.set_filename("block");
         request.set_blockidx(0);
@@ -165,19 +205,19 @@ public:
         delete[] blockData;
         ifs.close();
 
-        clientImp.ReadBlock(request);
+        clientImp.getBlock(request);
         return true;
     }
 
-    bool WriteBlockTest(){
+    bool putBlockTest(){
         BlockInfo request;
         request.set_filename("block");
         request.set_blockidx(0);
-        clientImp.WriteBlock(request);
+        clientImp.putBlock(request);
         return true;
     }
 
-    bool RemoveBlockTest(){
+    bool rmBlockTest(){
         BlockInfo request;
         request.set_filename("block");
         request.set_blockidx(0);
@@ -206,7 +246,12 @@ public:
         delete[] blockData;
         ifs.close();
 
-        clientImp.RemoveBlock(request);
+        clientImp.rmBlock(request);
+        return true;
+    }
+
+    bool getTest(){
+        clientImp.get("file");
         return true;
     }
 private:
@@ -217,25 +262,30 @@ int main(int argc, char** argv){
     strcpy(SERVER_ADDRESS, argv[1]);
     TestClient client("BlockCache/", 1024 * 1024);
     char temp;
-    if(client.ReadBlockTest()){
-        std::cout << "$ Read succeed!" << std::endl;
-    }else{
-        std::cout << "# Read failed!" << std::endl;
-    }
-    cin >> temp;
+//    if(client.getBlockTest()){
+//        std::cout << "$ Get succeed!" << std::endl;
+//    }else{
+//        std::cout << "# Get failed!" << std::endl;
+//    }
+//    cin >> temp;
+//
+//    if(client.rmBlockTest()){
+//        std::cout << "$ Rm succeed!" << std::endl;
+//    }else{
+//        std::cout << "# Rm failed!" << std::endl;
+//    }
+//    cin >> temp;
+//
+//    if(client.putBlockTest()){
+//        std::cout << "$ Put succeed!" << std::endl;
+//    }else{
+//        std::cout << "# Put failed!" << std::endl;
+//    }
 
-    if(client.RemoveBlockTest()){
-        std::cout << "$ Remove succeed!" << std::endl;
+    if(client.getTest()){
+        std::cout << "$ Get succeed!" << std::endl;
     }else{
-        std::cout << "# Remove failed!" << std::endl;
+        std::cout << "# Get failed!" << std::endl;
     }
-    cin >> temp;
-
-    if(client.WriteBlockTest()){
-        std::cout << "$ Write succeed!" << std::endl;
-    }else{
-        std::cout << "# Write failed!" << std::endl;
-    }
-
     return 0;
 }

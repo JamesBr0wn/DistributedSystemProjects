@@ -9,12 +9,16 @@
 #include <string>
 #include <fstream>
 #include <cstring>
+#include <vector>
 #include <grpc++/grpc++.h>
 #include <openssl/sha.h>
 #include <DataServer.pb.h>
+#include <NameServer.pb.h>
+#include <NameServer.grpc.pb.h>
 #include "DataServer.grpc.pb.h"
 
 using std::string;
+using std::vector;
 using std::to_string;
 using std::ifstream;
 using std::ofstream;
@@ -32,18 +36,24 @@ using grpc::Status;
 using DataServer::DataService;
 using DataServer::BlockInfo;
 using DataServer::BlockUnit;
+using NameServer::NameService;
+using NameServer::FileInfo;
+using NameServer::ServerInfo;
+using NameServer::BlockStore;
 
 char SERVER_ADDRESS[16];
 
 class ClientImp{
 public:
     ClientImp(std::shared_ptr<Channel> channel, string dir, size_t sz)
-        : _stub(DataService::NewStub(channel)), cacheDirectory(dir), unitSize(sz) {}
-    Status ReadBlock(const BlockInfo request);
-    Status WriteBlock(const BlockInfo request);
-    Status RemoveBlock(const BlockInfo request);
+        : nameStub(NameService::NewStub(channel)), cacheDirectory(dir), unitSize(sz) {}
+    Status getBlock(BlockInfo request);
+    Status putBlock(BlockInfo request);
+    Status rmBlock(BlockInfo request);
+    Status get(string fileName);
 private:
-    std::unique_ptr<DataService::Stub> _stub;
+    std::unique_ptr<NameService::Stub> nameStub;
+    std::unique_ptr<DataService::Stub> dataStub;
     string cacheDirectory;
     size_t unitSize;
 };

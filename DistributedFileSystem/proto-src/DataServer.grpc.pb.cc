@@ -19,9 +19,9 @@
 namespace DataServer {
 
 static const char* DataService_method_names[] = {
-  "/DataServer.DataService/ReadBlock",
-  "/DataServer.DataService/WriteBlock",
-  "/DataServer.DataService/RemoveBlock",
+  "/DataServer.DataService/getBlock",
+  "/DataServer.DataService/putBlock",
+  "/DataServer.DataService/rmBlock",
 };
 
 std::unique_ptr< DataService::Stub> DataService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -31,49 +31,49 @@ std::unique_ptr< DataService::Stub> DataService::NewStub(const std::shared_ptr< 
 }
 
 DataService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
-  : channel_(channel), rpcmethod_ReadBlock_(DataService_method_names[0], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
-  , rpcmethod_WriteBlock_(DataService_method_names[1], ::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
-  , rpcmethod_RemoveBlock_(DataService_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  : channel_(channel), rpcmethod_getBlock_(DataService_method_names[0], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_putBlock_(DataService_method_names[1], ::grpc::internal::RpcMethod::CLIENT_STREAMING, channel)
+  , rpcmethod_rmBlock_(DataService_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
-::grpc::ClientReader< ::DataServer::BlockUnit>* DataService::Stub::ReadBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request) {
-  return ::grpc::internal::ClientReaderFactory< ::DataServer::BlockUnit>::Create(channel_.get(), rpcmethod_ReadBlock_, context, request);
+::grpc::ClientReader< ::DataServer::BlockUnit>* DataService::Stub::getBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request) {
+  return ::grpc::internal::ClientReaderFactory< ::DataServer::BlockUnit>::Create(channel_.get(), rpcmethod_getBlock_, context, request);
 }
 
-::grpc::ClientAsyncReader< ::DataServer::BlockUnit>* DataService::Stub::AsyncReadBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq, void* tag) {
-  return ::grpc::internal::ClientAsyncReaderFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_ReadBlock_, context, request, true, tag);
+::grpc::ClientAsyncReader< ::DataServer::BlockUnit>* DataService::Stub::AsyncgetBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_getBlock_, context, request, true, tag);
 }
 
-::grpc::ClientAsyncReader< ::DataServer::BlockUnit>* DataService::Stub::PrepareAsyncReadBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncReaderFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_ReadBlock_, context, request, false, nullptr);
+::grpc::ClientAsyncReader< ::DataServer::BlockUnit>* DataService::Stub::PrepareAsyncgetBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_getBlock_, context, request, false, nullptr);
 }
 
-::grpc::ClientWriter< ::DataServer::BlockUnit>* DataService::Stub::WriteBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response) {
-  return ::grpc::internal::ClientWriterFactory< ::DataServer::BlockUnit>::Create(channel_.get(), rpcmethod_WriteBlock_, context, response);
+::grpc::ClientWriter< ::DataServer::BlockUnit>* DataService::Stub::putBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response) {
+  return ::grpc::internal::ClientWriterFactory< ::DataServer::BlockUnit>::Create(channel_.get(), rpcmethod_putBlock_, context, response);
 }
 
-::grpc::ClientAsyncWriter< ::DataServer::BlockUnit>* DataService::Stub::AsyncWriteBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response, ::grpc::CompletionQueue* cq, void* tag) {
-  return ::grpc::internal::ClientAsyncWriterFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_WriteBlock_, context, response, true, tag);
+::grpc::ClientAsyncWriter< ::DataServer::BlockUnit>* DataService::Stub::AsyncputBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncWriterFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_putBlock_, context, response, true, tag);
 }
 
-::grpc::ClientAsyncWriter< ::DataServer::BlockUnit>* DataService::Stub::PrepareAsyncWriteBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncWriterFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_WriteBlock_, context, response, false, nullptr);
+::grpc::ClientAsyncWriter< ::DataServer::BlockUnit>* DataService::Stub::PrepareAsyncputBlockRaw(::grpc::ClientContext* context, ::DataServer::BlockInfo* response, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncWriterFactory< ::DataServer::BlockUnit>::Create(channel_.get(), cq, rpcmethod_putBlock_, context, response, false, nullptr);
 }
 
-::grpc::Status DataService::Stub::RemoveBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::DataServer::BlockInfo* response) {
-  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_RemoveBlock_, context, request, response);
+::grpc::Status DataService::Stub::rmBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::DataServer::BlockInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_rmBlock_, context, request, response);
 }
 
-void DataService::Stub::experimental_async::RemoveBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_RemoveBlock_, context, request, response, std::move(f));
+void DataService::Stub::experimental_async::rmBlock(::grpc::ClientContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_rmBlock_, context, request, response, std::move(f));
 }
 
-::grpc::ClientAsyncResponseReader< ::DataServer::BlockInfo>* DataService::Stub::AsyncRemoveBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DataServer::BlockInfo>::Create(channel_.get(), cq, rpcmethod_RemoveBlock_, context, request, true);
+::grpc::ClientAsyncResponseReader< ::DataServer::BlockInfo>* DataService::Stub::AsyncrmBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DataServer::BlockInfo>::Create(channel_.get(), cq, rpcmethod_rmBlock_, context, request, true);
 }
 
-::grpc::ClientAsyncResponseReader< ::DataServer::BlockInfo>* DataService::Stub::PrepareAsyncRemoveBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DataServer::BlockInfo>::Create(channel_.get(), cq, rpcmethod_RemoveBlock_, context, request, false);
+::grpc::ClientAsyncResponseReader< ::DataServer::BlockInfo>* DataService::Stub::PrepareAsyncrmBlockRaw(::grpc::ClientContext* context, const ::DataServer::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DataServer::BlockInfo>::Create(channel_.get(), cq, rpcmethod_rmBlock_, context, request, false);
 }
 
 DataService::Service::Service() {
@@ -81,37 +81,37 @@ DataService::Service::Service() {
       DataService_method_names[0],
       ::grpc::internal::RpcMethod::SERVER_STREAMING,
       new ::grpc::internal::ServerStreamingHandler< DataService::Service, ::DataServer::BlockInfo, ::DataServer::BlockUnit>(
-          std::mem_fn(&DataService::Service::ReadBlock), this)));
+          std::mem_fn(&DataService::Service::getBlock), this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       DataService_method_names[1],
       ::grpc::internal::RpcMethod::CLIENT_STREAMING,
       new ::grpc::internal::ClientStreamingHandler< DataService::Service, ::DataServer::BlockUnit, ::DataServer::BlockInfo>(
-          std::mem_fn(&DataService::Service::WriteBlock), this)));
+          std::mem_fn(&DataService::Service::putBlock), this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       DataService_method_names[2],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< DataService::Service, ::DataServer::BlockInfo, ::DataServer::BlockInfo>(
-          std::mem_fn(&DataService::Service::RemoveBlock), this)));
+          std::mem_fn(&DataService::Service::rmBlock), this)));
 }
 
 DataService::Service::~Service() {
 }
 
-::grpc::Status DataService::Service::ReadBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::grpc::ServerWriter< ::DataServer::BlockUnit>* writer) {
+::grpc::Status DataService::Service::getBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::grpc::ServerWriter< ::DataServer::BlockUnit>* writer) {
   (void) context;
   (void) request;
   (void) writer;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status DataService::Service::WriteBlock(::grpc::ServerContext* context, ::grpc::ServerReader< ::DataServer::BlockUnit>* reader, ::DataServer::BlockInfo* response) {
+::grpc::Status DataService::Service::putBlock(::grpc::ServerContext* context, ::grpc::ServerReader< ::DataServer::BlockUnit>* reader, ::DataServer::BlockInfo* response) {
   (void) context;
   (void) reader;
   (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status DataService::Service::RemoveBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response) {
+::grpc::Status DataService::Service::rmBlock(::grpc::ServerContext* context, const ::DataServer::BlockInfo* request, ::DataServer::BlockInfo* response) {
   (void) context;
   (void) request;
   (void) response;

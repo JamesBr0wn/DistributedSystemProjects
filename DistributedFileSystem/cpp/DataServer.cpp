@@ -6,12 +6,12 @@
 
 DataServerImp::DataServerImp(std::shared_ptr<Channel> channel, string dir, size_t sz)
     : _stub(NameService::NewStub(channel)), storeDirectory(dir), unitSize(sz) {
-    NodeInfo request;
-    NodeInfo reply;
+    ServerInfo request;
+    ServerInfo reply;
     ClientContext context;
     Status status;
     request.set_address(DATA_ADDRESS);
-    status = _stub->StartServer(&context, request, &reply);
+    status = _stub->startServer(&context, request, &reply);
     if (status.ok()) {
         cout << "# Data server started!" << endl;
     } else {
@@ -21,8 +21,8 @@ DataServerImp::DataServerImp(std::shared_ptr<Channel> channel, string dir, size_
 }
 
 DataServerImp::~DataServerImp() {
-    NodeInfo request;
-    NodeInfo reply;
+    ServerInfo request;
+    ServerInfo reply;
     ClientContext context;
     Status status;
     request.set_address(DATA_ADDRESS);
@@ -34,7 +34,7 @@ DataServerImp::~DataServerImp() {
     SHA256_Update(&stx, address.data(), request.address().length());
     SHA256_Final(hash, &stx);
     request.set_hash(hash, SHA256_DIGEST_LENGTH);
-    status = _stub->TerminateServer(&context, request, &reply);
+    status = _stub->terminateServer(&context, request, &reply);
     if (status.ok()) {
         cout << "# Data server terminated!" << endl;
     } else {
@@ -43,7 +43,7 @@ DataServerImp::~DataServerImp() {
     }
 }
 
-Status DataServerImp::ReadBlock(ServerContext* context,const BlockInfo* request, ServerWriter<BlockUnit>* replyWriter) {
+Status DataServerImp::getBlock(ServerContext* context,const BlockInfo* request, ServerWriter<BlockUnit>* replyWriter) {
     // 打开Block文件
     string blockName = request->filename() + '_' + to_string(request->blockidx());
     ifstream ifs(storeDirectory + blockName, ios::in | ios::binary | ios::ate);
@@ -81,7 +81,7 @@ Status DataServerImp::ReadBlock(ServerContext* context,const BlockInfo* request,
         unit.set_unitidx(i);
         unit.set_unitdata(unitData, (size_t)unitSize);
         unit.set_lastunit(blockSize % unitSize == 0 && i == unitNum - 1);
-        cout << "$ Block " << blockName << " read unit " << i << endl;
+        cout << "$ Block " << blockName << " get unit " << i << endl;
         replyWriter->Write(unit);
     }
     if(blockSize % unitSize != 0){
@@ -92,7 +92,7 @@ Status DataServerImp::ReadBlock(ServerContext* context,const BlockInfo* request,
         unit.set_unitidx(unitNum);
         unit.set_unitdata(unitData, (size_t)blockSize % unitSize);
         unit.set_lastunit(true);
-        cout << "$ Block " << blockName << " read unit " << unitNum << endl;
+        cout << "$ Block " << blockName << " get unit " << unitNum << endl;
         replyWriter->Write(unit);
     }
 
@@ -112,11 +112,11 @@ Status DataServerImp::ReadBlock(ServerContext* context,const BlockInfo* request,
     // 完成RPC
     delete[] unitData;
     ifs.close();
-    cout << "$ Block " << blockName << " read finished!" << endl << endl;
+    cout << "$ Block " << blockName << " get finished!" << endl << endl;
     return Status::OK;
 }
 
-Status DataServerImp::WriteBlock(ServerContext* context, ServerReader<BlockUnit>* requestReader, BlockInfo* reply) {
+Status DataServerImp::putBlock(ServerContext* context, ServerReader<BlockUnit>* requestReader, BlockInfo* reply) {
     // 开始流传输
     BlockUnit unit;
     unsigned long blockSize = 0;
@@ -145,12 +145,12 @@ Status DataServerImp::WriteBlock(ServerContext* context, ServerReader<BlockUnit>
     ofs.write(unit.unitdata().data(), unit.unitdata().length());
     blockSize += unit.unitdata().length();
     SHA256_Update(&stx, unit.unitdata().data(), unit.unitdata().length());
-    cout << "$ Block " << blockName << " write unit " << unit.unitidx() << endl;
+    cout << "$ Block " << blockName << " put unit " << unit.unitidx() << endl;
     while(requestReader->Read(&unit)){
         ofs.write(unit.unitdata().data(), unit.unitdata().length());
         blockSize += unit.unitdata().length();
         SHA256_Update(&stx, unit.unitdata().data(), unit.unitdata().length());
-        cout << "$ Block " << blockName << " write unit " << unit.unitidx() << endl;
+        cout << "$ Block " << blockName << " put unit " << unit.unitidx() << endl;
     }
     SHA256_Final(hash, &stx);
     reply->set_blockhash((char*)hash);
@@ -158,11 +158,11 @@ Status DataServerImp::WriteBlock(ServerContext* context, ServerReader<BlockUnit>
 
     // 完成RPC
     ofs.close();
-    cout << "$ Block " << blockName << " write finished!" << endl << endl;
+    cout << "$ Block " << blockName << " put finished!" << endl << endl;
     return Status::OK;
 }
 
-Status DataServerImp::RemoveBlock(ServerContext* context, const BlockInfo* request, BlockInfo* reply){
+Status DataServerImp::rmBlock(ServerContext* context, const BlockInfo* request, BlockInfo* reply){
     // 打开Block文件
     string blockName = request->filename() + '_' + to_string(request->blockidx());
     ifstream ifs(storeDirectory + blockName, ios::in | ios::binary | ios::ate);
@@ -214,13 +214,13 @@ Status DataServerImp::RemoveBlock(ServerContext* context, const BlockInfo* reque
     ifs.close();
 
     // 删除Block
-    if(!remove((storeDirectory + blockName).data())){
-        cout << "$ Block " << blockName << " remove failed!" << endl << endl;
+    if(remove((storeDirectory + blockName).data())){
+        cout << "$ Block " << blockName << " rm failed!" << endl << endl;
         return Status::CANCELLED;
     }
 
     // 完成RPC
-    cout << "$ Block " << blockName << " remove finished!" << endl << endl;
+    cout << "$ Block " << blockName << " rm finished!" << endl << endl;
     return Status::OK;
 }
 

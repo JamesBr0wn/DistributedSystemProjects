@@ -3,11 +3,30 @@ syntax = "proto3";
 package NameServer;
 
 service NameService{
-    rpc StartServer(NodeInfo) returns(NodeInfo) {}
-    rpc TerminateServer(NodeInfo) returns(NodeInfo) {}
+    rpc startServer(ServerInfo) returns(ServerInfo) {}
+    rpc terminateServer(ServerInfo) returns(ServerInfo) {}
+    rpc beginGetTransaction(FileInfo) returns(stream BlockStore) {}
+    rpc commitGetTransaction(FileInfo) returns(FileInfo) {}
 }
 
-message NodeInfo{
+message ServerInfo{
     string address = 1;
-    bytes hash = 3;
+    bytes hash = 2;
+}
+
+message FileInfo{
+    string fileName = 1;
+    uint64 fileSize = 2;
+}
+
+message BlockStore{
+    BlockInfo blockInfo = 1;
+    ServerInfo serverInfo = 2;
+}
+
+message BlockInfo{
+    string fileName = 1;
+    uint64 blockIdx = 2;
+    uint64 blockSize = 3;
+    bytes blockHash = 4;
 }

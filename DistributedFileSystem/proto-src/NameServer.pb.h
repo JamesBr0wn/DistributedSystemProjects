@@ -38,7 +38,7 @@ namespace protobuf_NameServer_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[1];
+  static const ::google::protobuf::internal::ParseTable schema[4];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -46,37 +46,49 @@ struct TableStruct {
 void AddDescriptors();
 }  // namespace protobuf_NameServer_2eproto
 namespace NameServer {
-class NodeInfo;
-class NodeInfoDefaultTypeInternal;
-extern NodeInfoDefaultTypeInternal _NodeInfo_default_instance_;
+class BlockInfo;
+class BlockInfoDefaultTypeInternal;
+extern BlockInfoDefaultTypeInternal _BlockInfo_default_instance_;
+class BlockStore;
+class BlockStoreDefaultTypeInternal;
+extern BlockStoreDefaultTypeInternal _BlockStore_default_instance_;
+class FileInfo;
+class FileInfoDefaultTypeInternal;
+extern FileInfoDefaultTypeInternal _FileInfo_default_instance_;
+class ServerInfo;
+class ServerInfoDefaultTypeInternal;
+extern ServerInfoDefaultTypeInternal _ServerInfo_default_instance_;
 }  // namespace NameServer
 namespace google {
 namespace protobuf {
-template<> ::NameServer::NodeInfo* Arena::CreateMaybeMessage<::NameServer::NodeInfo>(Arena*);
+template<> ::NameServer::BlockInfo* Arena::CreateMaybeMessage<::NameServer::BlockInfo>(Arena*);
+template<> ::NameServer::BlockStore* Arena::CreateMaybeMessage<::NameServer::BlockStore>(Arena*);
+template<> ::NameServer::FileInfo* Arena::CreateMaybeMessage<::NameServer::FileInfo>(Arena*);
+template<> ::NameServer::ServerInfo* Arena::CreateMaybeMessage<::NameServer::ServerInfo>(Arena*);
 }  // namespace protobuf
 }  // namespace google
 namespace NameServer {
 
 // ===================================================================
 
-class NodeInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:NameServer.NodeInfo) */ {
+class ServerInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:NameServer.ServerInfo) */ {
  public:
-  NodeInfo();
-  virtual ~NodeInfo();
+  ServerInfo();
+  virtual ~ServerInfo();
 
-  NodeInfo(const NodeInfo& from);
+  ServerInfo(const ServerInfo& from);
 
-  inline NodeInfo& operator=(const NodeInfo& from) {
+  inline ServerInfo& operator=(const ServerInfo& from) {
     CopyFrom(from);
     return *this;
   }
   #if LANG_CXX11
-  NodeInfo(NodeInfo&& from) noexcept
-    : NodeInfo() {
+  ServerInfo(ServerInfo&& from) noexcept
+    : ServerInfo() {
     *this = ::std::move(from);
   }
 
-  inline NodeInfo& operator=(NodeInfo&& from) noexcept {
+  inline ServerInfo& operator=(ServerInfo&& from) noexcept {
     if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -86,34 +98,34 @@ class NodeInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(
   }
   #endif
   static const ::google::protobuf::Descriptor* descriptor();
-  static const NodeInfo& default_instance();
+  static const ServerInfo& default_instance();
 
   static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const NodeInfo* internal_default_instance() {
-    return reinterpret_cast<const NodeInfo*>(
-               &_NodeInfo_default_instance_);
+  static inline const ServerInfo* internal_default_instance() {
+    return reinterpret_cast<const ServerInfo*>(
+               &_ServerInfo_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     0;
 
-  void Swap(NodeInfo* other);
-  friend void swap(NodeInfo& a, NodeInfo& b) {
+  void Swap(ServerInfo* other);
+  friend void swap(ServerInfo& a, ServerInfo& b) {
     a.Swap(&b);
   }
 
   // implements Message ----------------------------------------------
 
-  inline NodeInfo* New() const final {
-    return CreateMaybeMessage<NodeInfo>(NULL);
+  inline ServerInfo* New() const final {
+    return CreateMaybeMessage<ServerInfo>(NULL);
   }
 
-  NodeInfo* New(::google::protobuf::Arena* arena) const final {
-    return CreateMaybeMessage<NodeInfo>(arena);
+  ServerInfo* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<ServerInfo>(arena);
   }
   void CopyFrom(const ::google::protobuf::Message& from) final;
   void MergeFrom(const ::google::protobuf::Message& from) final;
-  void CopyFrom(const NodeInfo& from);
-  void MergeFrom(const NodeInfo& from);
+  void CopyFrom(const ServerInfo& from);
+  void MergeFrom(const ServerInfo& from);
   void Clear() final;
   bool IsInitialized() const final;
 
@@ -130,7 +142,7 @@ class NodeInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(NodeInfo* other);
+  void InternalSwap(ServerInfo* other);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return NULL;
@@ -160,9 +172,9 @@ class NodeInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::std::string* release_address();
   void set_allocated_address(::std::string* address);
 
-  // bytes hash = 3;
+  // bytes hash = 2;
   void clear_hash();
-  static const int kHashFieldNumber = 3;
+  static const int kHashFieldNumber = 2;
   const ::std::string& hash() const;
   void set_hash(const ::std::string& value);
   #if LANG_CXX11
@@ -174,12 +186,392 @@ class NodeInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(
   ::std::string* release_hash();
   void set_allocated_hash(::std::string* hash);
 
-  // @@protoc_insertion_point(class_scope:NameServer.NodeInfo)
+  // @@protoc_insertion_point(class_scope:NameServer.ServerInfo)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr address_;
   ::google::protobuf::internal::ArenaStringPtr hash_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_NameServer_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class FileInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:NameServer.FileInfo) */ {
+ public:
+  FileInfo();
+  virtual ~FileInfo();
+
+  FileInfo(const FileInfo& from);
+
+  inline FileInfo& operator=(const FileInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  FileInfo(FileInfo&& from) noexcept
+    : FileInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline FileInfo& operator=(FileInfo&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const FileInfo& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const FileInfo* internal_default_instance() {
+    return reinterpret_cast<const FileInfo*>(
+               &_FileInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    1;
+
+  void Swap(FileInfo* other);
+  friend void swap(FileInfo& a, FileInfo& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline FileInfo* New() const final {
+    return CreateMaybeMessage<FileInfo>(NULL);
+  }
+
+  FileInfo* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<FileInfo>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const FileInfo& from);
+  void MergeFrom(const FileInfo& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(FileInfo* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string fileName = 1;
+  void clear_filename();
+  static const int kFileNameFieldNumber = 1;
+  const ::std::string& filename() const;
+  void set_filename(const ::std::string& value);
+  #if LANG_CXX11
+  void set_filename(::std::string&& value);
+  #endif
+  void set_filename(const char* value);
+  void set_filename(const char* value, size_t size);
+  ::std::string* mutable_filename();
+  ::std::string* release_filename();
+  void set_allocated_filename(::std::string* filename);
+
+  // uint64 fileSize = 2;
+  void clear_filesize();
+  static const int kFileSizeFieldNumber = 2;
+  ::google::protobuf::uint64 filesize() const;
+  void set_filesize(::google::protobuf::uint64 value);
+
+  // @@protoc_insertion_point(class_scope:NameServer.FileInfo)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr filename_;
+  ::google::protobuf::uint64 filesize_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_NameServer_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class BlockStore : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:NameServer.BlockStore) */ {
+ public:
+  BlockStore();
+  virtual ~BlockStore();
+
+  BlockStore(const BlockStore& from);
+
+  inline BlockStore& operator=(const BlockStore& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  BlockStore(BlockStore&& from) noexcept
+    : BlockStore() {
+    *this = ::std::move(from);
+  }
+
+  inline BlockStore& operator=(BlockStore&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BlockStore& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const BlockStore* internal_default_instance() {
+    return reinterpret_cast<const BlockStore*>(
+               &_BlockStore_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  void Swap(BlockStore* other);
+  friend void swap(BlockStore& a, BlockStore& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline BlockStore* New() const final {
+    return CreateMaybeMessage<BlockStore>(NULL);
+  }
+
+  BlockStore* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<BlockStore>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const BlockStore& from);
+  void MergeFrom(const BlockStore& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(BlockStore* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // .NameServer.BlockInfo blockInfo = 1;
+  bool has_blockinfo() const;
+  void clear_blockinfo();
+  static const int kBlockInfoFieldNumber = 1;
+  private:
+  const ::NameServer::BlockInfo& _internal_blockinfo() const;
+  public:
+  const ::NameServer::BlockInfo& blockinfo() const;
+  ::NameServer::BlockInfo* release_blockinfo();
+  ::NameServer::BlockInfo* mutable_blockinfo();
+  void set_allocated_blockinfo(::NameServer::BlockInfo* blockinfo);
+
+  // .NameServer.ServerInfo serverInfo = 2;
+  bool has_serverinfo() const;
+  void clear_serverinfo();
+  static const int kServerInfoFieldNumber = 2;
+  private:
+  const ::NameServer::ServerInfo& _internal_serverinfo() const;
+  public:
+  const ::NameServer::ServerInfo& serverinfo() const;
+  ::NameServer::ServerInfo* release_serverinfo();
+  ::NameServer::ServerInfo* mutable_serverinfo();
+  void set_allocated_serverinfo(::NameServer::ServerInfo* serverinfo);
+
+  // @@protoc_insertion_point(class_scope:NameServer.BlockStore)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::NameServer::BlockInfo* blockinfo_;
+  ::NameServer::ServerInfo* serverinfo_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_NameServer_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class BlockInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:NameServer.BlockInfo) */ {
+ public:
+  BlockInfo();
+  virtual ~BlockInfo();
+
+  BlockInfo(const BlockInfo& from);
+
+  inline BlockInfo& operator=(const BlockInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  BlockInfo(BlockInfo&& from) noexcept
+    : BlockInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline BlockInfo& operator=(BlockInfo&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BlockInfo& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const BlockInfo* internal_default_instance() {
+    return reinterpret_cast<const BlockInfo*>(
+               &_BlockInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    3;
+
+  void Swap(BlockInfo* other);
+  friend void swap(BlockInfo& a, BlockInfo& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline BlockInfo* New() const final {
+    return CreateMaybeMessage<BlockInfo>(NULL);
+  }
+
+  BlockInfo* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<BlockInfo>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const BlockInfo& from);
+  void MergeFrom(const BlockInfo& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(BlockInfo* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string fileName = 1;
+  void clear_filename();
+  static const int kFileNameFieldNumber = 1;
+  const ::std::string& filename() const;
+  void set_filename(const ::std::string& value);
+  #if LANG_CXX11
+  void set_filename(::std::string&& value);
+  #endif
+  void set_filename(const char* value);
+  void set_filename(const char* value, size_t size);
+  ::std::string* mutable_filename();
+  ::std::string* release_filename();
+  void set_allocated_filename(::std::string* filename);
+
+  // bytes blockHash = 4;
+  void clear_blockhash();
+  static const int kBlockHashFieldNumber = 4;
+  const ::std::string& blockhash() const;
+  void set_blockhash(const ::std::string& value);
+  #if LANG_CXX11
+  void set_blockhash(::std::string&& value);
+  #endif
+  void set_blockhash(const char* value);
+  void set_blockhash(const void* value, size_t size);
+  ::std::string* mutable_blockhash();
+  ::std::string* release_blockhash();
+  void set_allocated_blockhash(::std::string* blockhash);
+
+  // uint64 blockIdx = 2;
+  void clear_blockidx();
+  static const int kBlockIdxFieldNumber = 2;
+  ::google::protobuf::uint64 blockidx() const;
+  void set_blockidx(::google::protobuf::uint64 value);
+
+  // uint64 blockSize = 3;
+  void clear_blocksize();
+  static const int kBlockSizeFieldNumber = 3;
+  ::google::protobuf::uint64 blocksize() const;
+  void set_blocksize(::google::protobuf::uint64 value);
+
+  // @@protoc_insertion_point(class_scope:NameServer.BlockInfo)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr filename_;
+  ::google::protobuf::internal::ArenaStringPtr blockhash_;
+  ::google::protobuf::uint64 blockidx_;
+  ::google::protobuf::uint64 blocksize_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_NameServer_2eproto::TableStruct;
 };
@@ -192,117 +584,444 @@ class NodeInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// NodeInfo
+// ServerInfo
 
 // string address = 1;
-inline void NodeInfo::clear_address() {
+inline void ServerInfo::clear_address() {
   address_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& NodeInfo::address() const {
-  // @@protoc_insertion_point(field_get:NameServer.NodeInfo.address)
+inline const ::std::string& ServerInfo::address() const {
+  // @@protoc_insertion_point(field_get:NameServer.ServerInfo.address)
   return address_.GetNoArena();
 }
-inline void NodeInfo::set_address(const ::std::string& value) {
+inline void ServerInfo::set_address(const ::std::string& value) {
   
   address_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:NameServer.NodeInfo.address)
+  // @@protoc_insertion_point(field_set:NameServer.ServerInfo.address)
 }
 #if LANG_CXX11
-inline void NodeInfo::set_address(::std::string&& value) {
+inline void ServerInfo::set_address(::std::string&& value) {
   
   address_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:NameServer.NodeInfo.address)
+  // @@protoc_insertion_point(field_set_rvalue:NameServer.ServerInfo.address)
 }
 #endif
-inline void NodeInfo::set_address(const char* value) {
+inline void ServerInfo::set_address(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   address_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:NameServer.NodeInfo.address)
+  // @@protoc_insertion_point(field_set_char:NameServer.ServerInfo.address)
 }
-inline void NodeInfo::set_address(const char* value, size_t size) {
+inline void ServerInfo::set_address(const char* value, size_t size) {
   
   address_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:NameServer.NodeInfo.address)
+  // @@protoc_insertion_point(field_set_pointer:NameServer.ServerInfo.address)
 }
-inline ::std::string* NodeInfo::mutable_address() {
+inline ::std::string* ServerInfo::mutable_address() {
   
-  // @@protoc_insertion_point(field_mutable:NameServer.NodeInfo.address)
+  // @@protoc_insertion_point(field_mutable:NameServer.ServerInfo.address)
   return address_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* NodeInfo::release_address() {
-  // @@protoc_insertion_point(field_release:NameServer.NodeInfo.address)
+inline ::std::string* ServerInfo::release_address() {
+  // @@protoc_insertion_point(field_release:NameServer.ServerInfo.address)
   
   return address_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void NodeInfo::set_allocated_address(::std::string* address) {
+inline void ServerInfo::set_allocated_address(::std::string* address) {
   if (address != NULL) {
     
   } else {
     
   }
   address_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), address);
-  // @@protoc_insertion_point(field_set_allocated:NameServer.NodeInfo.address)
+  // @@protoc_insertion_point(field_set_allocated:NameServer.ServerInfo.address)
 }
 
-// bytes hash = 3;
-inline void NodeInfo::clear_hash() {
+// bytes hash = 2;
+inline void ServerInfo::clear_hash() {
   hash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& NodeInfo::hash() const {
-  // @@protoc_insertion_point(field_get:NameServer.NodeInfo.hash)
+inline const ::std::string& ServerInfo::hash() const {
+  // @@protoc_insertion_point(field_get:NameServer.ServerInfo.hash)
   return hash_.GetNoArena();
 }
-inline void NodeInfo::set_hash(const ::std::string& value) {
+inline void ServerInfo::set_hash(const ::std::string& value) {
   
   hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:NameServer.NodeInfo.hash)
+  // @@protoc_insertion_point(field_set:NameServer.ServerInfo.hash)
 }
 #if LANG_CXX11
-inline void NodeInfo::set_hash(::std::string&& value) {
+inline void ServerInfo::set_hash(::std::string&& value) {
   
   hash_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:NameServer.NodeInfo.hash)
+  // @@protoc_insertion_point(field_set_rvalue:NameServer.ServerInfo.hash)
 }
 #endif
-inline void NodeInfo::set_hash(const char* value) {
+inline void ServerInfo::set_hash(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:NameServer.NodeInfo.hash)
+  // @@protoc_insertion_point(field_set_char:NameServer.ServerInfo.hash)
 }
-inline void NodeInfo::set_hash(const void* value, size_t size) {
+inline void ServerInfo::set_hash(const void* value, size_t size) {
   
   hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:NameServer.NodeInfo.hash)
+  // @@protoc_insertion_point(field_set_pointer:NameServer.ServerInfo.hash)
 }
-inline ::std::string* NodeInfo::mutable_hash() {
+inline ::std::string* ServerInfo::mutable_hash() {
   
-  // @@protoc_insertion_point(field_mutable:NameServer.NodeInfo.hash)
+  // @@protoc_insertion_point(field_mutable:NameServer.ServerInfo.hash)
   return hash_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* NodeInfo::release_hash() {
-  // @@protoc_insertion_point(field_release:NameServer.NodeInfo.hash)
+inline ::std::string* ServerInfo::release_hash() {
+  // @@protoc_insertion_point(field_release:NameServer.ServerInfo.hash)
   
   return hash_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void NodeInfo::set_allocated_hash(::std::string* hash) {
+inline void ServerInfo::set_allocated_hash(::std::string* hash) {
   if (hash != NULL) {
     
   } else {
     
   }
   hash_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), hash);
-  // @@protoc_insertion_point(field_set_allocated:NameServer.NodeInfo.hash)
+  // @@protoc_insertion_point(field_set_allocated:NameServer.ServerInfo.hash)
+}
+
+// -------------------------------------------------------------------
+
+// FileInfo
+
+// string fileName = 1;
+inline void FileInfo::clear_filename() {
+  filename_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& FileInfo::filename() const {
+  // @@protoc_insertion_point(field_get:NameServer.FileInfo.fileName)
+  return filename_.GetNoArena();
+}
+inline void FileInfo::set_filename(const ::std::string& value) {
+  
+  filename_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:NameServer.FileInfo.fileName)
+}
+#if LANG_CXX11
+inline void FileInfo::set_filename(::std::string&& value) {
+  
+  filename_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:NameServer.FileInfo.fileName)
+}
+#endif
+inline void FileInfo::set_filename(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  filename_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:NameServer.FileInfo.fileName)
+}
+inline void FileInfo::set_filename(const char* value, size_t size) {
+  
+  filename_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:NameServer.FileInfo.fileName)
+}
+inline ::std::string* FileInfo::mutable_filename() {
+  
+  // @@protoc_insertion_point(field_mutable:NameServer.FileInfo.fileName)
+  return filename_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* FileInfo::release_filename() {
+  // @@protoc_insertion_point(field_release:NameServer.FileInfo.fileName)
+  
+  return filename_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void FileInfo::set_allocated_filename(::std::string* filename) {
+  if (filename != NULL) {
+    
+  } else {
+    
+  }
+  filename_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), filename);
+  // @@protoc_insertion_point(field_set_allocated:NameServer.FileInfo.fileName)
+}
+
+// uint64 fileSize = 2;
+inline void FileInfo::clear_filesize() {
+  filesize_ = GOOGLE_ULONGLONG(0);
+}
+inline ::google::protobuf::uint64 FileInfo::filesize() const {
+  // @@protoc_insertion_point(field_get:NameServer.FileInfo.fileSize)
+  return filesize_;
+}
+inline void FileInfo::set_filesize(::google::protobuf::uint64 value) {
+  
+  filesize_ = value;
+  // @@protoc_insertion_point(field_set:NameServer.FileInfo.fileSize)
+}
+
+// -------------------------------------------------------------------
+
+// BlockStore
+
+// .NameServer.BlockInfo blockInfo = 1;
+inline bool BlockStore::has_blockinfo() const {
+  return this != internal_default_instance() && blockinfo_ != NULL;
+}
+inline void BlockStore::clear_blockinfo() {
+  if (GetArenaNoVirtual() == NULL && blockinfo_ != NULL) {
+    delete blockinfo_;
+  }
+  blockinfo_ = NULL;
+}
+inline const ::NameServer::BlockInfo& BlockStore::_internal_blockinfo() const {
+  return *blockinfo_;
+}
+inline const ::NameServer::BlockInfo& BlockStore::blockinfo() const {
+  const ::NameServer::BlockInfo* p = blockinfo_;
+  // @@protoc_insertion_point(field_get:NameServer.BlockStore.blockInfo)
+  return p != NULL ? *p : *reinterpret_cast<const ::NameServer::BlockInfo*>(
+      &::NameServer::_BlockInfo_default_instance_);
+}
+inline ::NameServer::BlockInfo* BlockStore::release_blockinfo() {
+  // @@protoc_insertion_point(field_release:NameServer.BlockStore.blockInfo)
+  
+  ::NameServer::BlockInfo* temp = blockinfo_;
+  blockinfo_ = NULL;
+  return temp;
+}
+inline ::NameServer::BlockInfo* BlockStore::mutable_blockinfo() {
+  
+  if (blockinfo_ == NULL) {
+    auto* p = CreateMaybeMessage<::NameServer::BlockInfo>(GetArenaNoVirtual());
+    blockinfo_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:NameServer.BlockStore.blockInfo)
+  return blockinfo_;
+}
+inline void BlockStore::set_allocated_blockinfo(::NameServer::BlockInfo* blockinfo) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete blockinfo_;
+  }
+  if (blockinfo) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      blockinfo = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, blockinfo, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  blockinfo_ = blockinfo;
+  // @@protoc_insertion_point(field_set_allocated:NameServer.BlockStore.blockInfo)
+}
+
+// .NameServer.ServerInfo serverInfo = 2;
+inline bool BlockStore::has_serverinfo() const {
+  return this != internal_default_instance() && serverinfo_ != NULL;
+}
+inline void BlockStore::clear_serverinfo() {
+  if (GetArenaNoVirtual() == NULL && serverinfo_ != NULL) {
+    delete serverinfo_;
+  }
+  serverinfo_ = NULL;
+}
+inline const ::NameServer::ServerInfo& BlockStore::_internal_serverinfo() const {
+  return *serverinfo_;
+}
+inline const ::NameServer::ServerInfo& BlockStore::serverinfo() const {
+  const ::NameServer::ServerInfo* p = serverinfo_;
+  // @@protoc_insertion_point(field_get:NameServer.BlockStore.serverInfo)
+  return p != NULL ? *p : *reinterpret_cast<const ::NameServer::ServerInfo*>(
+      &::NameServer::_ServerInfo_default_instance_);
+}
+inline ::NameServer::ServerInfo* BlockStore::release_serverinfo() {
+  // @@protoc_insertion_point(field_release:NameServer.BlockStore.serverInfo)
+  
+  ::NameServer::ServerInfo* temp = serverinfo_;
+  serverinfo_ = NULL;
+  return temp;
+}
+inline ::NameServer::ServerInfo* BlockStore::mutable_serverinfo() {
+  
+  if (serverinfo_ == NULL) {
+    auto* p = CreateMaybeMessage<::NameServer::ServerInfo>(GetArenaNoVirtual());
+    serverinfo_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:NameServer.BlockStore.serverInfo)
+  return serverinfo_;
+}
+inline void BlockStore::set_allocated_serverinfo(::NameServer::ServerInfo* serverinfo) {
+  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == NULL) {
+    delete serverinfo_;
+  }
+  if (serverinfo) {
+    ::google::protobuf::Arena* submessage_arena = NULL;
+    if (message_arena != submessage_arena) {
+      serverinfo = ::google::protobuf::internal::GetOwnedMessage(
+          message_arena, serverinfo, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  serverinfo_ = serverinfo;
+  // @@protoc_insertion_point(field_set_allocated:NameServer.BlockStore.serverInfo)
+}
+
+// -------------------------------------------------------------------
+
+// BlockInfo
+
+// string fileName = 1;
+inline void BlockInfo::clear_filename() {
+  filename_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& BlockInfo::filename() const {
+  // @@protoc_insertion_point(field_get:NameServer.BlockInfo.fileName)
+  return filename_.GetNoArena();
+}
+inline void BlockInfo::set_filename(const ::std::string& value) {
+  
+  filename_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:NameServer.BlockInfo.fileName)
+}
+#if LANG_CXX11
+inline void BlockInfo::set_filename(::std::string&& value) {
+  
+  filename_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:NameServer.BlockInfo.fileName)
+}
+#endif
+inline void BlockInfo::set_filename(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  filename_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:NameServer.BlockInfo.fileName)
+}
+inline void BlockInfo::set_filename(const char* value, size_t size) {
+  
+  filename_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:NameServer.BlockInfo.fileName)
+}
+inline ::std::string* BlockInfo::mutable_filename() {
+  
+  // @@protoc_insertion_point(field_mutable:NameServer.BlockInfo.fileName)
+  return filename_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* BlockInfo::release_filename() {
+  // @@protoc_insertion_point(field_release:NameServer.BlockInfo.fileName)
+  
+  return filename_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void BlockInfo::set_allocated_filename(::std::string* filename) {
+  if (filename != NULL) {
+    
+  } else {
+    
+  }
+  filename_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), filename);
+  // @@protoc_insertion_point(field_set_allocated:NameServer.BlockInfo.fileName)
+}
+
+// uint64 blockIdx = 2;
+inline void BlockInfo::clear_blockidx() {
+  blockidx_ = GOOGLE_ULONGLONG(0);
+}
+inline ::google::protobuf::uint64 BlockInfo::blockidx() const {
+  // @@protoc_insertion_point(field_get:NameServer.BlockInfo.blockIdx)
+  return blockidx_;
+}
+inline void BlockInfo::set_blockidx(::google::protobuf::uint64 value) {
+  
+  blockidx_ = value;
+  // @@protoc_insertion_point(field_set:NameServer.BlockInfo.blockIdx)
+}
+
+// uint64 blockSize = 3;
+inline void BlockInfo::clear_blocksize() {
+  blocksize_ = GOOGLE_ULONGLONG(0);
+}
+inline ::google::protobuf::uint64 BlockInfo::blocksize() const {
+  // @@protoc_insertion_point(field_get:NameServer.BlockInfo.blockSize)
+  return blocksize_;
+}
+inline void BlockInfo::set_blocksize(::google::protobuf::uint64 value) {
+  
+  blocksize_ = value;
+  // @@protoc_insertion_point(field_set:NameServer.BlockInfo.blockSize)
+}
+
+// bytes blockHash = 4;
+inline void BlockInfo::clear_blockhash() {
+  blockhash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& BlockInfo::blockhash() const {
+  // @@protoc_insertion_point(field_get:NameServer.BlockInfo.blockHash)
+  return blockhash_.GetNoArena();
+}
+inline void BlockInfo::set_blockhash(const ::std::string& value) {
+  
+  blockhash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:NameServer.BlockInfo.blockHash)
+}
+#if LANG_CXX11
+inline void BlockInfo::set_blockhash(::std::string&& value) {
+  
+  blockhash_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:NameServer.BlockInfo.blockHash)
+}
+#endif
+inline void BlockInfo::set_blockhash(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  blockhash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:NameServer.BlockInfo.blockHash)
+}
+inline void BlockInfo::set_blockhash(const void* value, size_t size) {
+  
+  blockhash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:NameServer.BlockInfo.blockHash)
+}
+inline ::std::string* BlockInfo::mutable_blockhash() {
+  
+  // @@protoc_insertion_point(field_mutable:NameServer.BlockInfo.blockHash)
+  return blockhash_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* BlockInfo::release_blockhash() {
+  // @@protoc_insertion_point(field_release:NameServer.BlockInfo.blockHash)
+  
+  return blockhash_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void BlockInfo::set_allocated_blockhash(::std::string* blockhash) {
+  if (blockhash != NULL) {
+    
+  } else {
+    
+  }
+  blockhash_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), blockhash);
+  // @@protoc_insertion_point(field_set_allocated:NameServer.BlockInfo.blockHash)
 }
 
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 

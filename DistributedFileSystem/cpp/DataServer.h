@@ -34,7 +34,7 @@ using DataServer::DataService;
 using DataServer::BlockInfo;
 using DataServer::BlockUnit;
 using NameServer::NameService;
-using NameServer::NodeInfo;
+using NameServer::ServerInfo;
 
 char DATA_ADDRESS[32];
 char NAME_ADDRESS[32];
@@ -43,9 +43,9 @@ class DataServerImp final: public DataService::Service {
 public:
     DataServerImp(std::shared_ptr<Channel> channel, string dir, size_t sz);
     ~DataServerImp();
-    Status ReadBlock(ServerContext* context, const BlockInfo* request, ServerWriter<BlockUnit>* replyWriter) override;
-    Status WriteBlock(ServerContext* context, ServerReader<BlockUnit>* requestReader, BlockInfo* reply) override;
-    Status RemoveBlock(ServerContext* context, const BlockInfo* request, BlockInfo* reply) override;
+    Status getBlock(ServerContext* context, const BlockInfo* request, ServerWriter<BlockUnit>* replyWriter) override;
+    Status putBlock(ServerContext* context, ServerReader<BlockUnit>* requestReader, BlockInfo* reply) override;
+    Status rmBlock(ServerContext* context, const BlockInfo* request, BlockInfo* reply) override;
 private:
     std::unique_ptr<NameService::Stub> _stub;
     string storeDirectory;

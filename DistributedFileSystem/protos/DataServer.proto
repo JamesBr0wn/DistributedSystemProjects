@@ -3,9 +3,9 @@ syntax = "proto3";
 package DataServer;
 
 service DataService{
-    rpc ReadBlock(BlockInfo) returns (stream BlockUnit) {}
-    rpc WriteBlock(stream BlockUnit) returns (BlockInfo) {}
-    rpc RemoveBlock(BlockInfo) returns (BlockInfo) {}
+    rpc getBlock(BlockInfo) returns (stream BlockUnit) {}
+    rpc putBlock(stream BlockUnit) returns (BlockInfo) {}
+    rpc rmBlock(BlockInfo) returns (BlockInfo) {}
 }
 
 message BlockInfo{
