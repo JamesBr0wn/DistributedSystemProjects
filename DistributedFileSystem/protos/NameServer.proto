@@ -1,3 +1,13 @@
 syntax = "proto3";
 
 package NameServer;
+
+service NameService{
+    rpc StartServer(NodeInfo) returns(NodeInfo) {}
+    rpc TerminateServer(NodeInfo) returns(NodeInfo) {}
+}
+
+message NodeInfo{
+    string address = 1;
+    bytes hash = 3;
+}

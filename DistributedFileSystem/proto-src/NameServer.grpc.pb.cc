@@ -18,5 +18,84 @@
 #include <grpcpp/impl/codegen/sync_stream.h>
 namespace NameServer {
 
+static const char* NameService_method_names[] = {
+  "/NameServer.NameService/StartServer",
+  "/NameServer.NameService/TerminateServer",
+};
+
+std::unique_ptr< NameService::Stub> NameService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+  (void)options;
+  std::unique_ptr< NameService::Stub> stub(new NameService::Stub(channel));
+  return stub;
+}
+
+NameService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
+  : channel_(channel), rpcmethod_StartServer_(NameService_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_TerminateServer_(NameService_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  {}
+
+::grpc::Status NameService::Stub::StartServer(::grpc::ClientContext* context, const ::NameServer::NodeInfo& request, ::NameServer::NodeInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_StartServer_, context, request, response);
+}
+
+void NameService::Stub::experimental_async::StartServer(::grpc::ClientContext* context, const ::NameServer::NodeInfo* request, ::NameServer::NodeInfo* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_StartServer_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::NameServer::NodeInfo>* NameService::Stub::AsyncStartServerRaw(::grpc::ClientContext* context, const ::NameServer::NodeInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::NodeInfo>::Create(channel_.get(), cq, rpcmethod_StartServer_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::NameServer::NodeInfo>* NameService::Stub::PrepareAsyncStartServerRaw(::grpc::ClientContext* context, const ::NameServer::NodeInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::NodeInfo>::Create(channel_.get(), cq, rpcmethod_StartServer_, context, request, false);
+}
+
+::grpc::Status NameService::Stub::TerminateServer(::grpc::ClientContext* context, const ::NameServer::NodeInfo& request, ::NameServer::NodeInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_TerminateServer_, context, request, response);
+}
+
+void NameService::Stub::experimental_async::TerminateServer(::grpc::ClientContext* context, const ::NameServer::NodeInfo* request, ::NameServer::NodeInfo* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_TerminateServer_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::NameServer::NodeInfo>* NameService::Stub::AsyncTerminateServerRaw(::grpc::ClientContext* context, const ::NameServer::NodeInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::NodeInfo>::Create(channel_.get(), cq, rpcmethod_TerminateServer_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::NameServer::NodeInfo>* NameService::Stub::PrepareAsyncTerminateServerRaw(::grpc::ClientContext* context, const ::NameServer::NodeInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::NodeInfo>::Create(channel_.get(), cq, rpcmethod_TerminateServer_, context, request, false);
+}
+
+NameService::Service::Service() {
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      NameService_method_names[0],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< NameService::Service, ::NameServer::NodeInfo, ::NameServer::NodeInfo>(
+          std::mem_fn(&NameService::Service::StartServer), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      NameService_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< NameService::Service, ::NameServer::NodeInfo, ::NameServer::NodeInfo>(
+          std::mem_fn(&NameService::Service::TerminateServer), this)));
+}
+
+NameService::Service::~Service() {
+}
+
+::grpc::Status NameService::Service::StartServer(::grpc::ServerContext* context, const ::NameServer::NodeInfo* request, ::NameServer::NodeInfo* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status NameService::Service::TerminateServer(::grpc::ServerContext* context, const ::NameServer::NodeInfo* request, ::NameServer::NodeInfo* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+
 }  // namespace NameServer
 

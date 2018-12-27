@@ -26,8 +26,10 @@
 #include <google/protobuf/generated_message_util.h>
 #include <google/protobuf/inlined_string_field.h>
 #include <google/protobuf/metadata.h>
+#include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
+#include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 #define PROTOBUF_INTERNAL_EXPORT_protobuf_NameServer_2eproto 
 
@@ -44,12 +46,143 @@ struct TableStruct {
 void AddDescriptors();
 }  // namespace protobuf_NameServer_2eproto
 namespace NameServer {
+class NodeInfo;
+class NodeInfoDefaultTypeInternal;
+extern NodeInfoDefaultTypeInternal _NodeInfo_default_instance_;
 }  // namespace NameServer
+namespace google {
+namespace protobuf {
+template<> ::NameServer::NodeInfo* Arena::CreateMaybeMessage<::NameServer::NodeInfo>(Arena*);
+}  // namespace protobuf
+}  // namespace google
 namespace NameServer {
 
 // ===================================================================
 
+class NodeInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:NameServer.NodeInfo) */ {
+ public:
+  NodeInfo();
+  virtual ~NodeInfo();
 
+  NodeInfo(const NodeInfo& from);
+
+  inline NodeInfo& operator=(const NodeInfo& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  NodeInfo(NodeInfo&& from) noexcept
+    : NodeInfo() {
+    *this = ::std::move(from);
+  }
+
+  inline NodeInfo& operator=(NodeInfo&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const NodeInfo& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const NodeInfo* internal_default_instance() {
+    return reinterpret_cast<const NodeInfo*>(
+               &_NodeInfo_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    0;
+
+  void Swap(NodeInfo* other);
+  friend void swap(NodeInfo& a, NodeInfo& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline NodeInfo* New() const final {
+    return CreateMaybeMessage<NodeInfo>(NULL);
+  }
+
+  NodeInfo* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<NodeInfo>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const NodeInfo& from);
+  void MergeFrom(const NodeInfo& from);
+  void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(NodeInfo* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string address = 1;
+  void clear_address();
+  static const int kAddressFieldNumber = 1;
+  const ::std::string& address() const;
+  void set_address(const ::std::string& value);
+  #if LANG_CXX11
+  void set_address(::std::string&& value);
+  #endif
+  void set_address(const char* value);
+  void set_address(const char* value, size_t size);
+  ::std::string* mutable_address();
+  ::std::string* release_address();
+  void set_allocated_address(::std::string* address);
+
+  // bytes hash = 3;
+  void clear_hash();
+  static const int kHashFieldNumber = 3;
+  const ::std::string& hash() const;
+  void set_hash(const ::std::string& value);
+  #if LANG_CXX11
+  void set_hash(::std::string&& value);
+  #endif
+  void set_hash(const char* value);
+  void set_hash(const void* value, size_t size);
+  ::std::string* mutable_hash();
+  ::std::string* release_hash();
+  void set_allocated_hash(::std::string* hash);
+
+  // @@protoc_insertion_point(class_scope:NameServer.NodeInfo)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr address_;
+  ::google::protobuf::internal::ArenaStringPtr hash_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::protobuf_NameServer_2eproto::TableStruct;
+};
 // ===================================================================
 
 
@@ -59,6 +192,114 @@ namespace NameServer {
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// NodeInfo
+
+// string address = 1;
+inline void NodeInfo::clear_address() {
+  address_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& NodeInfo::address() const {
+  // @@protoc_insertion_point(field_get:NameServer.NodeInfo.address)
+  return address_.GetNoArena();
+}
+inline void NodeInfo::set_address(const ::std::string& value) {
+  
+  address_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:NameServer.NodeInfo.address)
+}
+#if LANG_CXX11
+inline void NodeInfo::set_address(::std::string&& value) {
+  
+  address_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:NameServer.NodeInfo.address)
+}
+#endif
+inline void NodeInfo::set_address(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  address_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:NameServer.NodeInfo.address)
+}
+inline void NodeInfo::set_address(const char* value, size_t size) {
+  
+  address_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:NameServer.NodeInfo.address)
+}
+inline ::std::string* NodeInfo::mutable_address() {
+  
+  // @@protoc_insertion_point(field_mutable:NameServer.NodeInfo.address)
+  return address_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* NodeInfo::release_address() {
+  // @@protoc_insertion_point(field_release:NameServer.NodeInfo.address)
+  
+  return address_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void NodeInfo::set_allocated_address(::std::string* address) {
+  if (address != NULL) {
+    
+  } else {
+    
+  }
+  address_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), address);
+  // @@protoc_insertion_point(field_set_allocated:NameServer.NodeInfo.address)
+}
+
+// bytes hash = 3;
+inline void NodeInfo::clear_hash() {
+  hash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& NodeInfo::hash() const {
+  // @@protoc_insertion_point(field_get:NameServer.NodeInfo.hash)
+  return hash_.GetNoArena();
+}
+inline void NodeInfo::set_hash(const ::std::string& value) {
+  
+  hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:NameServer.NodeInfo.hash)
+}
+#if LANG_CXX11
+inline void NodeInfo::set_hash(::std::string&& value) {
+  
+  hash_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:NameServer.NodeInfo.hash)
+}
+#endif
+inline void NodeInfo::set_hash(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:NameServer.NodeInfo.hash)
+}
+inline void NodeInfo::set_hash(const void* value, size_t size) {
+  
+  hash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:NameServer.NodeInfo.hash)
+}
+inline ::std::string* NodeInfo::mutable_hash() {
+  
+  // @@protoc_insertion_point(field_mutable:NameServer.NodeInfo.hash)
+  return hash_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* NodeInfo::release_hash() {
+  // @@protoc_insertion_point(field_release:NameServer.NodeInfo.hash)
+  
+  return hash_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void NodeInfo::set_allocated_hash(::std::string* hash) {
+  if (hash != NULL) {
+    
+  } else {
+    
+  }
+  hash_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), hash);
+  // @@protoc_insertion_point(field_set_allocated:NameServer.NodeInfo.hash)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__

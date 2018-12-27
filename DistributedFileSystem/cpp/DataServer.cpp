@@ -4,6 +4,45 @@
 
 #include "DataServer.h"
 
+DataServerImp::DataServerImp(std::shared_ptr<Channel> channel, string dir, size_t sz)
+    : _stub(NameService::NewStub(channel)), storeDirectory(dir), unitSize(sz) {
+    NodeInfo request;
+    NodeInfo reply;
+    ClientContext context;
+    Status status;
+    request.set_address(DATA_ADDRESS);
+    status = _stub->StartServer(&context, request, &reply);
+    if (status.ok()) {
+        cout << "# Data server started!" << endl;
+    } else {
+        cout << "# Data server start fail!" << endl;
+        exit(-1);
+    }
+}
+
+DataServerImp::~DataServerImp() {
+    NodeInfo request;
+    NodeInfo reply;
+    ClientContext context;
+    Status status;
+    request.set_address(DATA_ADDRESS);
+    SHA256_CTX stx;
+    unsigned char hash[SHA256_DIGEST_LENGTH+1];
+    hash[SHA256_DIGEST_LENGTH] = '\0';
+    SHA256_Init(&stx);
+    string address = request.address();
+    SHA256_Update(&stx, address.data(), request.address().length());
+    SHA256_Final(hash, &stx);
+    request.set_hash(hash, SHA256_DIGEST_LENGTH);
+    status = _stub->TerminateServer(&context, request, &reply);
+    if (status.ok()) {
+        cout << "# Data server terminated!" << endl;
+    } else {
+        cout << "# Data server terminate fail!" << endl;
+        exit(-1);
+    }
+}
+
 Status DataServerImp::ReadBlock(ServerContext* context,const BlockInfo* request, ServerWriter<BlockUnit>* replyWriter) {
     // 打开Block文件
     string blockName = request->filename() + '_' + to_string(request->blockidx());
@@ -186,8 +225,10 @@ Status DataServerImp::RemoveBlock(ServerContext* context, const BlockInfo* reque
 }
 
 void RunServer() {
-    std::string server_address(SERVER_ADDRESS);
-    DataServerImp service("BlockStore/", 1024 * 1024);
+    std::string server_address(DATA_ADDRESS);
+    DataServerImp service(grpc::CreateChannel(
+    std::string(NAME_ADDRESS), grpc::InsecureChannelCredentials()),
+            "BlockStore/", 1024 * 1024);
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
@@ -197,7 +238,7 @@ void RunServer() {
     builder.RegisterService(&service);
     // Finally assemble the server.
     std::unique_ptr<Server> server(builder.BuildAndStart());
-    std::cout << "Info server listening on " << server_address << std::endl;
+    std::cout << "Data server listening on " << server_address << std::endl;
 
     // Wait for the server to shutdown. Note that some other thread must be
     // responsible for shutting down the server for this call to ever return.
@@ -205,7 +246,8 @@ void RunServer() {
 }
 
 int main(int argc, char** argv) {
-    strcpy(SERVER_ADDRESS, argv[1]);
+    strcpy(DATA_ADDRESS, argv[1]);
+    strcpy(NAME_ADDRESS, argv[2]);
     RunServer();
 
     return 0;
