@@ -40,8 +40,11 @@ NameServerImp::NameServerImp() {
 
     ServerInfo serverInfo;
     serverInfo.set_address("127.0.0.1:8888");
-    
-    meta.storeList.emplace_back();
+
+    meta.storeList.emplace_back(blockInfo, serverInfo);
+    blockInfo.set_blockidx(1);
+    meta.storeList.emplace_back(blockInfo, serverInfo);
+    fileList.push_back(meta);
 }
 
 Status NameServerImp::startServer(ServerContext *context, const ServerInfo *request, ServerInfo *reply) {
@@ -90,6 +93,7 @@ Status NameServerImp::terminateServer(ServerContext *context, const ServerInfo *
 
 Status NameServerImp::beginGetTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter){
     string fileName = request->filename();
+    cout << "$ Client " << context->peer() << " begin transaction: get " << fileName << "." << endl;
     auto it = fileList.begin();
     while(it != fileList.end()){
         if(it->fileInfo.filename() == fileName){
@@ -103,14 +107,30 @@ Status NameServerImp::beginGetTransaction(ServerContext *context, const FileInfo
         return Status::CANCELLED;
     }
 
+    BlockStore blockStore;
     for(long i = 0; i < it->storeList.size(); i++){
-        replyWriter->Write(it->storeList[i]);
+        BlockInfo blockInfo = it->storeList[i].first;
+        ServerInfo serverInfo = it->storeList[i].second;
+        blockStore.set_filename(blockInfo.filename());
+        blockStore.set_blockidx(blockInfo.blockidx());
+        blockStore.set_blocksize(blockInfo.blocksize());
+        blockStore.set_blockhash(blockInfo.blockhash());
+        blockStore.set_serveraddress(serverInfo.address());
+        blockStore.set_serverhash(serverInfo.hash());
+        replyWriter->Write(blockStore);
     }
     return Status::OK;
 }
 
 Status NameServerImp::commitGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) {
     *reply = *request;
+    cout << "$ Client " << context->peer() << " commit transaction: get " << request->filename() << "." << endl;
+    return Status::OK;
+}
+
+Status NameServerImp::abortGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) {
+    *reply = *request;
+    cout << "$ Client " << context->peer() << " abort transaction: get " << request->filename() << "." << endl;
     return Status::OK;
 }
 

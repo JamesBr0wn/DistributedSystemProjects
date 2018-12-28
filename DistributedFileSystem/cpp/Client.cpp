@@ -13,26 +13,26 @@ Status ClientImp::getBlock(const BlockInfo request){
     Status status;
 
     string blockName = request.filename() + '_' + to_string(request.blockidx());
+    cout << "$ Get block " << blockName << "." << endl;
     ofstream ofs(cacheDirectory + blockName, ios::out | ios::binary | ios::ate);
     if(!ofs.is_open()){
-        cout << "# Block " << blockName << " open failed!" << endl << endl;
+        cout << "# Block " << blockName << " open failed!" << endl;
         return Status::CANCELLED;
     }
 
     unsigned long i = 0;
     while (reader->Read(&unit)) {
         ofs.write(unit.unitdata().data(), unit.unitdata().length());
-        cout << "$ Block " << blockName << " get unit " << i << endl;
         i++;
     }
     ofs.close();
     status = reader->Finish();
 
     if (status.ok()) {
-        cout << "$ Block " << blockName << " get finished!" << endl << endl;
+        cout << "$ Block get finished!" << endl;
         return Status::OK;
     } else {
-        cout << "# Block " << blockName << " get failed!" << endl << endl;
+        cout << "# Block " << blockName << " get failed!" << endl;
         return Status::CANCELLED;
     }
 }
@@ -47,9 +47,10 @@ Status ClientImp::putBlock(const BlockInfo request){
     unsigned long blockIdx = request.blockidx();
     long blockSize;
     string blockName = fileName + '_' + to_string(blockIdx);
+    cout << "$ Put block " << blockName << "." << endl;
     ifstream ifs(cacheDirectory + blockName, ios::in | ios::binary | ios::ate);
     if(!ifs.is_open()){
-        cout << "# Block " << blockName << " open failed!" << endl << endl;
+        cout << "# Block " << blockName << " open failed!" << endl;
         return Status::CANCELLED;
     }
     blockSize = ifs.tellg();
@@ -99,7 +100,7 @@ Status ClientImp::putBlock(const BlockInfo request){
     if (status.ok()) {
         // 检查blockSize是否相符
         if(blockSize != reply.blocksize()){
-            cout << "# Block " << blockName << " size mismatch!" << endl << endl;
+            cout << "# Block " << blockName << " size mismatch!" << endl;
             return Status::CANCELLED;
         }
 
@@ -112,14 +113,14 @@ Status ClientImp::putBlock(const BlockInfo request){
         }
         cout << dec << endl;
         if(memcmp(hash, reply.blockhash().data(), SHA256_DIGEST_LENGTH) != 0){
-            cout << "# Block " << blockName << " hash mismatch!" << endl << endl;
+            cout << "# Block " << blockName << " hash mismatch!" << endl;
             return Status::CANCELLED;
         }
 
-        cout << "$ Block " << blockName << " put finished!" << endl << endl;
+        cout << "$ Block put finished!" << endl;
         return Status::CANCELLED;
     } else {
-        cout << "# Block " << blockName << " put failed!" << endl << endl;
+        cout << "# Block " << blockName << " put failed!" << endl;
         return Status::CANCELLED;
     }
 }
@@ -129,23 +130,24 @@ Status ClientImp::rmBlock(const BlockInfo request){
     ClientContext context;
     Status status;
     string blockName = request.filename() + '_' + to_string(request.blockidx());
-
+    cout << "$ Rm block " << blockName << "." << endl;
     status = dataStub->rmBlock(&context, request, &reply);
     if(status.ok()){
-        cout << "$ Block " << blockName << " rm finished!" << endl << endl;
+        cout << "$ Block rm finished!" << endl;
     }else{
-        cout << "$ Block " << blockName << " rm failed!" << endl << endl;
+        cout << "$ Block " << blockName << " rm failed!" << endl;
     }
     return status;
 }
 
 Status ClientImp::get(const string fileName){
+    cout << "$ Get file " << fileName << "." << endl;
     FileInfo fileInfo;
     fileInfo.set_filename(fileName);
     BlockStore blockStore;
-    ClientContext context;
+    ClientContext start;
     std::unique_ptr<ClientReader<BlockStore>> blockStoreReader(
-            nameStub->beginGetTransaction(&context, fileInfo));
+            nameStub->beginGetTransaction(&start, fileInfo));
     Status status;
     unsigned long i = 0;
     vector<BlockStore> storeList;
@@ -158,17 +160,48 @@ Status ClientImp::get(const string fileName){
         cout << "# File " << fileInfo.filename() << " get block list fail!" << endl;
     }
 
-    BlockInfo temp;
+    BlockInfo tempInfo;
     for(auto it = storeList.begin(); it != storeList.end(); it++){
-        dataStub = DataService::NewStub(grpc::CreateChannel(it->serverinfo().address(), grpc::InsecureChannelCredentials()));
-        temp.set_filename(it->blockinfo().filename());
-        temp.set_blockidx(it->blockinfo().blockidx());
-        temp.set_blocksize(it->blockinfo().blocksize());
-        temp.set_blockhash(it->blockinfo().blockhash());
-        if(!getBlock(temp).ok()){
+        dataStub = DataService::NewStub(grpc::CreateChannel(it->serveraddress(), grpc::InsecureChannelCredentials()));
+        tempInfo.set_filename(it->filename());
+        tempInfo.set_blockidx(it->blockidx());
+        tempInfo.set_blocksize(it->blocksize());
+        tempInfo.set_blockhash(it->blockhash());
+        if(!getBlock(tempInfo).ok()){
+            ClientContext abort;
+            nameStub->abortGetTransaction(&abort, fileInfo, &fileInfo);
             return Status::CANCELLED;
         }
     }
+
+    ifstream bfs;
+    ofstream ffs;
+    unsigned long blockSize;
+    char tempUnit[unitSize];
+    ffs.open(cacheDirectory + fileName, ios::out | ios::binary | ios::app);
+    for(auto it = storeList.begin(); it != storeList.end(); it++){
+        bfs.open(cacheDirectory + it->filename() + "_" + to_string(it->blockidx()), ios::in | ios::binary | ios::app);
+        blockSize = it->blocksize();
+        for(i = 0; i < blockSize / unitSize; i++){
+            bfs.read(tempUnit, unitSize);
+            ffs.write(tempUnit, unitSize);
+        }
+        if(blockSize % unitSize != 0){
+            bfs.read(tempUnit, blockSize % unitSize);
+            ffs.write(tempUnit, blockSize % unitSize);
+        }
+        bfs.close();
+        if(remove((cacheDirectory + it->filename() + "_" + to_string(it->blockidx())).data())){
+            cout << "# Cached block " << cacheDirectory + it->filename() + to_string(it->blockidx()) << " remove fail!" << endl;
+            ClientContext abort;
+            nameStub->abortGetTransaction(&abort, fileInfo, &fileInfo);
+            return Status::CANCELLED;
+        }
+    }
+    ffs.close();
+    ClientContext commit;
+    nameStub->commitGetTransaction(&commit, fileInfo, &fileInfo);
+    cout << "$ File get finished!" << endl;
     return Status::OK;
 }
 
@@ -251,7 +284,7 @@ public:
     }
 
     bool getTest(){
-        clientImp.get("file");
+        clientImp.get("block");
         return true;
     }
 private:

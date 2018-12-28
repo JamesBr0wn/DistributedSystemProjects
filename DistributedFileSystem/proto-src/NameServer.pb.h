@@ -402,36 +402,84 @@ class BlockStore : public ::google::protobuf::Message /* @@protoc_insertion_poin
 
   // accessors -------------------------------------------------------
 
-  // .NameServer.BlockInfo blockInfo = 1;
-  bool has_blockinfo() const;
-  void clear_blockinfo();
-  static const int kBlockInfoFieldNumber = 1;
-  private:
-  const ::NameServer::BlockInfo& _internal_blockinfo() const;
-  public:
-  const ::NameServer::BlockInfo& blockinfo() const;
-  ::NameServer::BlockInfo* release_blockinfo();
-  ::NameServer::BlockInfo* mutable_blockinfo();
-  void set_allocated_blockinfo(::NameServer::BlockInfo* blockinfo);
+  // string serverAddress = 1;
+  void clear_serveraddress();
+  static const int kServerAddressFieldNumber = 1;
+  const ::std::string& serveraddress() const;
+  void set_serveraddress(const ::std::string& value);
+  #if LANG_CXX11
+  void set_serveraddress(::std::string&& value);
+  #endif
+  void set_serveraddress(const char* value);
+  void set_serveraddress(const char* value, size_t size);
+  ::std::string* mutable_serveraddress();
+  ::std::string* release_serveraddress();
+  void set_allocated_serveraddress(::std::string* serveraddress);
 
-  // .NameServer.ServerInfo serverInfo = 2;
-  bool has_serverinfo() const;
-  void clear_serverinfo();
-  static const int kServerInfoFieldNumber = 2;
-  private:
-  const ::NameServer::ServerInfo& _internal_serverinfo() const;
-  public:
-  const ::NameServer::ServerInfo& serverinfo() const;
-  ::NameServer::ServerInfo* release_serverinfo();
-  ::NameServer::ServerInfo* mutable_serverinfo();
-  void set_allocated_serverinfo(::NameServer::ServerInfo* serverinfo);
+  // bytes serverHash = 2;
+  void clear_serverhash();
+  static const int kServerHashFieldNumber = 2;
+  const ::std::string& serverhash() const;
+  void set_serverhash(const ::std::string& value);
+  #if LANG_CXX11
+  void set_serverhash(::std::string&& value);
+  #endif
+  void set_serverhash(const char* value);
+  void set_serverhash(const void* value, size_t size);
+  ::std::string* mutable_serverhash();
+  ::std::string* release_serverhash();
+  void set_allocated_serverhash(::std::string* serverhash);
+
+  // string fileName = 3;
+  void clear_filename();
+  static const int kFileNameFieldNumber = 3;
+  const ::std::string& filename() const;
+  void set_filename(const ::std::string& value);
+  #if LANG_CXX11
+  void set_filename(::std::string&& value);
+  #endif
+  void set_filename(const char* value);
+  void set_filename(const char* value, size_t size);
+  ::std::string* mutable_filename();
+  ::std::string* release_filename();
+  void set_allocated_filename(::std::string* filename);
+
+  // bytes blockHash = 6;
+  void clear_blockhash();
+  static const int kBlockHashFieldNumber = 6;
+  const ::std::string& blockhash() const;
+  void set_blockhash(const ::std::string& value);
+  #if LANG_CXX11
+  void set_blockhash(::std::string&& value);
+  #endif
+  void set_blockhash(const char* value);
+  void set_blockhash(const void* value, size_t size);
+  ::std::string* mutable_blockhash();
+  ::std::string* release_blockhash();
+  void set_allocated_blockhash(::std::string* blockhash);
+
+  // uint64 blockIdx = 4;
+  void clear_blockidx();
+  static const int kBlockIdxFieldNumber = 4;
+  ::google::protobuf::uint64 blockidx() const;
+  void set_blockidx(::google::protobuf::uint64 value);
+
+  // uint64 blockSize = 5;
+  void clear_blocksize();
+  static const int kBlockSizeFieldNumber = 5;
+  ::google::protobuf::uint64 blocksize() const;
+  void set_blocksize(::google::protobuf::uint64 value);
 
   // @@protoc_insertion_point(class_scope:NameServer.BlockStore)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::NameServer::BlockInfo* blockinfo_;
-  ::NameServer::ServerInfo* serverinfo_;
+  ::google::protobuf::internal::ArenaStringPtr serveraddress_;
+  ::google::protobuf::internal::ArenaStringPtr serverhash_;
+  ::google::protobuf::internal::ArenaStringPtr filename_;
+  ::google::protobuf::internal::ArenaStringPtr blockhash_;
+  ::google::protobuf::uint64 blockidx_;
+  ::google::protobuf::uint64 blocksize_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_NameServer_2eproto::TableStruct;
 };
@@ -767,112 +815,244 @@ inline void FileInfo::set_filesize(::google::protobuf::uint64 value) {
 
 // BlockStore
 
-// .NameServer.BlockInfo blockInfo = 1;
-inline bool BlockStore::has_blockinfo() const {
-  return this != internal_default_instance() && blockinfo_ != NULL;
+// string serverAddress = 1;
+inline void BlockStore::clear_serveraddress() {
+  serveraddress_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void BlockStore::clear_blockinfo() {
-  if (GetArenaNoVirtual() == NULL && blockinfo_ != NULL) {
-    delete blockinfo_;
-  }
-  blockinfo_ = NULL;
+inline const ::std::string& BlockStore::serveraddress() const {
+  // @@protoc_insertion_point(field_get:NameServer.BlockStore.serverAddress)
+  return serveraddress_.GetNoArena();
 }
-inline const ::NameServer::BlockInfo& BlockStore::_internal_blockinfo() const {
-  return *blockinfo_;
-}
-inline const ::NameServer::BlockInfo& BlockStore::blockinfo() const {
-  const ::NameServer::BlockInfo* p = blockinfo_;
-  // @@protoc_insertion_point(field_get:NameServer.BlockStore.blockInfo)
-  return p != NULL ? *p : *reinterpret_cast<const ::NameServer::BlockInfo*>(
-      &::NameServer::_BlockInfo_default_instance_);
-}
-inline ::NameServer::BlockInfo* BlockStore::release_blockinfo() {
-  // @@protoc_insertion_point(field_release:NameServer.BlockStore.blockInfo)
+inline void BlockStore::set_serveraddress(const ::std::string& value) {
   
-  ::NameServer::BlockInfo* temp = blockinfo_;
-  blockinfo_ = NULL;
-  return temp;
+  serveraddress_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:NameServer.BlockStore.serverAddress)
 }
-inline ::NameServer::BlockInfo* BlockStore::mutable_blockinfo() {
+#if LANG_CXX11
+inline void BlockStore::set_serveraddress(::std::string&& value) {
   
-  if (blockinfo_ == NULL) {
-    auto* p = CreateMaybeMessage<::NameServer::BlockInfo>(GetArenaNoVirtual());
-    blockinfo_ = p;
-  }
-  // @@protoc_insertion_point(field_mutable:NameServer.BlockStore.blockInfo)
-  return blockinfo_;
+  serveraddress_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:NameServer.BlockStore.serverAddress)
 }
-inline void BlockStore::set_allocated_blockinfo(::NameServer::BlockInfo* blockinfo) {
-  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == NULL) {
-    delete blockinfo_;
-  }
-  if (blockinfo) {
-    ::google::protobuf::Arena* submessage_arena = NULL;
-    if (message_arena != submessage_arena) {
-      blockinfo = ::google::protobuf::internal::GetOwnedMessage(
-          message_arena, blockinfo, submessage_arena);
-    }
+#endif
+inline void BlockStore::set_serveraddress(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  serveraddress_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:NameServer.BlockStore.serverAddress)
+}
+inline void BlockStore::set_serveraddress(const char* value, size_t size) {
+  
+  serveraddress_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:NameServer.BlockStore.serverAddress)
+}
+inline ::std::string* BlockStore::mutable_serveraddress() {
+  
+  // @@protoc_insertion_point(field_mutable:NameServer.BlockStore.serverAddress)
+  return serveraddress_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* BlockStore::release_serveraddress() {
+  // @@protoc_insertion_point(field_release:NameServer.BlockStore.serverAddress)
+  
+  return serveraddress_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void BlockStore::set_allocated_serveraddress(::std::string* serveraddress) {
+  if (serveraddress != NULL) {
     
   } else {
     
   }
-  blockinfo_ = blockinfo;
-  // @@protoc_insertion_point(field_set_allocated:NameServer.BlockStore.blockInfo)
+  serveraddress_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), serveraddress);
+  // @@protoc_insertion_point(field_set_allocated:NameServer.BlockStore.serverAddress)
 }
 
-// .NameServer.ServerInfo serverInfo = 2;
-inline bool BlockStore::has_serverinfo() const {
-  return this != internal_default_instance() && serverinfo_ != NULL;
+// bytes serverHash = 2;
+inline void BlockStore::clear_serverhash() {
+  serverhash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void BlockStore::clear_serverinfo() {
-  if (GetArenaNoVirtual() == NULL && serverinfo_ != NULL) {
-    delete serverinfo_;
-  }
-  serverinfo_ = NULL;
+inline const ::std::string& BlockStore::serverhash() const {
+  // @@protoc_insertion_point(field_get:NameServer.BlockStore.serverHash)
+  return serverhash_.GetNoArena();
 }
-inline const ::NameServer::ServerInfo& BlockStore::_internal_serverinfo() const {
-  return *serverinfo_;
-}
-inline const ::NameServer::ServerInfo& BlockStore::serverinfo() const {
-  const ::NameServer::ServerInfo* p = serverinfo_;
-  // @@protoc_insertion_point(field_get:NameServer.BlockStore.serverInfo)
-  return p != NULL ? *p : *reinterpret_cast<const ::NameServer::ServerInfo*>(
-      &::NameServer::_ServerInfo_default_instance_);
-}
-inline ::NameServer::ServerInfo* BlockStore::release_serverinfo() {
-  // @@protoc_insertion_point(field_release:NameServer.BlockStore.serverInfo)
+inline void BlockStore::set_serverhash(const ::std::string& value) {
   
-  ::NameServer::ServerInfo* temp = serverinfo_;
-  serverinfo_ = NULL;
-  return temp;
+  serverhash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:NameServer.BlockStore.serverHash)
 }
-inline ::NameServer::ServerInfo* BlockStore::mutable_serverinfo() {
+#if LANG_CXX11
+inline void BlockStore::set_serverhash(::std::string&& value) {
   
-  if (serverinfo_ == NULL) {
-    auto* p = CreateMaybeMessage<::NameServer::ServerInfo>(GetArenaNoVirtual());
-    serverinfo_ = p;
-  }
-  // @@protoc_insertion_point(field_mutable:NameServer.BlockStore.serverInfo)
-  return serverinfo_;
+  serverhash_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:NameServer.BlockStore.serverHash)
 }
-inline void BlockStore::set_allocated_serverinfo(::NameServer::ServerInfo* serverinfo) {
-  ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
-  if (message_arena == NULL) {
-    delete serverinfo_;
-  }
-  if (serverinfo) {
-    ::google::protobuf::Arena* submessage_arena = NULL;
-    if (message_arena != submessage_arena) {
-      serverinfo = ::google::protobuf::internal::GetOwnedMessage(
-          message_arena, serverinfo, submessage_arena);
-    }
+#endif
+inline void BlockStore::set_serverhash(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  serverhash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:NameServer.BlockStore.serverHash)
+}
+inline void BlockStore::set_serverhash(const void* value, size_t size) {
+  
+  serverhash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:NameServer.BlockStore.serverHash)
+}
+inline ::std::string* BlockStore::mutable_serverhash() {
+  
+  // @@protoc_insertion_point(field_mutable:NameServer.BlockStore.serverHash)
+  return serverhash_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* BlockStore::release_serverhash() {
+  // @@protoc_insertion_point(field_release:NameServer.BlockStore.serverHash)
+  
+  return serverhash_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void BlockStore::set_allocated_serverhash(::std::string* serverhash) {
+  if (serverhash != NULL) {
     
   } else {
     
   }
-  serverinfo_ = serverinfo;
-  // @@protoc_insertion_point(field_set_allocated:NameServer.BlockStore.serverInfo)
+  serverhash_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), serverhash);
+  // @@protoc_insertion_point(field_set_allocated:NameServer.BlockStore.serverHash)
+}
+
+// string fileName = 3;
+inline void BlockStore::clear_filename() {
+  filename_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& BlockStore::filename() const {
+  // @@protoc_insertion_point(field_get:NameServer.BlockStore.fileName)
+  return filename_.GetNoArena();
+}
+inline void BlockStore::set_filename(const ::std::string& value) {
+  
+  filename_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:NameServer.BlockStore.fileName)
+}
+#if LANG_CXX11
+inline void BlockStore::set_filename(::std::string&& value) {
+  
+  filename_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:NameServer.BlockStore.fileName)
+}
+#endif
+inline void BlockStore::set_filename(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  filename_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:NameServer.BlockStore.fileName)
+}
+inline void BlockStore::set_filename(const char* value, size_t size) {
+  
+  filename_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:NameServer.BlockStore.fileName)
+}
+inline ::std::string* BlockStore::mutable_filename() {
+  
+  // @@protoc_insertion_point(field_mutable:NameServer.BlockStore.fileName)
+  return filename_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* BlockStore::release_filename() {
+  // @@protoc_insertion_point(field_release:NameServer.BlockStore.fileName)
+  
+  return filename_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void BlockStore::set_allocated_filename(::std::string* filename) {
+  if (filename != NULL) {
+    
+  } else {
+    
+  }
+  filename_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), filename);
+  // @@protoc_insertion_point(field_set_allocated:NameServer.BlockStore.fileName)
+}
+
+// uint64 blockIdx = 4;
+inline void BlockStore::clear_blockidx() {
+  blockidx_ = GOOGLE_ULONGLONG(0);
+}
+inline ::google::protobuf::uint64 BlockStore::blockidx() const {
+  // @@protoc_insertion_point(field_get:NameServer.BlockStore.blockIdx)
+  return blockidx_;
+}
+inline void BlockStore::set_blockidx(::google::protobuf::uint64 value) {
+  
+  blockidx_ = value;
+  // @@protoc_insertion_point(field_set:NameServer.BlockStore.blockIdx)
+}
+
+// uint64 blockSize = 5;
+inline void BlockStore::clear_blocksize() {
+  blocksize_ = GOOGLE_ULONGLONG(0);
+}
+inline ::google::protobuf::uint64 BlockStore::blocksize() const {
+  // @@protoc_insertion_point(field_get:NameServer.BlockStore.blockSize)
+  return blocksize_;
+}
+inline void BlockStore::set_blocksize(::google::protobuf::uint64 value) {
+  
+  blocksize_ = value;
+  // @@protoc_insertion_point(field_set:NameServer.BlockStore.blockSize)
+}
+
+// bytes blockHash = 6;
+inline void BlockStore::clear_blockhash() {
+  blockhash_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& BlockStore::blockhash() const {
+  // @@protoc_insertion_point(field_get:NameServer.BlockStore.blockHash)
+  return blockhash_.GetNoArena();
+}
+inline void BlockStore::set_blockhash(const ::std::string& value) {
+  
+  blockhash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:NameServer.BlockStore.blockHash)
+}
+#if LANG_CXX11
+inline void BlockStore::set_blockhash(::std::string&& value) {
+  
+  blockhash_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:NameServer.BlockStore.blockHash)
+}
+#endif
+inline void BlockStore::set_blockhash(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  blockhash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:NameServer.BlockStore.blockHash)
+}
+inline void BlockStore::set_blockhash(const void* value, size_t size) {
+  
+  blockhash_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:NameServer.BlockStore.blockHash)
+}
+inline ::std::string* BlockStore::mutable_blockhash() {
+  
+  // @@protoc_insertion_point(field_mutable:NameServer.BlockStore.blockHash)
+  return blockhash_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* BlockStore::release_blockhash() {
+  // @@protoc_insertion_point(field_release:NameServer.BlockStore.blockHash)
+  
+  return blockhash_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void BlockStore::set_allocated_blockhash(::std::string* blockhash) {
+  if (blockhash != NULL) {
+    
+  } else {
+    
+  }
+  blockhash_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), blockhash);
+  // @@protoc_insertion_point(field_set_allocated:NameServer.BlockStore.blockHash)
 }
 
 // -------------------------------------------------------------------

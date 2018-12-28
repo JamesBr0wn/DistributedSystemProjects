@@ -7,6 +7,7 @@ service NameService{
     rpc terminateServer(ServerInfo) returns(ServerInfo) {}
     rpc beginGetTransaction(FileInfo) returns(stream BlockStore) {}
     rpc commitGetTransaction(FileInfo) returns(FileInfo) {}
+    rpc abortGetTransaction(FileInfo) returns(FileInfo) {}
 }
 
 message ServerInfo{
@@ -20,8 +21,12 @@ message FileInfo{
 }
 
 message BlockStore{
-    BlockInfo blockInfo = 1;
-    ServerInfo serverInfo = 2;
+    string serverAddress = 1;
+    bytes serverHash = 2;
+    string fileName = 3;
+    uint64 blockIdx = 4;
+    uint64 blockSize = 5;
+    bytes blockHash = 6;
 }
 
 message BlockInfo{

@@ -23,6 +23,7 @@ static const char* NameService_method_names[] = {
   "/NameServer.NameService/terminateServer",
   "/NameServer.NameService/beginGetTransaction",
   "/NameServer.NameService/commitGetTransaction",
+  "/NameServer.NameService/abortGetTransaction",
 };
 
 std::unique_ptr< NameService::Stub> NameService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -36,6 +37,7 @@ NameService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   , rpcmethod_terminateServer_(NameService_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_beginGetTransaction_(NameService_method_names[2], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
   , rpcmethod_commitGetTransaction_(NameService_method_names[3], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_abortGetTransaction_(NameService_method_names[4], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status NameService::Stub::startServer(::grpc::ClientContext* context, const ::NameServer::ServerInfo& request, ::NameServer::ServerInfo* response) {
@@ -98,6 +100,22 @@ void NameService::Stub::experimental_async::commitGetTransaction(::grpc::ClientC
   return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::FileInfo>::Create(channel_.get(), cq, rpcmethod_commitGetTransaction_, context, request, false);
 }
 
+::grpc::Status NameService::Stub::abortGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::NameServer::FileInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_abortGetTransaction_, context, request, response);
+}
+
+void NameService::Stub::experimental_async::abortGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_abortGetTransaction_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>* NameService::Stub::AsyncabortGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::FileInfo>::Create(channel_.get(), cq, rpcmethod_abortGetTransaction_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>* NameService::Stub::PrepareAsyncabortGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::NameServer::FileInfo>::Create(channel_.get(), cq, rpcmethod_abortGetTransaction_, context, request, false);
+}
+
 NameService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       NameService_method_names[0],
@@ -119,6 +137,11 @@ NameService::Service::Service() {
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< NameService::Service, ::NameServer::FileInfo, ::NameServer::FileInfo>(
           std::mem_fn(&NameService::Service::commitGetTransaction), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      NameService_method_names[4],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< NameService::Service, ::NameServer::FileInfo, ::NameServer::FileInfo>(
+          std::mem_fn(&NameService::Service::abortGetTransaction), this)));
 }
 
 NameService::Service::~Service() {
@@ -146,6 +169,13 @@ NameService::Service::~Service() {
 }
 
 ::grpc::Status NameService::Service::commitGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status NameService::Service::abortGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response) {
   (void) context;
   (void) request;
   (void) response;

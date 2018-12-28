@@ -10,7 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
-#include <grpc++/grpc++.h>
+#include <grpcpp/grpcpp.h>
 #include <openssl/sha.h>
 #include "NameServer.grpc.pb.h"
 
@@ -42,7 +42,7 @@ char SERVER_ADDRESS[32];
 
 struct FileMetaData{
     FileInfo fileInfo;
-    vector<BlockStore> storeList;
+    vector<pair<BlockInfo, ServerInfo>> storeList;
 };
 
 class NameServerImp final: public NameService::Service {
@@ -52,6 +52,7 @@ public:
     Status terminateServer(ServerContext* context, const ServerInfo* request, ServerInfo* reply) override;
     Status beginGetTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter) override;
     Status commitGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
+    Status abortGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
 private:
     vector<ServerInfo> serverList;
     vector<FileMetaData> fileList;

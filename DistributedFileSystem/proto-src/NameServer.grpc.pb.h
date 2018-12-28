@@ -66,12 +66,20 @@ class NameService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::NameServer::FileInfo>> PrepareAsynccommitGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::NameServer::FileInfo>>(PrepareAsynccommitGetTransactionRaw(context, request, cq));
     }
+    virtual ::grpc::Status abortGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::NameServer::FileInfo* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::NameServer::FileInfo>> AsyncabortGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::NameServer::FileInfo>>(AsyncabortGetTransactionRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::NameServer::FileInfo>> PrepareAsyncabortGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::NameServer::FileInfo>>(PrepareAsyncabortGetTransactionRaw(context, request, cq));
+    }
     class experimental_async_interface {
      public:
       virtual ~experimental_async_interface() {}
       virtual void startServer(::grpc::ClientContext* context, const ::NameServer::ServerInfo* request, ::NameServer::ServerInfo* response, std::function<void(::grpc::Status)>) = 0;
       virtual void terminateServer(::grpc::ClientContext* context, const ::NameServer::ServerInfo* request, ::NameServer::ServerInfo* response, std::function<void(::grpc::Status)>) = 0;
       virtual void commitGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void abortGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response, std::function<void(::grpc::Status)>) = 0;
     };
     virtual class experimental_async_interface* experimental_async() { return nullptr; }
   private:
@@ -84,6 +92,8 @@ class NameService final {
     virtual ::grpc::ClientAsyncReaderInterface< ::NameServer::BlockStore>* PrepareAsyncbeginGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::NameServer::FileInfo>* AsynccommitGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::NameServer::FileInfo>* PrepareAsynccommitGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::NameServer::FileInfo>* AsyncabortGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::NameServer::FileInfo>* PrepareAsyncabortGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -118,12 +128,20 @@ class NameService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>> PrepareAsynccommitGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>>(PrepareAsynccommitGetTransactionRaw(context, request, cq));
     }
+    ::grpc::Status abortGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::NameServer::FileInfo* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>> AsyncabortGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>>(AsyncabortGetTransactionRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>> PrepareAsyncabortGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>>(PrepareAsyncabortGetTransactionRaw(context, request, cq));
+    }
     class experimental_async final :
       public StubInterface::experimental_async_interface {
      public:
       void startServer(::grpc::ClientContext* context, const ::NameServer::ServerInfo* request, ::NameServer::ServerInfo* response, std::function<void(::grpc::Status)>) override;
       void terminateServer(::grpc::ClientContext* context, const ::NameServer::ServerInfo* request, ::NameServer::ServerInfo* response, std::function<void(::grpc::Status)>) override;
       void commitGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response, std::function<void(::grpc::Status)>) override;
+      void abortGetTransaction(::grpc::ClientContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response, std::function<void(::grpc::Status)>) override;
      private:
       friend class Stub;
       explicit experimental_async(Stub* stub): stub_(stub) { }
@@ -144,10 +162,13 @@ class NameService final {
     ::grpc::ClientAsyncReader< ::NameServer::BlockStore>* PrepareAsyncbeginGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>* AsynccommitGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>* PrepareAsynccommitGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>* AsyncabortGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::NameServer::FileInfo>* PrepareAsyncabortGetTransactionRaw(::grpc::ClientContext* context, const ::NameServer::FileInfo& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_startServer_;
     const ::grpc::internal::RpcMethod rpcmethod_terminateServer_;
     const ::grpc::internal::RpcMethod rpcmethod_beginGetTransaction_;
     const ::grpc::internal::RpcMethod rpcmethod_commitGetTransaction_;
+    const ::grpc::internal::RpcMethod rpcmethod_abortGetTransaction_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -159,6 +180,7 @@ class NameService final {
     virtual ::grpc::Status terminateServer(::grpc::ServerContext* context, const ::NameServer::ServerInfo* request, ::NameServer::ServerInfo* response);
     virtual ::grpc::Status beginGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::grpc::ServerWriter< ::NameServer::BlockStore>* writer);
     virtual ::grpc::Status commitGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response);
+    virtual ::grpc::Status abortGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_startServer : public BaseClass {
@@ -240,7 +262,27 @@ class NameService final {
       ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_startServer<WithAsyncMethod_terminateServer<WithAsyncMethod_beginGetTransaction<WithAsyncMethod_commitGetTransaction<Service > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_abortGetTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_abortGetTransaction() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_abortGetTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status abortGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestabortGetTransaction(::grpc::ServerContext* context, ::NameServer::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::NameServer::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_startServer<WithAsyncMethod_terminateServer<WithAsyncMethod_beginGetTransaction<WithAsyncMethod_commitGetTransaction<WithAsyncMethod_abortGetTransaction<Service > > > > > AsyncService;
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_startServer : public BaseClass {
    private:
@@ -332,7 +374,32 @@ class NameService final {
     }
     virtual void commitGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
-  typedef ExperimentalWithCallbackMethod_startServer<ExperimentalWithCallbackMethod_terminateServer<ExperimentalWithCallbackMethod_beginGetTransaction<ExperimentalWithCallbackMethod_commitGetTransaction<Service > > > > ExperimentalCallbackService;
+  template <class BaseClass>
+  class ExperimentalWithCallbackMethod_abortGetTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithCallbackMethod_abortGetTransaction() {
+      ::grpc::Service::experimental().MarkMethodCallback(4,
+        new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithCallbackMethod_abortGetTransaction<BaseClass>, ::NameServer::FileInfo, ::NameServer::FileInfo>(
+          [this](::grpc::ServerContext* context,
+                 const ::NameServer::FileInfo* request,
+                 ::NameServer::FileInfo* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   this->abortGetTransaction(context, request, response, controller);
+                 }, this));
+    }
+    ~ExperimentalWithCallbackMethod_abortGetTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status abortGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void abortGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  typedef ExperimentalWithCallbackMethod_startServer<ExperimentalWithCallbackMethod_terminateServer<ExperimentalWithCallbackMethod_beginGetTransaction<ExperimentalWithCallbackMethod_commitGetTransaction<ExperimentalWithCallbackMethod_abortGetTransaction<Service > > > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_startServer : public BaseClass {
    private:
@@ -397,6 +464,23 @@ class NameService final {
     }
     // disable synchronous version of this method
     ::grpc::Status commitGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_abortGetTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_abortGetTransaction() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_abortGetTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status abortGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -479,6 +563,26 @@ class NameService final {
     }
     void RequestcommitGetTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_abortGetTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_abortGetTransaction() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_abortGetTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status abortGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestabortGetTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -573,6 +677,31 @@ class NameService final {
     virtual void commitGetTransaction(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_abortGetTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithRawCallbackMethod_abortGetTransaction() {
+      ::grpc::Service::experimental().MarkMethodRawCallback(4,
+        new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithRawCallbackMethod_abortGetTransaction<BaseClass>, ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          [this](::grpc::ServerContext* context,
+                 const ::grpc::ByteBuffer* request,
+                 ::grpc::ByteBuffer* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   this->abortGetTransaction(context, request, response, controller);
+                 }, this));
+    }
+    ~ExperimentalWithRawCallbackMethod_abortGetTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status abortGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void abortGetTransaction(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_startServer : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
@@ -632,7 +761,27 @@ class NameService final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedcommitGetTransaction(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::NameServer::FileInfo,::NameServer::FileInfo>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_startServer<WithStreamedUnaryMethod_terminateServer<WithStreamedUnaryMethod_commitGetTransaction<Service > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_abortGetTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithStreamedUnaryMethod_abortGetTransaction() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler< ::NameServer::FileInfo, ::NameServer::FileInfo>(std::bind(&WithStreamedUnaryMethod_abortGetTransaction<BaseClass>::StreamedabortGetTransaction, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_abortGetTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status abortGetTransaction(::grpc::ServerContext* context, const ::NameServer::FileInfo* request, ::NameServer::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedabortGetTransaction(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::NameServer::FileInfo,::NameServer::FileInfo>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_startServer<WithStreamedUnaryMethod_terminateServer<WithStreamedUnaryMethod_commitGetTransaction<WithStreamedUnaryMethod_abortGetTransaction<Service > > > > StreamedUnaryService;
   template <class BaseClass>
   class WithSplitStreamingMethod_beginGetTransaction : public BaseClass {
    private:
@@ -654,7 +803,7 @@ class NameService final {
     virtual ::grpc::Status StreamedbeginGetTransaction(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::NameServer::FileInfo,::NameServer::BlockStore>* server_split_streamer) = 0;
   };
   typedef WithSplitStreamingMethod_beginGetTransaction<Service > SplitStreamedService;
-  typedef WithStreamedUnaryMethod_startServer<WithStreamedUnaryMethod_terminateServer<WithSplitStreamingMethod_beginGetTransaction<WithStreamedUnaryMethod_commitGetTransaction<Service > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_startServer<WithStreamedUnaryMethod_terminateServer<WithSplitStreamingMethod_beginGetTransaction<WithStreamedUnaryMethod_commitGetTransaction<WithStreamedUnaryMethod_abortGetTransaction<Service > > > > > StreamedService;
 };
 
 }  // namespace NameServer

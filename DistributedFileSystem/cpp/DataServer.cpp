@@ -46,17 +46,18 @@ DataServerImp::~DataServerImp() {
 Status DataServerImp::getBlock(ServerContext* context,const BlockInfo* request, ServerWriter<BlockUnit>* replyWriter) {
     // 打开Block文件
     string blockName = request->filename() + '_' + to_string(request->blockidx());
+    cout << "$ Client " << context->peer() << " get block " << blockName << "." << endl;
     ifstream ifs(storeDirectory + blockName, ios::in | ios::binary | ios::ate);
     if(!ifs.is_open()){
-        cout << "# Block " << blockName << " open failed!" << endl << endl;
+        cout << "# Block " << blockName << " open failed!" << endl;
         return Status::CANCELLED;
     }
 
     // 检查blockSize是否相等
     long blockSize = ifs.tellg();
-    cout << "$ Block " << blockName << " size: " << blockSize << endl;
+    cout << "$ Block size: " << blockSize << endl;
     if(blockSize != request->blocksize()){
-        cout << "# Block " << blockName << " size mismatch!" << endl << endl;
+        cout << "# Block " << blockName << " size mismatch!" << endl;
         return Status::CANCELLED;
     }
 
@@ -81,7 +82,6 @@ Status DataServerImp::getBlock(ServerContext* context,const BlockInfo* request, 
         unit.set_unitidx(i);
         unit.set_unitdata(unitData, (size_t)unitSize);
         unit.set_lastunit(blockSize % unitSize == 0 && i == unitNum - 1);
-        cout << "$ Block " << blockName << " get unit " << i << endl;
         replyWriter->Write(unit);
     }
     if(blockSize % unitSize != 0){
@@ -92,27 +92,20 @@ Status DataServerImp::getBlock(ServerContext* context,const BlockInfo* request, 
         unit.set_unitidx(unitNum);
         unit.set_unitdata(unitData, (size_t)blockSize % unitSize);
         unit.set_lastunit(true);
-        cout << "$ Block " << blockName << " get unit " << unitNum << endl;
         replyWriter->Write(unit);
     }
 
     // 检查Hash值是否相等
     SHA256_Final(hash, &stx);
-    cout << "$ Block " << blockName << " hash: ";
-    cout << hex;
-    for(long i = 0; i < SHA256_DIGEST_LENGTH; i++){
-        cout << (unsigned int)hash[i];
-    }
-    cout << dec << endl;
     if(memcmp(hash, request->blockhash().data(), SHA256_DIGEST_LENGTH) != 0){
-        cout << "# Block " << blockName << " hash mismatch!" << endl << endl;
+        cout << "# Block " << blockName << " hash mismatch!" << endl;
         return Status::CANCELLED;
     }
 
     // 完成RPC
     delete[] unitData;
     ifs.close();
-    cout << "$ Block " << blockName << " get finished!" << endl << endl;
+    cout << "$ Block get finished!" << endl;
     return Status::OK;
 }
 
@@ -121,15 +114,16 @@ Status DataServerImp::putBlock(ServerContext* context, ServerReader<BlockUnit>* 
     BlockUnit unit;
     unsigned long blockSize = 0;
     if(!requestReader->Read(&unit)){
-        cout << "# Stream read failed!" << endl << endl;
+        cout << "# Stream read failed!" << endl;
         return Status::CANCELLED;
     }
 
     // 打开Block文件
     string blockName = unit.filename() + '_' + to_string(unit.blockidx());
+    cout << "$ Client " << context->peer() << " put block " << blockName << "." << endl;
     ofstream ofs(storeDirectory + blockName, ios::out | ios::binary | ios::ate);
     if(!ofs.is_open()){
-        cout << "# Block " << blockName << " open failed!" << endl << endl;
+        cout << "# Block " << blockName << " open failed!" << endl;
         return Status::CANCELLED;
     }
     reply->set_filename(unit.filename());
@@ -145,12 +139,10 @@ Status DataServerImp::putBlock(ServerContext* context, ServerReader<BlockUnit>* 
     ofs.write(unit.unitdata().data(), unit.unitdata().length());
     blockSize += unit.unitdata().length();
     SHA256_Update(&stx, unit.unitdata().data(), unit.unitdata().length());
-    cout << "$ Block " << blockName << " put unit " << unit.unitidx() << endl;
     while(requestReader->Read(&unit)){
         ofs.write(unit.unitdata().data(), unit.unitdata().length());
         blockSize += unit.unitdata().length();
         SHA256_Update(&stx, unit.unitdata().data(), unit.unitdata().length());
-        cout << "$ Block " << blockName << " put unit " << unit.unitidx() << endl;
     }
     SHA256_Final(hash, &stx);
     reply->set_blockhash((char*)hash);
@@ -158,16 +150,17 @@ Status DataServerImp::putBlock(ServerContext* context, ServerReader<BlockUnit>* 
 
     // 完成RPC
     ofs.close();
-    cout << "$ Block " << blockName << " put finished!" << endl << endl;
+    cout << "$ Block put finished!" << endl;
     return Status::OK;
 }
 
 Status DataServerImp::rmBlock(ServerContext* context, const BlockInfo* request, BlockInfo* reply){
     // 打开Block文件
     string blockName = request->filename() + '_' + to_string(request->blockidx());
+    cout << "$ Client " << context->peer() << " rm block " << blockName << "." << endl;
     ifstream ifs(storeDirectory + blockName, ios::in | ios::binary | ios::ate);
     if(!ifs.is_open()){
-        cout << "# Block " << blockName << " open failed!" << endl << endl;
+        cout << "# Block " << blockName << " open failed!" << endl;
         return Status::CANCELLED;
     }
 
@@ -175,7 +168,7 @@ Status DataServerImp::rmBlock(ServerContext* context, const BlockInfo* request, 
     long blockSize = ifs.tellg();
     cout << "$ Block " << blockName << " size: " << blockSize << endl;
     if(blockSize != request->blocksize()){
-        cout << "# Block " << blockName << " size mismatch!" << endl << endl;
+        cout << "# Block " << blockName << " size mismatch!" << endl;
         return Status::CANCELLED;
     }
 
@@ -200,14 +193,8 @@ Status DataServerImp::rmBlock(ServerContext* context, const BlockInfo* request, 
 
     // 检查Hash值是否相等
     SHA256_Final(hash, &stx);
-    cout << "$ Block " << blockName << " hash: ";
-    cout << hex;
-    for(long i = 0; i < SHA256_DIGEST_LENGTH; i++){
-        cout << (unsigned int)hash[i];
-    }
-    cout << dec << endl;
     if(memcmp(hash, request->blockhash().data(), SHA256_DIGEST_LENGTH) != 0){
-        cout << "# Block " << blockName << " hash mismatch!" << endl << endl;
+        cout << "# Block " << blockName << " hash mismatch!" << endl;
         return Status::CANCELLED;
     }
     delete[] unitData;
@@ -215,12 +202,12 @@ Status DataServerImp::rmBlock(ServerContext* context, const BlockInfo* request, 
 
     // 删除Block
     if(remove((storeDirectory + blockName).data())){
-        cout << "$ Block " << blockName << " rm failed!" << endl << endl;
+        cout << "$ Block " << blockName << " rm failed!" << endl;
         return Status::CANCELLED;
     }
 
     // 完成RPC
-    cout << "$ Block " << blockName << " rm finished!" << endl << endl;
+    cout << "$ Block rm finished!" << endl;
     return Status::OK;
 }
 

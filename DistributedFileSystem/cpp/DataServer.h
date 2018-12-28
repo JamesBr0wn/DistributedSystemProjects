@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <grpc++/grpc++.h>
+#include <grpcpp/grpcpp.h>
 #include <openssl/sha.h>
 #include "DataServer.grpc.pb.h"
 #include "NameServer.grpc.pb.h"
@@ -42,7 +42,7 @@ char NAME_ADDRESS[32];
 class DataServerImp final: public DataService::Service {
 public:
     DataServerImp(std::shared_ptr<Channel> channel, string dir, size_t sz);
-    ~DataServerImp();
+    ~DataServerImp() override;
     Status getBlock(ServerContext* context, const BlockInfo* request, ServerWriter<BlockUnit>* replyWriter) override;
     Status putBlock(ServerContext* context, ServerReader<BlockUnit>* requestReader, BlockInfo* reply) override;
     Status rmBlock(ServerContext* context, const BlockInfo* request, BlockInfo* reply) override;

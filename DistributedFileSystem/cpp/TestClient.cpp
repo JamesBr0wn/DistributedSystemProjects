@@ -5,7 +5,7 @@
 #include <string>
 #include <fstream>
 #include <cstring>
-#include <grpc++/grpc++.h>
+#include <grpcpp/grpcpp.h>
 #include <openssl/sha.h>
 #include <DataServer.pb.h>
 #include "DataServer.grpc.pb.h"
