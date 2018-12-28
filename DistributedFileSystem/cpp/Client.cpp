@@ -381,8 +381,6 @@ int main(int argc, char** argv){
 //        std::cout << "# Put failed!" << std::endl;
 //    }
 
-
-
     if(client.putTest()){
         std::cout << "$ Put succeed!" << std::endl;
     }else{
