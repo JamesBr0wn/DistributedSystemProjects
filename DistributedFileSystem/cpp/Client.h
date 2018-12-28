@@ -12,10 +12,7 @@
 #include <vector>
 #include <grpc++/grpc++.h>
 #include <openssl/sha.h>
-#include <DataServer.pb.h>
-#include <NameServer.pb.h>
-#include <NameServer.grpc.pb.h>
-#include "DataServer.grpc.pb.h"
+#include "DistributedFileSystem.grpc.pb.h"
 
 using std::string;
 using std::vector;
@@ -33,13 +30,13 @@ using grpc::ClientContext;
 using grpc::ClientReader;
 using grpc::ClientWriter;
 using grpc::Status;
-using DataServer::DataService;
-using DataServer::BlockInfo;
-using DataServer::BlockUnit;
-using NameServer::NameService;
-using NameServer::FileInfo;
-using NameServer::ServerInfo;
-using NameServer::BlockStore;
+using DistributedFileSystem::DataService;
+using DistributedFileSystem::BlockInfo;
+using DistributedFileSystem::BlockUnit;
+using DistributedFileSystem::NameService;
+using DistributedFileSystem::FileInfo;
+using DistributedFileSystem::ServerInfo;
+using DistributedFileSystem::BlockStore;
 
 char SERVER_ADDRESS[16];
 
@@ -51,6 +48,7 @@ public:
     Status putBlock(BlockInfo request);
     Status rmBlock(BlockInfo request);
     Status get(string fileName);
+    Status put(string fileName);
 private:
     std::unique_ptr<NameService::Stub> nameStub;
     std::unique_ptr<DataService::Stub> dataStub;

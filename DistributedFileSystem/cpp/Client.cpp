@@ -2,7 +2,6 @@
 // Created by JamesBrown on 2018/12/26.
 //
 
-#include <NameServer.pb.h>
 #include "Client.h"
 
 Status ClientImp::getBlock(const BlockInfo request){
@@ -12,7 +11,7 @@ Status ClientImp::getBlock(const BlockInfo request){
             dataStub->getBlock(&context, request));
     Status status;
 
-    string blockName = request.filename() + '_' + to_string(request.blockidx());
+    string blockName = request.filename() + '.' + to_string(request.blockidx());
     cout << "$ Get block " << blockName << "." << endl;
     ofstream ofs(cacheDirectory + blockName, ios::out | ios::binary | ios::ate);
     if(!ofs.is_open()){
@@ -46,7 +45,7 @@ Status ClientImp::putBlock(const BlockInfo request){
     string fileName = request.filename();
     unsigned long blockIdx = request.blockidx();
     long blockSize;
-    string blockName = fileName + '_' + to_string(blockIdx);
+    string blockName = fileName + '.' + to_string(blockIdx);
     cout << "$ Put block " << blockName << "." << endl;
     ifstream ifs(cacheDirectory + blockName, ios::in | ios::binary | ios::ate);
     if(!ifs.is_open()){
@@ -77,7 +76,6 @@ Status ClientImp::putBlock(const BlockInfo request){
         unit.set_unitidx(i);
         unit.set_unitdata(unitData, (size_t)unitSize);
         unit.set_lastunit(blockSize % unitSize == 0 && i == unitNum - 1);
-        cout << "$ Block " << blockName << " put unit " << i << endl;
         writer->Write(unit);
     }
     if(blockSize % unitSize != 0){
@@ -88,7 +86,6 @@ Status ClientImp::putBlock(const BlockInfo request){
         unit.set_unitidx(unitNum);
         unit.set_unitdata(unitData, (size_t)blockSize % unitSize);
         unit.set_lastunit(true);
-        cout << "$ Block " << blockName << " put unit " << unitNum << endl;
         writer->Write(unit);
     }
 
@@ -118,7 +115,7 @@ Status ClientImp::putBlock(const BlockInfo request){
         }
 
         cout << "$ Block put finished!" << endl;
-        return Status::CANCELLED;
+        return Status::OK;
     } else {
         cout << "# Block " << blockName << " put failed!" << endl;
         return Status::CANCELLED;
@@ -129,7 +126,7 @@ Status ClientImp::rmBlock(const BlockInfo request){
     BlockInfo reply;
     ClientContext context;
     Status status;
-    string blockName = request.filename() + '_' + to_string(request.blockidx());
+    string blockName = request.filename() + '.' + to_string(request.blockidx());
     cout << "$ Rm block " << blockName << "." << endl;
     status = dataStub->rmBlock(&context, request, &reply);
     if(status.ok()){
@@ -178,9 +175,9 @@ Status ClientImp::get(const string fileName){
     ofstream ffs;
     unsigned long blockSize;
     char tempUnit[unitSize];
-    ffs.open(cacheDirectory + fileName, ios::out | ios::binary | ios::app);
+    ffs.open(cacheDirectory + fileName, ios::out | ios::binary | ios::ate);
     for(auto it = storeList.begin(); it != storeList.end(); it++){
-        bfs.open(cacheDirectory + it->filename() + "_" + to_string(it->blockidx()), ios::in | ios::binary | ios::app);
+        bfs.open(cacheDirectory + it->filename() + "." + to_string(it->blockidx()), ios::in | ios::binary | ios::app);
         blockSize = it->blocksize();
         for(i = 0; i < blockSize / unitSize; i++){
             bfs.read(tempUnit, unitSize);
@@ -191,7 +188,7 @@ Status ClientImp::get(const string fileName){
             ffs.write(tempUnit, blockSize % unitSize);
         }
         bfs.close();
-        if(remove((cacheDirectory + it->filename() + "_" + to_string(it->blockidx())).data())){
+        if(remove((cacheDirectory + it->filename() + "." + to_string(it->blockidx())).data())){
             cout << "# Cached block " << cacheDirectory + it->filename() + to_string(it->blockidx()) << " remove fail!" << endl;
             ClientContext abort;
             nameStub->abortGetTransaction(&abort, fileInfo, &fileInfo);
@@ -204,6 +201,70 @@ Status ClientImp::get(const string fileName){
     cout << "$ File get finished!" << endl;
     return Status::OK;
 }
+
+Status ClientImp::put(const string fileName){
+    cout << "$ Put file " << fileName << "." << endl;
+    FileInfo fileInfo;
+    fileInfo.set_filename(fileName);
+    ifstream tempIfs(cacheDirectory + fileName, ios::out | ios::binary | ios::app);
+    tempIfs.seekg(0,ifstream::end);
+    fileInfo.set_filesize(tempIfs.tellg());
+    tempIfs.close();
+    BlockStore blockStore;
+    ClientContext start;
+    std::unique_ptr<ClientReader<BlockStore>> blockStoreReader(
+            nameStub->beginPutTransaction(&start, fileInfo));
+    Status status;
+    unsigned long i = 0;
+    vector<BlockStore> storeList;
+    while (blockStoreReader->Read(&blockStore)) {
+        storeList.push_back(blockStore);
+        i++;
+    }
+    status = blockStoreReader->Finish();
+    if(!status.ok()){
+        cout << "# File " << fileInfo.filename() << " get block list fail!" << endl;
+    }
+
+    ifstream ffs;
+    ofstream bfs;
+    unsigned long blockSize;
+    char tempUnit[unitSize];
+    ffs.open(cacheDirectory + fileName, ios::out | ios::binary | ios::app);
+    for(auto it = storeList.begin(); it != storeList.end(); it++){
+        bfs.open(cacheDirectory + it->filename() + "." + to_string(it->blockidx()), ios::out | ios::binary | ios::ate);
+        blockSize = it->blocksize();
+        for(i = 0; i < blockSize / unitSize; i++){
+            ffs.read(tempUnit, unitSize);
+            bfs.write(tempUnit, unitSize);
+        }
+        if(blockSize % unitSize != 0){
+            ffs.read(tempUnit, blockSize % unitSize);
+            bfs.write(tempUnit, blockSize % unitSize);
+        }
+        bfs.close();
+    }
+    ffs.close();
+
+    BlockInfo tempInfo;
+    for(auto it = storeList.begin(); it != storeList.end(); it++){
+        tempInfo.set_filename(fileName);
+        tempInfo.set_blockidx(it->blockidx());
+        tempInfo.set_blocksize(it->blocksize());
+
+        cout << "Block " << it->blockidx() << " server " << it->serveraddress() << endl;
+        dataStub = DataService::NewStub(grpc::CreateChannel(it->serveraddress(), grpc::InsecureChannelCredentials()));
+        if(!putBlock(tempInfo).ok()){
+//            ClientContext abort;
+//            nameStub->abortPutTransaction(&abort, fileInfo, &fileInfo);
+            cout << "# Put block fail" << endl;
+            return Status::CANCELLED;
+        }
+    }
+
+    return Status::OK;
+}
+
 
 class TestClient {
 public:
@@ -284,7 +345,12 @@ public:
     }
 
     bool getTest(){
-        clientImp.get("block");
+        clientImp.get("test.pdf");
+        return true;
+    }
+
+    bool putTest(){
+        clientImp.put("test.pdf");
         return true;
     }
 private:
@@ -315,6 +381,15 @@ int main(int argc, char** argv){
 //        std::cout << "# Put failed!" << std::endl;
 //    }
 
+
+
+    if(client.putTest()){
+        std::cout << "$ Put succeed!" << std::endl;
+    }else{
+        std::cout << "# Put failed!" << std::endl;
+    }
+    char c;
+    cin >> c;
     if(client.getTest()){
         std::cout << "$ Get succeed!" << std::endl;
     }else{

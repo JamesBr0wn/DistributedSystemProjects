@@ -8,44 +8,7 @@ int cmp(const ServerInfo& a, const ServerInfo& b){
     return a.hash() < b.hash();
 }
 
-NameServerImp::NameServerImp() {
-    BlockInfo blockInfo;
-    blockInfo.set_filename("block");
-    blockInfo.set_blockidx(0);
-    string blockName = blockInfo.filename() + '_' + to_string(blockInfo.blockidx());
-    ifstream ifs("Temp/" + blockName, ios::in | ios::binary | ios::ate);
-    long blockSize = ifs.tellg();
-    cout << "Block " << blockName << " size: " << blockSize << endl;
-    blockInfo.set_blocksize(blockSize);
-    ifs.seekg(0, ios::beg);
-    char * blockData = new char[blockSize];
-    ifs.read(blockData, blockSize);
-
-    SHA256_CTX stx;
-    unsigned char hash[SHA256_DIGEST_LENGTH+1];
-    hash[SHA256_DIGEST_LENGTH] = '\0';
-    SHA256_Init(&stx);
-    SHA256_Update(&stx, blockData, (size_t)blockSize);
-    SHA256_Final(hash, &stx);
-    blockInfo.set_blockhash((char*)hash);
-    delete[] blockData;
-    ifs.close();
-
-    FileInfo fileInfo;
-    fileInfo.set_filename(blockInfo.filename());
-    fileInfo.set_filesize(blockInfo.blocksize());
-
-    FileMetaData meta;
-    meta.fileInfo = fileInfo;
-
-    ServerInfo serverInfo;
-    serverInfo.set_address("127.0.0.1:8888");
-
-    meta.storeList.emplace_back(blockInfo, serverInfo);
-    blockInfo.set_blockidx(1);
-    meta.storeList.emplace_back(blockInfo, serverInfo);
-    fileList.push_back(meta);
-}
+NameServerImp::NameServerImp(unsigned long size): maxBlockSize(size) {}
 
 Status NameServerImp::startServer(ServerContext *context, const ServerInfo *request, ServerInfo *reply) {
     *reply = *request;
@@ -94,23 +57,23 @@ Status NameServerImp::terminateServer(ServerContext *context, const ServerInfo *
 Status NameServerImp::beginGetTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter){
     string fileName = request->filename();
     cout << "$ Client " << context->peer() << " begin transaction: get " << fileName << "." << endl;
-    auto it = fileList.begin();
-    while(it != fileList.end()){
-        if(it->fileInfo.filename() == fileName){
+    auto fileIter = fileList.begin();
+    while(fileIter != fileList.end()){
+        if(fileIter->fileInfo.filename() == fileName){
             break;
         }
-        it++;
+        fileIter++;
     }
 
-    if(it == fileList.end()){
+    if(fileIter == fileList.end()){
         cout << "# File " << fileName << " not found!" << endl;
         return Status::CANCELLED;
     }
 
     BlockStore blockStore;
-    for(long i = 0; i < it->storeList.size(); i++){
-        BlockInfo blockInfo = it->storeList[i].first;
-        ServerInfo serverInfo = it->storeList[i].second;
+    for(long i = 0; i < fileIter->storeList.size(); i++){
+        BlockInfo blockInfo = fileIter->storeList[i].first;
+        ServerInfo serverInfo = fileIter->storeList[i].second;
         blockStore.set_filename(blockInfo.filename());
         blockStore.set_blockidx(blockInfo.blockidx());
         blockStore.set_blocksize(blockInfo.blocksize());
@@ -134,9 +97,120 @@ Status NameServerImp::abortGetTransaction(ServerContext *context, const FileInfo
     return Status::OK;
 }
 
+Status NameServerImp::beginPutTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter){
+    string fileName = request->filename();
+    unsigned long fileSize = request->filesize();
+    cout << "$ Client " << context->peer() << " begin transaction: put " << fileName << "." << endl;
+    auto fileIter = fileList.begin();
+    while(fileIter != fileList.end()){
+        if(fileIter->fileInfo.filename() == fileName){
+            break;
+        }
+        fileIter++;
+    }
+
+    if(fileIter != fileList.end()){
+        cout << "# File " << fileName << " already exists!" << endl;
+        return Status::CANCELLED;
+    }
+
+    unsigned long remainSize = fileSize, blockSize, blockIdx = 0;
+    string tempStr = fileName;
+    FileMetaData fileMetaData;
+
+    fileMetaData.fileInfo.set_filename(fileName);
+    fileMetaData.fileInfo.set_filesize(fileSize);
+
+    while(remainSize > 0){
+        blockSize = remainSize > maxBlockSize ? maxBlockSize : remainSize;
+        tempStr[rand()%tempStr.length()] = (char)(rand() % 256);
+
+        // 计算Hash值
+        SHA256_CTX stx;
+        unsigned char hash[SHA256_DIGEST_LENGTH+1];
+        hash[SHA256_DIGEST_LENGTH] = '\0';
+        SHA256_Init(&stx);
+        SHA256_Update(&stx, tempStr.data(), fileName.length());
+        SHA256_Final(hash, &stx);
+
+        auto serverIter = serverList.begin();
+        while(serverIter != serverList.end()-1){
+            if(strcmp((char*)hash, serverIter->hash().data()) <= 0){
+                break;
+            }
+            serverIter++;
+        }
+
+        BlockInfo blockInfo;
+        blockInfo.set_filename(fileName);
+        blockInfo.set_blockidx(blockIdx);
+        blockInfo.set_blocksize(blockSize);
+
+        ServerInfo serverInfo;
+        serverInfo.set_address(serverIter->address());
+        serverInfo.set_hash(serverIter->hash());
+
+        fileMetaData.storeList.push_back(pair<BlockInfo, ServerInfo>(blockInfo, serverInfo));
+
+        blockIdx += 1;
+        remainSize -= blockSize;
+    }
+    fileList.push_back(fileMetaData);
+    fileIter = fileList.end()-1;
+
+    BlockStore blockStore;
+    for(long i = 0; i < fileIter->storeList.size(); i++){
+        BlockInfo blockInfo = fileIter->storeList[i].first;
+        ServerInfo serverInfo = fileIter->storeList[i].second;
+        blockStore.set_filename(blockInfo.filename());
+        blockStore.set_blockidx(blockInfo.blockidx());
+        blockStore.set_blocksize(blockInfo.blocksize());
+        blockStore.set_blockhash(blockInfo.blockhash());
+        blockStore.set_serveraddress(serverInfo.address());
+        blockStore.set_serverhash(serverInfo.hash());
+        replyWriter->Write(blockStore);
+    }
+    return Status::OK;
+}
+
+Status NameServerImp::updateBlockInfo(ServerContext *context, const BlockInfo *request, BlockInfo *reply) {
+    string fileName = request->filename();
+    unsigned long blockIdx = request->blockidx();
+
+    auto fileIter = fileList.begin();
+    while(fileIter != fileList.end()){
+        if(fileIter->fileInfo.filename() == fileName){
+            break;
+        }
+        fileIter++;
+    }
+    if(fileIter == fileList.end()){
+        cout << "# File " << fileName << " not exists!" << endl;
+        return Status::CANCELLED;
+    }
+
+    auto storeIter = fileIter->storeList.begin();
+    while(storeIter != fileIter->storeList.end()){
+        if(storeIter->first.blockidx() == blockIdx){
+            break;
+        }
+        storeIter++;
+    }
+    if(storeIter == fileIter->storeList.end()){
+        cout << "# Block " << fileName << "_" << blockIdx << " not exists!" << endl;
+        return Status::CANCELLED;
+    }
+
+    storeIter->first.set_blocksize(request->blocksize());
+    storeIter->first.set_blockhash(request->blockhash());
+
+    *reply = *request;
+    return Status::OK;
+}
+
 void RunServer() {
     std::string server_address(SERVER_ADDRESS);
-    NameServerImp service;
+    NameServerImp service(1024*1024*16);
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.

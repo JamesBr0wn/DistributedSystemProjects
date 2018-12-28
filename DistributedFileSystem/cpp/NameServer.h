@@ -12,7 +12,7 @@
 #include <fstream>
 #include <grpcpp/grpcpp.h>
 #include <openssl/sha.h>
-#include "NameServer.grpc.pb.h"
+#include "DistributedFileSystem.grpc.pb.h"
 
 using std::string;
 using std::to_string;
@@ -32,11 +32,11 @@ using grpc::ServerContext;
 using grpc::ServerReader;
 using grpc::ServerWriter;
 using grpc::Status;
-using NameServer::NameService;
-using NameServer::ServerInfo;
-using NameServer::FileInfo;
-using NameServer::BlockInfo;
-using NameServer::BlockStore;
+using DistributedFileSystem::NameService;
+using DistributedFileSystem::ServerInfo;
+using DistributedFileSystem::FileInfo;
+using DistributedFileSystem::BlockInfo;
+using DistributedFileSystem::BlockStore;
 
 char SERVER_ADDRESS[32];
 
@@ -47,15 +47,18 @@ struct FileMetaData{
 
 class NameServerImp final: public NameService::Service {
 public:
-    NameServerImp();
+    NameServerImp(unsigned long sz);
     Status startServer(ServerContext* context, const ServerInfo* request, ServerInfo* reply) override;
     Status terminateServer(ServerContext* context, const ServerInfo* request, ServerInfo* reply) override;
     Status beginGetTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter) override;
     Status commitGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
     Status abortGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
+    Status beginPutTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter) override;
+    Status updateBlockInfo(ServerContext *context, const BlockInfo *request, BlockInfo *reply) override;
 private:
     vector<ServerInfo> serverList;
     vector<FileMetaData> fileList;
+    unsigned long maxBlockSize;
 };
 
 

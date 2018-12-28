@@ -10,8 +10,7 @@
 #include <fstream>
 #include <grpcpp/grpcpp.h>
 #include <openssl/sha.h>
-#include "DataServer.grpc.pb.h"
-#include "NameServer.grpc.pb.h"
+#include "DistributedFileSystem.grpc.pb.h"
 
 using std::string;
 using std::to_string;
@@ -30,14 +29,15 @@ using grpc::ServerContext;
 using grpc::ServerReader;
 using grpc::ServerWriter;
 using grpc::Status;
-using DataServer::DataService;
-using DataServer::BlockInfo;
-using DataServer::BlockUnit;
-using NameServer::NameService;
-using NameServer::ServerInfo;
+using DistributedFileSystem::DataService;
+using DistributedFileSystem::BlockInfo;
+using DistributedFileSystem::BlockUnit;
+using DistributedFileSystem::NameService;
+using DistributedFileSystem::ServerInfo;
 
 char DATA_ADDRESS[32];
 char NAME_ADDRESS[32];
+char STORE_DIR[64];
 
 class DataServerImp final: public DataService::Service {
 public:

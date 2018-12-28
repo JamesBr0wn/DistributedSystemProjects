@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package NameServer;
+package DistributedFileSystem;
 
 service NameService{
     rpc startServer(ServerInfo) returns(ServerInfo) {}
@@ -8,6 +8,14 @@ service NameService{
     rpc beginGetTransaction(FileInfo) returns(stream BlockStore) {}
     rpc commitGetTransaction(FileInfo) returns(FileInfo) {}
     rpc abortGetTransaction(FileInfo) returns(FileInfo) {}
+    rpc beginPutTransaction(FileInfo) returns(stream BlockStore) {}
+    rpc updateBlockInfo(BlockInfo) returns(BlockInfo) {}
+}
+
+service DataService{
+    rpc getBlock(BlockInfo) returns (stream BlockUnit) {}
+    rpc putBlock(stream BlockUnit) returns (BlockInfo) {}
+    rpc rmBlock(BlockInfo) returns (BlockInfo) {}
 }
 
 message ServerInfo{
@@ -34,4 +42,12 @@ message BlockInfo{
     uint64 blockIdx = 2;
     uint64 blockSize = 3;
     bytes blockHash = 4;
+}
+
+message BlockUnit{
+    string fileName = 1;
+    uint64 blockIdx = 2;
+    uint64 unitIdx = 3;
+    bytes unitData = 4;
+    bool lastUnit = 5;
 }

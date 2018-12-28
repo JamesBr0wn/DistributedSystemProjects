@@ -45,7 +45,7 @@ DataServerImp::~DataServerImp() {
 
 Status DataServerImp::getBlock(ServerContext* context,const BlockInfo* request, ServerWriter<BlockUnit>* replyWriter) {
     // 打开Block文件
-    string blockName = request->filename() + '_' + to_string(request->blockidx());
+    string blockName = request->filename() + '.' + to_string(request->blockidx());
     cout << "$ Client " << context->peer() << " get block " << blockName << "." << endl;
     ifstream ifs(storeDirectory + blockName, ios::in | ios::binary | ios::ate);
     if(!ifs.is_open()){
@@ -119,7 +119,7 @@ Status DataServerImp::putBlock(ServerContext* context, ServerReader<BlockUnit>* 
     }
 
     // 打开Block文件
-    string blockName = unit.filename() + '_' + to_string(unit.blockidx());
+    string blockName = unit.filename() + '.' + to_string(unit.blockidx());
     cout << "$ Client " << context->peer() << " put block " << blockName << "." << endl;
     ofstream ofs(storeDirectory + blockName, ios::out | ios::binary | ios::ate);
     if(!ofs.is_open()){
@@ -148,6 +148,15 @@ Status DataServerImp::putBlock(ServerContext* context, ServerReader<BlockUnit>* 
     reply->set_blockhash((char*)hash);
     reply->set_blocksize(blockSize);
 
+    // 更新Block信息
+    ClientContext update;
+    BlockInfo blockInfo = *reply;
+    Status status = _stub->updateBlockInfo(&update, blockInfo, &blockInfo);
+    if(!status.ok()){
+        cout << "$ Block " << blockName << " info update fail!" << endl;
+    }
+    cout << "$ Block info update finished!" << endl;
+
     // 完成RPC
     ofs.close();
     cout << "$ Block put finished!" << endl;
@@ -156,7 +165,7 @@ Status DataServerImp::putBlock(ServerContext* context, ServerReader<BlockUnit>* 
 
 Status DataServerImp::rmBlock(ServerContext* context, const BlockInfo* request, BlockInfo* reply){
     // 打开Block文件
-    string blockName = request->filename() + '_' + to_string(request->blockidx());
+    string blockName = request->filename() + '.' + to_string(request->blockidx());
     cout << "$ Client " << context->peer() << " rm block " << blockName << "." << endl;
     ifstream ifs(storeDirectory + blockName, ios::in | ios::binary | ios::ate);
     if(!ifs.is_open()){
@@ -215,7 +224,7 @@ void RunServer() {
     std::string server_address(DATA_ADDRESS);
     DataServerImp service(grpc::CreateChannel(
     std::string(NAME_ADDRESS), grpc::InsecureChannelCredentials()),
-            "BlockStore/", 1024 * 1024);
+                          STORE_DIR, 1024 * 1024);
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
@@ -235,6 +244,7 @@ void RunServer() {
 int main(int argc, char** argv) {
     strcpy(DATA_ADDRESS, argv[1]);
     strcpy(NAME_ADDRESS, argv[2]);
+    strcpy(STORE_DIR, argv[3]);
     RunServer();
 
     return 0;
