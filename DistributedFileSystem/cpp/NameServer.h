@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
+#include <random>
 #include <grpcpp/grpcpp.h>
 #include <openssl/sha.h>
 #include "DistributedFileSystem.grpc.pb.h"
@@ -24,6 +25,8 @@ using std::sort;
 using std::ios;
 using std::ifstream;
 using std::ofstream;
+using std::default_random_engine;
+using std::uniform_int_distribution;
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Server;
@@ -37,8 +40,6 @@ using DistributedFileSystem::ServerInfo;
 using DistributedFileSystem::FileInfo;
 using DistributedFileSystem::BlockInfo;
 using DistributedFileSystem::BlockStore;
-
-char SERVER_ADDRESS[32];
 
 struct FileMetaData{
     FileInfo fileInfo;
@@ -54,10 +55,16 @@ public:
     Status commitGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
     Status abortGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
     Status beginPutTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter) override;
+    Status commitPutTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
+    Status abortPutTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
+    Status beginRmTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter) override;
+    Status commitRmTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
+    Status abortRmTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
     Status updateBlockInfo(ServerContext *context, const BlockInfo *request, BlockInfo *reply) override;
 private:
     vector<ServerInfo> serverList;
     vector<FileMetaData> fileList;
+    vector<FileMetaData> tempList;
     unsigned long maxBlockSize;
 };
 

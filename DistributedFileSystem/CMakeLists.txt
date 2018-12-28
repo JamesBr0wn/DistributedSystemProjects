@@ -45,13 +45,14 @@ target_link_libraries(DataServer
         )
 
 # Building client
-add_executable(Client
+add_executable(TestClient
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpp/TestClient.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/Client.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/cpp/Client.h
         ${PROTO_SRCS}
         ${GRPC_SRCS}
-        )
-target_link_libraries(Client
+        cpp/TestClient.cpp)
+target_link_libraries(TestClient
         gRPC::grpc++_reflection
         protobuf::libprotobuf
         OpenSSL::SSL

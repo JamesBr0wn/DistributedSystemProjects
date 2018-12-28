@@ -53,7 +53,6 @@ Status ClientImp::putBlock(const BlockInfo request){
         return Status::CANCELLED;
     }
     blockSize = ifs.tellg();
-    cout << "$ Block " << blockName << " size: " << blockSize << endl;
 
     // 初始化流传输相关变量
     ifs.seekg(0, ios::beg);
@@ -103,13 +102,17 @@ Status ClientImp::putBlock(const BlockInfo request){
 
         // 验证Hash值
         SHA256_Final(hash, &stx);
-        cout << "$ Block " << blockName << " hash: ";
-        cout << hex;
-        for(long i = 0; i < SHA256_DIGEST_LENGTH; i++){
-            cout << (unsigned int)hash[i];
-        }
-        cout << dec << endl;
         if(memcmp(hash, reply.blockhash().data(), SHA256_DIGEST_LENGTH) != 0){
+            cout << "Local hash ";
+            for(int i = 0; i < SHA256_DIGEST_LENGTH; i++){
+                cout << (int)(hash[i]) << " ";
+            }
+            cout << endl;
+            cout << "Remote hash ";
+            for(int i = 0; i < SHA256_DIGEST_LENGTH; i++){
+                cout << (int)(reply.blockhash().data()[i]) << " ";
+            }
+            cout << endl;
             cout << "# Block " << blockName << " hash mismatch!" << endl;
             return Status::CANCELLED;
         }
@@ -251,147 +254,69 @@ Status ClientImp::put(const string fileName){
         tempInfo.set_filename(fileName);
         tempInfo.set_blockidx(it->blockidx());
         tempInfo.set_blocksize(it->blocksize());
-
-        cout << "Block " << it->blockidx() << " server " << it->serveraddress() << endl;
         dataStub = DataService::NewStub(grpc::CreateChannel(it->serveraddress(), grpc::InsecureChannelCredentials()));
         if(!putBlock(tempInfo).ok()){
-//            ClientContext abort;
-//            nameStub->abortPutTransaction(&abort, fileInfo, &fileInfo);
-            cout << "# Put block fail" << endl;
+            ClientContext abort;
+            nameStub->abortPutTransaction(&abort, fileInfo, &fileInfo);
+            return Status::CANCELLED;
+        }
+        if(remove((cacheDirectory + it->filename() + "." + to_string(it->blockidx())).data())){
+            cout << "# Cached block " << cacheDirectory + it->filename() + to_string(it->blockidx()) << " remove fail!" << endl;
+            ClientContext abort;
+            nameStub->abortPutTransaction(&abort, fileInfo, &fileInfo);
             return Status::CANCELLED;
         }
     }
 
+    ClientContext commit;
+    nameStub->commitPutTransaction(&commit, fileInfo, &fileInfo);
+    cout << "# File put finished!" << endl;
     return Status::OK;
 }
 
+Status ClientImp::rm(string fileName) {
+    cout << "$ Rm file " << fileName << "." << endl;
+    FileInfo fileInfo;
+    fileInfo.set_filename(fileName);
+    BlockStore blockStore;
+    ClientContext start;
+    std::unique_ptr<ClientReader<BlockStore>> blockStoreReader(
+            nameStub->beginRmTransaction(&start, fileInfo));
+    Status status;
+    unsigned long i = 0;
+    vector<BlockStore> storeList;
+    while (blockStoreReader->Read(&blockStore)) {
+        storeList.push_back(blockStore);
+        i++;
+    }
+    status = blockStoreReader->Finish();
+    if(!status.ok()){
+        cout << "# File " << fileInfo.filename() << " get block list fail!" << endl;
+    }
 
-class TestClient {
-public:
-    TestClient(string dir, size_t sz) : clientImp(grpc::CreateChannel(std::string(SERVER_ADDRESS), grpc::InsecureChannelCredentials()), dir, sz){}
-
-    bool getBlockTest(){
-        BlockInfo request;
-        request.set_filename("block");
-        request.set_blockidx(0);
-        string blockName = request.filename() + '_' + to_string(request.blockidx());
-        ifstream ifs("Temp/" + blockName, ios::in | ios::binary | ios::ate);
-        long blockSize = ifs.tellg();
-        cout << "Block " << blockName << " size: " << blockSize << endl;
-        request.set_blocksize(blockSize);
-        ifs.seekg(0, ios::beg);
-        char * blockData = new char[blockSize];
-        ifs.read(blockData, blockSize);
-
-        SHA256_CTX stx;
-        unsigned char hash[SHA256_DIGEST_LENGTH+1];
-        hash[SHA256_DIGEST_LENGTH] = '\0';
-        SHA256_Init(&stx);
-        SHA256_Update(&stx, blockData, (size_t)blockSize);
-        SHA256_Final(hash, &stx);
-        cout << "Block " << blockName << " hash: ";
-        cout << hex;
-        for(long i = 0; i < SHA256_DIGEST_LENGTH; i++){
-            cout << (unsigned int)hash[i];
+    BlockInfo tempInfo;
+    for(auto it = storeList.begin(); it != storeList.end(); it++){
+        dataStub = DataService::NewStub(grpc::CreateChannel(it->serveraddress(), grpc::InsecureChannelCredentials()));
+        tempInfo.set_filename(it->filename());
+        tempInfo.set_blockidx(it->blockidx());
+        tempInfo.set_blocksize(it->blocksize());
+        tempInfo.set_blockhash(it->blockhash());
+        if(!rmBlock(tempInfo).ok()){
+            ClientContext abort;
+            nameStub->abortRmTransaction(&abort, fileInfo, &fileInfo);
+            return Status::CANCELLED;
         }
-        cout << dec << endl;
-        request.set_blockhash((char*)hash);
-        delete[] blockData;
-        ifs.close();
-
-        clientImp.getBlock(request);
-        return true;
     }
 
-    bool putBlockTest(){
-        BlockInfo request;
-        request.set_filename("block");
-        request.set_blockidx(0);
-        clientImp.putBlock(request);
-        return true;
+    if(remove((cacheDirectory + fileName).data())){
+        cout << "# File " << fileName << " remove fail!" << endl;
+        ClientContext abort;
+        nameStub->abortRmTransaction(&abort, fileInfo, &fileInfo);
+        return Status::CANCELLED;
     }
 
-    bool rmBlockTest(){
-        BlockInfo request;
-        request.set_filename("block");
-        request.set_blockidx(0);
-        string blockName = request.filename() + '_' + to_string(request.blockidx());
-        ifstream ifs("BlockStore/" + blockName, ios::in | ios::binary | ios::ate);
-        long blockSize = ifs.tellg();
-        cout << "Block " << blockName << " size: " << blockSize << endl;
-        request.set_blocksize(blockSize);
-        ifs.seekg(0, ios::beg);
-        char * blockData = new char[blockSize];
-        ifs.read(blockData, blockSize);
-
-        SHA256_CTX stx;
-        unsigned char hash[SHA256_DIGEST_LENGTH+1];
-        hash[SHA256_DIGEST_LENGTH] = '\0';
-        SHA256_Init(&stx);
-        SHA256_Update(&stx, blockData, (size_t)blockSize);
-        SHA256_Final(hash, &stx);
-        cout << "Block " << blockName << " hash: ";
-        cout << hex;
-        for(long i = 0; i < SHA256_DIGEST_LENGTH; i++){
-            cout << (unsigned int)hash[i];
-        }
-        cout << dec << endl;
-        request.set_blockhash((char*)hash);
-        delete[] blockData;
-        ifs.close();
-
-        clientImp.rmBlock(request);
-        return true;
-    }
-
-    bool getTest(){
-        clientImp.get("test.pdf");
-        return true;
-    }
-
-    bool putTest(){
-        clientImp.put("test.pdf");
-        return true;
-    }
-private:
-    ClientImp clientImp;
-};
-
-int main(int argc, char** argv){
-    strcpy(SERVER_ADDRESS, argv[1]);
-    TestClient client("BlockCache/", 1024 * 1024);
-    char temp;
-//    if(client.getBlockTest()){
-//        std::cout << "$ Get succeed!" << std::endl;
-//    }else{
-//        std::cout << "# Get failed!" << std::endl;
-//    }
-//    cin >> temp;
-//
-//    if(client.rmBlockTest()){
-//        std::cout << "$ Rm succeed!" << std::endl;
-//    }else{
-//        std::cout << "# Rm failed!" << std::endl;
-//    }
-//    cin >> temp;
-//
-//    if(client.putBlockTest()){
-//        std::cout << "$ Put succeed!" << std::endl;
-//    }else{
-//        std::cout << "# Put failed!" << std::endl;
-//    }
-
-    if(client.putTest()){
-        std::cout << "$ Put succeed!" << std::endl;
-    }else{
-        std::cout << "# Put failed!" << std::endl;
-    }
-    char c;
-    cin >> c;
-    if(client.getTest()){
-        std::cout << "$ Get succeed!" << std::endl;
-    }else{
-        std::cout << "# Get failed!" << std::endl;
-    }
-    return 0;
+    ClientContext commit;
+    nameStub->commitRmTransaction(&commit, fileInfo, &fileInfo);
+    cout << "$ File rm finished!" << endl;
+    return Status::OK;
 }

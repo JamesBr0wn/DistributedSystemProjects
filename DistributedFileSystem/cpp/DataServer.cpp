@@ -4,6 +4,10 @@
 
 #include "DataServer.h"
 
+char DATA_ADDRESS[32];
+char NAME_ADDRESS[32];
+char STORE_DIR[64];
+
 DataServerImp::DataServerImp(std::shared_ptr<Channel> channel, string dir, size_t sz)
     : _stub(NameService::NewStub(channel)), storeDirectory(dir), unitSize(sz) {
     ServerInfo request;
@@ -11,6 +15,13 @@ DataServerImp::DataServerImp(std::shared_ptr<Channel> channel, string dir, size_
     ClientContext context;
     Status status;
     request.set_address(DATA_ADDRESS);
+    SHA256_CTX stx;
+    unsigned char hash[SHA256_DIGEST_LENGTH+1];
+    hash[SHA256_DIGEST_LENGTH] = '\0';
+    SHA256_Init(&stx);
+    SHA256_Update(&stx, request.address().data(), request.address().length());
+    SHA256_Final(hash, &stx);
+    request.set_hash(hash, SHA256_DIGEST_LENGTH);
     status = _stub->startServer(&context, request, &reply);
     if (status.ok()) {
         cout << "# Data server started!" << endl;
@@ -145,7 +156,8 @@ Status DataServerImp::putBlock(ServerContext* context, ServerReader<BlockUnit>* 
         SHA256_Update(&stx, unit.unitdata().data(), unit.unitdata().length());
     }
     SHA256_Final(hash, &stx);
-    reply->set_blockhash((char*)hash);
+
+    reply->set_blockhash((char*)hash, SHA256_DIGEST_LENGTH);
     reply->set_blocksize(blockSize);
 
     // 更新Block信息
@@ -224,7 +236,7 @@ void RunServer() {
     std::string server_address(DATA_ADDRESS);
     DataServerImp service(grpc::CreateChannel(
     std::string(NAME_ADDRESS), grpc::InsecureChannelCredentials()),
-                          STORE_DIR, 1024 * 1024);
+                          STORE_DIR, 256 * 1024);
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
@@ -234,7 +246,7 @@ void RunServer() {
     builder.RegisterService(&service);
     // Finally assemble the server.
     std::unique_ptr<Server> server(builder.BuildAndStart());
-    std::cout << "Data server listening on " << server_address << std::endl;
+    std::cout << "# Data server listening on " << server_address << std::endl;
 
     // Wait for the server to shutdown. Note that some other thread must be
     // responsible for shutting down the server for this call to ever return.

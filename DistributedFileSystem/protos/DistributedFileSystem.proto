@@ -9,6 +9,11 @@ service NameService{
     rpc commitGetTransaction(FileInfo) returns(FileInfo) {}
     rpc abortGetTransaction(FileInfo) returns(FileInfo) {}
     rpc beginPutTransaction(FileInfo) returns(stream BlockStore) {}
+    rpc commitPutTransaction(FileInfo) returns(FileInfo) {}
+    rpc abortPutTransaction(FileInfo) returns(FileInfo) {}
+    rpc beginRmTransaction(FileInfo) returns(stream BlockStore) {}
+    rpc commitRmTransaction(FileInfo) returns(FileInfo) {}
+    rpc abortRmTransaction(FileInfo) returns(FileInfo) {}
     rpc updateBlockInfo(BlockInfo) returns(BlockInfo) {}
 }
 

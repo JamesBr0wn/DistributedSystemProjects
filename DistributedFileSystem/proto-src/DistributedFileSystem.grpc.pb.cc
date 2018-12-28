@@ -25,6 +25,11 @@ static const char* NameService_method_names[] = {
   "/DistributedFileSystem.NameService/commitGetTransaction",
   "/DistributedFileSystem.NameService/abortGetTransaction",
   "/DistributedFileSystem.NameService/beginPutTransaction",
+  "/DistributedFileSystem.NameService/commitPutTransaction",
+  "/DistributedFileSystem.NameService/abortPutTransaction",
+  "/DistributedFileSystem.NameService/beginRmTransaction",
+  "/DistributedFileSystem.NameService/commitRmTransaction",
+  "/DistributedFileSystem.NameService/abortRmTransaction",
   "/DistributedFileSystem.NameService/updateBlockInfo",
 };
 
@@ -41,7 +46,12 @@ NameService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   , rpcmethod_commitGetTransaction_(NameService_method_names[3], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_abortGetTransaction_(NameService_method_names[4], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_beginPutTransaction_(NameService_method_names[5], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
-  , rpcmethod_updateBlockInfo_(NameService_method_names[6], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_commitPutTransaction_(NameService_method_names[6], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_abortPutTransaction_(NameService_method_names[7], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_beginRmTransaction_(NameService_method_names[8], ::grpc::internal::RpcMethod::SERVER_STREAMING, channel)
+  , rpcmethod_commitRmTransaction_(NameService_method_names[9], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_abortRmTransaction_(NameService_method_names[10], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_updateBlockInfo_(NameService_method_names[11], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status NameService::Stub::startServer(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo& request, ::DistributedFileSystem::ServerInfo* response) {
@@ -132,6 +142,82 @@ void NameService::Stub::experimental_async::abortGetTransaction(::grpc::ClientCo
   return ::grpc::internal::ClientAsyncReaderFactory< ::DistributedFileSystem::BlockStore>::Create(channel_.get(), cq, rpcmethod_beginPutTransaction_, context, request, false, nullptr);
 }
 
+::grpc::Status NameService::Stub::commitPutTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::DistributedFileSystem::FileInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_commitPutTransaction_, context, request, response);
+}
+
+void NameService::Stub::experimental_async::commitPutTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_commitPutTransaction_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>* NameService::Stub::AsynccommitPutTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DistributedFileSystem::FileInfo>::Create(channel_.get(), cq, rpcmethod_commitPutTransaction_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>* NameService::Stub::PrepareAsynccommitPutTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DistributedFileSystem::FileInfo>::Create(channel_.get(), cq, rpcmethod_commitPutTransaction_, context, request, false);
+}
+
+::grpc::Status NameService::Stub::abortPutTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::DistributedFileSystem::FileInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_abortPutTransaction_, context, request, response);
+}
+
+void NameService::Stub::experimental_async::abortPutTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_abortPutTransaction_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>* NameService::Stub::AsyncabortPutTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DistributedFileSystem::FileInfo>::Create(channel_.get(), cq, rpcmethod_abortPutTransaction_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>* NameService::Stub::PrepareAsyncabortPutTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DistributedFileSystem::FileInfo>::Create(channel_.get(), cq, rpcmethod_abortPutTransaction_, context, request, false);
+}
+
+::grpc::ClientReader< ::DistributedFileSystem::BlockStore>* NameService::Stub::beginRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request) {
+  return ::grpc::internal::ClientReaderFactory< ::DistributedFileSystem::BlockStore>::Create(channel_.get(), rpcmethod_beginRmTransaction_, context, request);
+}
+
+::grpc::ClientAsyncReader< ::DistributedFileSystem::BlockStore>* NameService::Stub::AsyncbeginRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq, void* tag) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::DistributedFileSystem::BlockStore>::Create(channel_.get(), cq, rpcmethod_beginRmTransaction_, context, request, true, tag);
+}
+
+::grpc::ClientAsyncReader< ::DistributedFileSystem::BlockStore>* NameService::Stub::PrepareAsyncbeginRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncReaderFactory< ::DistributedFileSystem::BlockStore>::Create(channel_.get(), cq, rpcmethod_beginRmTransaction_, context, request, false, nullptr);
+}
+
+::grpc::Status NameService::Stub::commitRmTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::DistributedFileSystem::FileInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_commitRmTransaction_, context, request, response);
+}
+
+void NameService::Stub::experimental_async::commitRmTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_commitRmTransaction_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>* NameService::Stub::AsynccommitRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DistributedFileSystem::FileInfo>::Create(channel_.get(), cq, rpcmethod_commitRmTransaction_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>* NameService::Stub::PrepareAsynccommitRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DistributedFileSystem::FileInfo>::Create(channel_.get(), cq, rpcmethod_commitRmTransaction_, context, request, false);
+}
+
+::grpc::Status NameService::Stub::abortRmTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::DistributedFileSystem::FileInfo* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_abortRmTransaction_, context, request, response);
+}
+
+void NameService::Stub::experimental_async::abortRmTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_abortRmTransaction_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>* NameService::Stub::AsyncabortRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DistributedFileSystem::FileInfo>::Create(channel_.get(), cq, rpcmethod_abortRmTransaction_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>* NameService::Stub::PrepareAsyncabortRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::DistributedFileSystem::FileInfo>::Create(channel_.get(), cq, rpcmethod_abortRmTransaction_, context, request, false);
+}
+
 ::grpc::Status NameService::Stub::updateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::DistributedFileSystem::BlockInfo* response) {
   return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_updateBlockInfo_, context, request, response);
 }
@@ -182,6 +268,31 @@ NameService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       NameService_method_names[6],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< NameService::Service, ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(
+          std::mem_fn(&NameService::Service::commitPutTransaction), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      NameService_method_names[7],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< NameService::Service, ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(
+          std::mem_fn(&NameService::Service::abortPutTransaction), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      NameService_method_names[8],
+      ::grpc::internal::RpcMethod::SERVER_STREAMING,
+      new ::grpc::internal::ServerStreamingHandler< NameService::Service, ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::BlockStore>(
+          std::mem_fn(&NameService::Service::beginRmTransaction), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      NameService_method_names[9],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< NameService::Service, ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(
+          std::mem_fn(&NameService::Service::commitRmTransaction), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      NameService_method_names[10],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< NameService::Service, ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(
+          std::mem_fn(&NameService::Service::abortRmTransaction), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      NameService_method_names[11],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< NameService::Service, ::DistributedFileSystem::BlockInfo, ::DistributedFileSystem::BlockInfo>(
           std::mem_fn(&NameService::Service::updateBlockInfo), this)));
 }
@@ -228,6 +339,41 @@ NameService::Service::~Service() {
   (void) context;
   (void) request;
   (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status NameService::Service::commitPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status NameService::Service::abortPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status NameService::Service::beginRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) {
+  (void) context;
+  (void) request;
+  (void) writer;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status NameService::Service::commitRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status NameService::Service::abortRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) {
+  (void) context;
+  (void) request;
+  (void) response;
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 

@@ -35,10 +35,6 @@ using DistributedFileSystem::BlockUnit;
 using DistributedFileSystem::NameService;
 using DistributedFileSystem::ServerInfo;
 
-char DATA_ADDRESS[32];
-char NAME_ADDRESS[32];
-char STORE_DIR[64];
-
 class DataServerImp final: public DataService::Service {
 public:
     DataServerImp(std::shared_ptr<Channel> channel, string dir, size_t sz);

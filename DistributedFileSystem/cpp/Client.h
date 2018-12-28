@@ -38,8 +38,6 @@ using DistributedFileSystem::FileInfo;
 using DistributedFileSystem::ServerInfo;
 using DistributedFileSystem::BlockStore;
 
-char SERVER_ADDRESS[16];
-
 class ClientImp{
 public:
     ClientImp(std::shared_ptr<Channel> channel, string dir, size_t sz)
@@ -49,6 +47,7 @@ public:
     Status rmBlock(BlockInfo request);
     Status get(string fileName);
     Status put(string fileName);
+    Status rm(string fileName);
 private:
     std::unique_ptr<NameService::Stub> nameStub;
     std::unique_ptr<DataService::Stub> dataStub;
