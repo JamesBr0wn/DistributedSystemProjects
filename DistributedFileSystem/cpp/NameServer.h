@@ -10,8 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
-#include <random>
-#include <shared_mutex>
+#include <mutex>
 #include <grpcpp/grpcpp.h>
 #include <openssl/sha.h>
 #include "DistributedFileSystem.grpc.pb.h"
@@ -27,9 +26,8 @@ using std::sort;
 using std::ios;
 using std::ifstream;
 using std::ofstream;
-using std::default_random_engine;
+using std::mutex;
 using std::uniform_int_distribution;
-using std::shared_mutex;
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Server;
@@ -46,14 +44,7 @@ using DistributedFileSystem::BlockStore;
 
 struct FileMetaData{
     FileInfo fileInfo;
-    shared_mutex* fileLock;
     vector<pair<BlockInfo, ServerInfo>> storeList;
-    FileMetaData() {
-        fileLock = new shared_mutex;
-    }
-    ~FileMetaData() {
-        delete fileLock;
-    }
 };
 
 class NameServerImp final: public NameService::Service {

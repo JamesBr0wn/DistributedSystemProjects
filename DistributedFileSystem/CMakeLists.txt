@@ -1,4 +1,4 @@
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 11)
 # GRPC and Protocol Buffers libraries location
 list(APPEND CMAKE_PREFIX_PATH "/usr/include/grpc" "/usr/include/grpcpp" "/usr/include/grpc++" "/usr/include/google/protobuf")
 

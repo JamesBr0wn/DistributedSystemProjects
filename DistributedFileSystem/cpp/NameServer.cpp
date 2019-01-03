@@ -5,6 +5,7 @@
 #include "NameServer.h"
 
 char SERVER_ADDRESS[32];
+mutex atomicMutex;
 
 int cmp(const ServerInfo& a, const ServerInfo& b){
     return memcmp(a.hash().data(), b.hash().data(), SHA256_DIGEST_LENGTH) < 0;
@@ -13,6 +14,7 @@ int cmp(const ServerInfo& a, const ServerInfo& b){
 NameServerImp::NameServerImp(unsigned long size, unsigned int num): maxBlockSize(size), backupNum(num) {}
 
 Status NameServerImp::startServer(ServerContext *context, const ServerInfo *request, ServerInfo *reply) {
+    atomicMutex.lock();
     *reply = *request;
 
     SHA256_CTX stx;
@@ -25,16 +27,19 @@ Status NameServerImp::startServer(ServerContext *context, const ServerInfo *requ
     reply->set_hash(hash, SHA256_DIGEST_LENGTH);
     if(memcmp(hash, request->hash().data(), SHA256_DIGEST_LENGTH) != 0){
         cout << "$ Data server " << address << " hash mismatch!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
 
     serverList.push_back(*reply);
     sort(serverList.begin(), serverList.end(), cmp);
     cout << "$ Data server " << address << " started!" << endl;
+    atomicMutex.unlock();
     return Status::OK;
 }
 
 Status NameServerImp::terminateServer(ServerContext *context, const ServerInfo *request, ServerInfo *reply) {
+    atomicMutex.lock();
     *reply = *request;
 
     SHA256_CTX stx;
@@ -46,6 +51,7 @@ Status NameServerImp::terminateServer(ServerContext *context, const ServerInfo *
     SHA256_Final(hash, &stx);
     if(memcmp(hash, request->hash().data(), SHA256_DIGEST_LENGTH) != 0){
         cout << "$ Data server " << address << " hash mismatch!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
 
@@ -53,14 +59,17 @@ Status NameServerImp::terminateServer(ServerContext *context, const ServerInfo *
         if(iter->address() == request->address()){
             serverList.erase(iter);
             cout << "$ Data server " << address << " terminated!" << endl;
+            atomicMutex.unlock();
             return Status::OK;
         }
     }
     cout << "# Data server " << address << " not found!" << endl;
+    atomicMutex.unlock();
     return Status::CANCELLED;
 }
 
 Status NameServerImp::beginGetTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter){
+    atomicMutex.lock();
     string fileName = request->filename();
     cout << "$ Client " << context->peer() << " begin transaction: get " << fileName << "." << endl;
     auto fileIter = fileList.begin();
@@ -73,11 +82,7 @@ Status NameServerImp::beginGetTransaction(ServerContext *context, const FileInfo
 
     if(fileIter == fileList.end()){
         cout << "# File " << fileName << " not found!" << endl;
-        return Status::CANCELLED;
-    }
-
-    if(!fileIter->fileLock->try_lock_shared()){
-        cout << "# File " << fileName << " read lock fail!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
 
@@ -93,10 +98,12 @@ Status NameServerImp::beginGetTransaction(ServerContext *context, const FileInfo
         blockStore.set_serverhash(serverInfo.hash());
         replyWriter->Write(blockStore);
     }
+    atomicMutex.unlock();
     return Status::OK;
 }
 
 Status NameServerImp::commitGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) {
+    atomicMutex.lock();
     *reply = *request;
     cout << "$ Client " << context->peer() << " commit transaction: get " << request->filename() << "." << endl;
     auto fileIter = fileList.begin();
@@ -108,13 +115,15 @@ Status NameServerImp::commitGetTransaction(ServerContext *context, const FileInf
     }
     if(fileIter == fileList.end()){
         cout << "# File " << request->filename() << " not found!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
-    fileIter->fileLock->unlock_shared();
+    atomicMutex.unlock();
     return Status::OK;
 }
 
 Status NameServerImp::abortGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) {
+    atomicMutex.lock();
     *reply = *request;
     cout << "$ Client " << context->peer() << " abort transaction: get " << request->filename() << "." << endl;
     auto fileIter = fileList.begin();
@@ -126,13 +135,15 @@ Status NameServerImp::abortGetTransaction(ServerContext *context, const FileInfo
     }
     if(fileIter == fileList.end()){
         cout << "# File " << request->filename() << " not found!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
-    fileIter->fileLock->unlock_shared();
+    atomicMutex.unlock();
     return Status::OK;
 }
 
 Status NameServerImp::beginPutTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter){
+    atomicMutex.lock();
     string fileName = request->filename();
     unsigned long fileSize = request->filesize();
     cout << "$ Client " << context->peer() << " begin transaction: put " << fileName << "." << endl;
@@ -146,6 +157,7 @@ Status NameServerImp::beginPutTransaction(ServerContext *context, const FileInfo
 
     if(fileIter != fileList.end()){
         cout << "# File " << fileName << " already exists!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
 
@@ -155,7 +167,6 @@ Status NameServerImp::beginPutTransaction(ServerContext *context, const FileInfo
     fileMetaData.fileInfo.set_filename(fileName);
     fileMetaData.fileInfo.set_filesize(fileSize);
 
-    default_random_engine engine;
     while(remainSize > 0){
         blockSize = remainSize > maxBlockSize ? maxBlockSize : remainSize;
 
@@ -208,11 +219,6 @@ Status NameServerImp::beginPutTransaction(ServerContext *context, const FileInfo
     tempList.push_back(fileMetaData);
     auto metaIter = fileMetaData.storeList.begin();
 
-//    if(!fileMetaData.fileLock->try_lock()){
-//        cout << "# File " << fileName << " write lock fail!" << endl;
-//        return Status::CANCELLED;
-//    }
-
     BlockStore blockStore;
     while(metaIter != fileMetaData.storeList.end()){
         BlockInfo blockInfo = metaIter->first;
@@ -226,10 +232,12 @@ Status NameServerImp::beginPutTransaction(ServerContext *context, const FileInfo
         replyWriter->Write(blockStore);
         metaIter++;
     }
+    atomicMutex.unlock();
     return Status::OK;
 }
 
 Status NameServerImp::commitPutTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) {
+    atomicMutex.lock();
     *reply = *request;
     cout << "$ Client " << context->peer() << " commit transaction: put " << request->filename() << "." << endl;
 
@@ -243,16 +251,18 @@ Status NameServerImp::commitPutTransaction(ServerContext *context, const FileInf
 
     if(fileIter == tempList.end()){
         cout << "# File " << request->filename() << " not found!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
-//    fileIter->fileLock->unlock();
     fileList.push_back(*fileIter);
     tempList.erase(fileIter);
 
+    atomicMutex.unlock();
     return Status::OK;
 }
 
 Status NameServerImp::abortPutTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) {
+    atomicMutex.lock();
     *reply = *request;
     cout << "$ Client " << context->peer() << " abort transaction: put " << request->filename() << "." << endl;
 
@@ -266,14 +276,16 @@ Status NameServerImp::abortPutTransaction(ServerContext *context, const FileInfo
 
     if(fileIter == tempList.end()){
         cout << "# File " << request->filename() << " not found!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
-//    fileIter->fileLock->unlock();
     tempList.erase(fileIter);
+    atomicMutex.unlock();
     return Status::OK;
 }
 
 Status NameServerImp::beginRmTransaction(ServerContext *context, const FileInfo *request,ServerWriter<BlockStore> *replyWriter) {
+    atomicMutex.lock();
     string fileName = request->filename();
     cout << "$ Client " << context->peer() << " begin transaction: rm " << fileName << "." << endl;
     auto fileIter = fileList.begin();
@@ -286,13 +298,9 @@ Status NameServerImp::beginRmTransaction(ServerContext *context, const FileInfo 
 
     if(fileIter == fileList.end()){
         cout << "# File " << fileName << " not found!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
-
-//    if(!fileIter->fileLock->try_lock()){
-//        cout << "# File " << fileName << " rm lock fail!" << endl;
-//        return Status::CANCELLED;
-//    }
 
     tempList.push_back(*fileIter);
 
@@ -310,10 +318,12 @@ Status NameServerImp::beginRmTransaction(ServerContext *context, const FileInfo 
     }
 
     fileList.erase(fileIter);
+    atomicMutex.unlock();
     return Status::OK;
 }
 
 Status NameServerImp::commitRmTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) {
+    atomicMutex.lock();
     *reply = *request;
     cout << "$ Client " << context->peer() << " commit transaction: rm " << request->filename() << "." << endl;
 
@@ -327,14 +337,16 @@ Status NameServerImp::commitRmTransaction(ServerContext *context, const FileInfo
 
     if(fileIter == tempList.end()){
         cout << "# File " << request->filename() << " not found!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
-//    fileIter->fileLock->unlock();
     tempList.erase(fileIter);
+    atomicMutex.unlock();
     return Status::OK;
 }
 
 Status NameServerImp::abortRmTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) {
+    atomicMutex.lock();
     *reply = *request;
     cout << "$ Client " << context->peer() << " abort transaction: rm " << request->filename() << "." << endl;
 
@@ -348,15 +360,17 @@ Status NameServerImp::abortRmTransaction(ServerContext *context, const FileInfo 
 
     if(fileIter == tempList.end()){
         cout << "# File " << request->filename() << " not found!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
-//    fileIter->fileLock->unlock();
     fileList.push_back(*fileIter);
     tempList.erase(fileIter);
+    atomicMutex.unlock();
     return Status::OK;
 }
 
 Status NameServerImp::updateBlockInfo(ServerContext *context, const BlockInfo *request, BlockInfo *reply) {
+    atomicMutex.lock();
     string fileName = request->filename();
     unsigned long blockIdx = request->blockidx();
 
@@ -369,6 +383,7 @@ Status NameServerImp::updateBlockInfo(ServerContext *context, const BlockInfo *r
     }
     if(fileIter == tempList.end()){
         cout << "# File " << fileName << " not exists!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
 
@@ -381,6 +396,7 @@ Status NameServerImp::updateBlockInfo(ServerContext *context, const BlockInfo *r
     }
     if(storeIter == fileIter->storeList.end()){
         cout << "# Block " << fileName << "." << blockIdx << " not exists!" << endl;
+        atomicMutex.unlock();
         return Status::CANCELLED;
     }
 
@@ -392,6 +408,7 @@ Status NameServerImp::updateBlockInfo(ServerContext *context, const BlockInfo *r
     }
 
     *reply = *request;
+    atomicMutex.unlock();
     return Status::OK;
 }
 

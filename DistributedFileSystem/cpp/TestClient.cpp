@@ -174,6 +174,5 @@ int main(int argc, char** argv){
     }else{
         std::cout << "# Rm failed!" << std::endl;
     }
-    cin >> temp;
     return 0;
 }
