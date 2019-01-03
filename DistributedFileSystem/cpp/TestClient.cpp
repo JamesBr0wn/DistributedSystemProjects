@@ -85,17 +85,17 @@ public:
     }
 
     bool getTest(){
-        clientImp.get("Test.tar.gz");
+        clientImp.get("Test.pdf");
         return true;
     }
 
     bool putTest(){
-        clientImp.put("Test.tar.gz");
+        clientImp.put("Test.pdf");
         return true;
     }
 
     bool rmTest(){
-        clientImp.rm("Test.tar.gz");
+        clientImp.rm("Test.pdf");
         return true;
     }
 private:
@@ -104,7 +104,7 @@ private:
 
 int main(int argc, char** argv){
     strcpy(SERVER_ADDRESS, argv[1]);
-    TestClient client("BlockCache/", 256 * 1024);
+    TestClient client("Cache/", 256 * 1024);
     char temp;
 
 //    if(client.putBlockTest()){
@@ -127,11 +127,17 @@ int main(int argc, char** argv){
 //    }
 //
 
-
     if(client.putTest()){
         std::cout << "$ Put succeed!" << std::endl;
     }else{
         std::cout << "# Put failed!" << std::endl;
+    }
+    cin >> temp;
+
+    if(client.getTest()){
+        std::cout << "$ Get succeed!" << std::endl;
+    }else{
+        std::cout << "# Get failed!" << std::endl;
     }
     cin >> temp;
 
@@ -161,6 +167,7 @@ int main(int argc, char** argv){
     }else{
         std::cout << "# Get failed!" << std::endl;
     }
+    cin >> temp;
 
     if(client.rmTest()){
         std::cout << "$ Rm succeed!" << std::endl;

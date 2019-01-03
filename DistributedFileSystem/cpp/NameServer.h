@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <fstream>
 #include <random>
+#include <shared_mutex>
 #include <grpcpp/grpcpp.h>
 #include <openssl/sha.h>
 #include "DistributedFileSystem.grpc.pb.h"
@@ -21,12 +22,14 @@ using std::cout;
 using std::endl;
 using std::vector;
 using std::pair;
+using std::find;
 using std::sort;
 using std::ios;
 using std::ifstream;
 using std::ofstream;
 using std::default_random_engine;
 using std::uniform_int_distribution;
+using std::shared_mutex;
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Server;
@@ -43,12 +46,19 @@ using DistributedFileSystem::BlockStore;
 
 struct FileMetaData{
     FileInfo fileInfo;
+    shared_mutex* fileLock;
     vector<pair<BlockInfo, ServerInfo>> storeList;
+    FileMetaData() {
+        fileLock = new shared_mutex;
+    }
+    ~FileMetaData() {
+        delete fileLock;
+    }
 };
 
 class NameServerImp final: public NameService::Service {
 public:
-    NameServerImp(unsigned long sz);
+    NameServerImp(unsigned long sz, unsigned int num);
     Status startServer(ServerContext* context, const ServerInfo* request, ServerInfo* reply) override;
     Status terminateServer(ServerContext* context, const ServerInfo* request, ServerInfo* reply) override;
     Status beginGetTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter) override;
@@ -66,6 +76,7 @@ private:
     vector<FileMetaData> fileList;
     vector<FileMetaData> tempList;
     unsigned long maxBlockSize;
+    unsigned int backupNum;
 };
 
 

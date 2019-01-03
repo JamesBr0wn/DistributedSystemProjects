@@ -149,11 +149,9 @@ Status ClientImp::get(const string fileName){
     std::unique_ptr<ClientReader<BlockStore>> blockStoreReader(
             nameStub->beginGetTransaction(&start, fileInfo));
     Status status;
-    unsigned long i = 0;
     vector<BlockStore> storeList;
     while (blockStoreReader->Read(&blockStore)) {
         storeList.push_back(blockStore);
-        i++;
     }
     status = blockStoreReader->Finish();
     if(!status.ok()){
@@ -161,16 +159,22 @@ Status ClientImp::get(const string fileName){
     }
 
     BlockInfo tempInfo;
+    long lastBlockIdx = -1;
     for(auto it = storeList.begin(); it != storeList.end(); it++){
+        if(it->blockidx() == lastBlockIdx){
+            continue;
+        }else if(it->blockidx() > lastBlockIdx + 1){
+            ClientContext abort;
+            nameStub->abortGetTransaction(&abort, fileInfo, &fileInfo);
+            return Status::CANCELLED;
+        }
         dataStub = DataService::NewStub(grpc::CreateChannel(it->serveraddress(), grpc::InsecureChannelCredentials()));
         tempInfo.set_filename(it->filename());
         tempInfo.set_blockidx(it->blockidx());
         tempInfo.set_blocksize(it->blocksize());
         tempInfo.set_blockhash(it->blockhash());
-        if(!getBlock(tempInfo).ok()){
-            ClientContext abort;
-            nameStub->abortGetTransaction(&abort, fileInfo, &fileInfo);
-            return Status::CANCELLED;
+        if(getBlock(tempInfo).ok()){
+            lastBlockIdx++;
         }
     }
 
@@ -178,11 +182,15 @@ Status ClientImp::get(const string fileName){
     ofstream ffs;
     unsigned long blockSize;
     char tempUnit[unitSize];
+    lastBlockIdx = -1;
     ffs.open(cacheDirectory + fileName, ios::out | ios::binary | ios::ate);
     for(auto it = storeList.begin(); it != storeList.end(); it++){
-        bfs.open(cacheDirectory + it->filename() + "." + to_string(it->blockidx()), ios::in | ios::binary | ios::app);
+        if(it->blockidx() == lastBlockIdx){
+            continue;
+        }
+        bfs.open(cacheDirectory + it->filename() + "." + to_string(it->blockidx()), ios::in | ios::binary);
         blockSize = it->blocksize();
-        for(i = 0; i < blockSize / unitSize; i++){
+        for(unsigned long i = 0; i < blockSize / unitSize; i++){
             bfs.read(tempUnit, unitSize);
             ffs.write(tempUnit, unitSize);
         }
@@ -192,11 +200,12 @@ Status ClientImp::get(const string fileName){
         }
         bfs.close();
         if(remove((cacheDirectory + it->filename() + "." + to_string(it->blockidx())).data())){
-            cout << "# Cached block " << cacheDirectory + it->filename() + to_string(it->blockidx()) << " remove fail!" << endl;
+            cout << "# Cached block " << cacheDirectory + it->filename() + '.' + to_string(it->blockidx()) << " remove fail!" << endl;
             ClientContext abort;
             nameStub->abortGetTransaction(&abort, fileInfo, &fileInfo);
             return Status::CANCELLED;
         }
+        lastBlockIdx++;
     }
     ffs.close();
     ClientContext commit;
@@ -232,9 +241,13 @@ Status ClientImp::put(const string fileName){
     ifstream ffs;
     ofstream bfs;
     unsigned long blockSize;
+    long lastBlockIdx = -1;
     char tempUnit[unitSize];
-    ffs.open(cacheDirectory + fileName, ios::out | ios::binary | ios::app);
+    ffs.open(cacheDirectory + fileName, ios::in | ios::binary);
     for(auto it = storeList.begin(); it != storeList.end(); it++){
+        if(it->blockidx() == lastBlockIdx){
+            continue;
+        }
         bfs.open(cacheDirectory + it->filename() + "." + to_string(it->blockidx()), ios::out | ios::binary | ios::ate);
         blockSize = it->blocksize();
         for(i = 0; i < blockSize / unitSize; i++){
@@ -246,6 +259,7 @@ Status ClientImp::put(const string fileName){
             bfs.write(tempUnit, blockSize % unitSize);
         }
         bfs.close();
+        lastBlockIdx++;
     }
     ffs.close();
 
@@ -260,12 +274,20 @@ Status ClientImp::put(const string fileName){
             nameStub->abortPutTransaction(&abort, fileInfo, &fileInfo);
             return Status::CANCELLED;
         }
+    }
+
+    lastBlockIdx = -1;
+    for(auto it = storeList.begin(); it != storeList.end(); it++){
+        if(it->blockidx() == lastBlockIdx){
+            continue;
+        }
         if(remove((cacheDirectory + it->filename() + "." + to_string(it->blockidx())).data())){
             cout << "# Cached block " << cacheDirectory + it->filename() + to_string(it->blockidx()) << " remove fail!" << endl;
             ClientContext abort;
             nameStub->abortPutTransaction(&abort, fileInfo, &fileInfo);
             return Status::CANCELLED;
         }
+        lastBlockIdx++;
     }
 
     ClientContext commit;

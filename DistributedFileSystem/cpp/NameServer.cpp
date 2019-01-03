@@ -10,7 +10,7 @@ int cmp(const ServerInfo& a, const ServerInfo& b){
     return memcmp(a.hash().data(), b.hash().data(), SHA256_DIGEST_LENGTH) < 0;
 }
 
-NameServerImp::NameServerImp(unsigned long size): maxBlockSize(size) {}
+NameServerImp::NameServerImp(unsigned long size, unsigned int num): maxBlockSize(size), backupNum(num) {}
 
 Status NameServerImp::startServer(ServerContext *context, const ServerInfo *request, ServerInfo *reply) {
     *reply = *request;
@@ -76,6 +76,11 @@ Status NameServerImp::beginGetTransaction(ServerContext *context, const FileInfo
         return Status::CANCELLED;
     }
 
+    if(!fileIter->fileLock->try_lock_shared()){
+        cout << "# File " << fileName << " read lock fail!" << endl;
+        return Status::CANCELLED;
+    }
+
     BlockStore blockStore;
     for(long i = 0; i < fileIter->storeList.size(); i++){
         BlockInfo blockInfo = fileIter->storeList[i].first;
@@ -94,12 +99,36 @@ Status NameServerImp::beginGetTransaction(ServerContext *context, const FileInfo
 Status NameServerImp::commitGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) {
     *reply = *request;
     cout << "$ Client " << context->peer() << " commit transaction: get " << request->filename() << "." << endl;
+    auto fileIter = fileList.begin();
+    while(fileIter != fileList.end()){
+        if(fileIter->fileInfo.filename() == request->filename()){
+            break;
+        }
+        fileIter++;
+    }
+    if(fileIter == fileList.end()){
+        cout << "# File " << request->filename() << " not found!" << endl;
+        return Status::CANCELLED;
+    }
+    fileIter->fileLock->unlock_shared();
     return Status::OK;
 }
 
 Status NameServerImp::abortGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) {
     *reply = *request;
     cout << "$ Client " << context->peer() << " abort transaction: get " << request->filename() << "." << endl;
+    auto fileIter = fileList.begin();
+    while(fileIter != fileList.end()){
+        if(fileIter->fileInfo.filename() == request->filename()){
+            break;
+        }
+        fileIter++;
+    }
+    if(fileIter == fileList.end()){
+        cout << "# File " << request->filename() << " not found!" << endl;
+        return Status::CANCELLED;
+    }
+    fileIter->fileLock->unlock_shared();
     return Status::OK;
 }
 
@@ -121,7 +150,6 @@ Status NameServerImp::beginPutTransaction(ServerContext *context, const FileInfo
     }
 
     unsigned long remainSize = fileSize, blockSize, blockIdx = 0;
-    string tempStr = fileName;
     FileMetaData fileMetaData;
 
     fileMetaData.fileInfo.set_filename(fileName);
@@ -130,40 +158,60 @@ Status NameServerImp::beginPutTransaction(ServerContext *context, const FileInfo
     default_random_engine engine;
     while(remainSize > 0){
         blockSize = remainSize > maxBlockSize ? maxBlockSize : remainSize;
-        tempStr[engine()%tempStr.length()] = (unsigned char)engine();
 
-        // 计算Hash值
-        SHA256_CTX stx;
-        unsigned char hash[SHA256_DIGEST_LENGTH+1];
-        hash[SHA256_DIGEST_LENGTH] = '\0';
-        SHA256_Init(&stx);
-        SHA256_Update(&stx, tempStr.data(), fileName.length());
-        SHA256_Final(hash, &stx);
+        for(unsigned int currentBackup = 0; currentBackup < backupNum; currentBackup++){
+            // 计算Hash值
+            SHA256_CTX stx;
+            unsigned char hash[SHA256_DIGEST_LENGTH+1];
+            hash[SHA256_DIGEST_LENGTH] = '\0';
+            SHA256_Init(&stx);
+            SHA256_Update(&stx, fileName.data(), fileName.length());
+            SHA256_Update(&stx, &blockIdx, sizeof(blockIdx));
+            SHA256_Update(&stx, &currentBackup, sizeof(currentBackup));
+            SHA256_Final(hash, &stx);
 
-        auto serverIter = serverList.begin();
-        while(serverIter != serverList.end()-1){
-            if(memcmp((char*)hash, serverIter->hash().data(), SHA256_DIGEST_LENGTH) <= 0){
-                break;
+            auto serverIter = serverList.begin();
+            while(serverIter != serverList.end()-1){
+                if(memcmp((char*)hash, serverIter->hash().data(), SHA256_DIGEST_LENGTH) <= 0){
+                    break;
+                }
+                serverIter++;
             }
-            serverIter++;
+
+            BlockInfo blockInfo;
+            blockInfo.set_filename(fileName);
+            blockInfo.set_blockidx(blockIdx);
+            blockInfo.set_blocksize(blockSize);
+
+            ServerInfo serverInfo;
+            serverInfo.set_address(serverIter->address());
+            serverInfo.set_hash(serverIter->hash());
+
+            bool skip = false;
+            for(auto temp = fileMetaData.storeList.begin(); temp != fileMetaData.storeList.end(); temp++){
+                if(temp->first.blockidx() == blockInfo.blockidx() &&
+                    temp->second.address() == serverInfo.address()){
+                    skip = true;
+                    break;
+                }
+            }
+            if(skip){
+                continue;
+            }
+
+            fileMetaData.storeList.push_back(pair<BlockInfo, ServerInfo>(blockInfo, serverInfo));
         }
-
-        BlockInfo blockInfo;
-        blockInfo.set_filename(fileName);
-        blockInfo.set_blockidx(blockIdx);
-        blockInfo.set_blocksize(blockSize);
-
-        ServerInfo serverInfo;
-        serverInfo.set_address(serverIter->address());
-        serverInfo.set_hash(serverIter->hash());
-
-        fileMetaData.storeList.push_back(pair<BlockInfo, ServerInfo>(blockInfo, serverInfo));
 
         blockIdx += 1;
         remainSize -= blockSize;
     }
     tempList.push_back(fileMetaData);
     auto metaIter = fileMetaData.storeList.begin();
+
+//    if(!fileMetaData.fileLock->try_lock()){
+//        cout << "# File " << fileName << " write lock fail!" << endl;
+//        return Status::CANCELLED;
+//    }
 
     BlockStore blockStore;
     while(metaIter != fileMetaData.storeList.end()){
@@ -197,7 +245,7 @@ Status NameServerImp::commitPutTransaction(ServerContext *context, const FileInf
         cout << "# File " << request->filename() << " not found!" << endl;
         return Status::CANCELLED;
     }
-
+//    fileIter->fileLock->unlock();
     fileList.push_back(*fileIter);
     tempList.erase(fileIter);
 
@@ -220,7 +268,7 @@ Status NameServerImp::abortPutTransaction(ServerContext *context, const FileInfo
         cout << "# File " << request->filename() << " not found!" << endl;
         return Status::CANCELLED;
     }
-
+//    fileIter->fileLock->unlock();
     tempList.erase(fileIter);
     return Status::OK;
 }
@@ -240,6 +288,11 @@ Status NameServerImp::beginRmTransaction(ServerContext *context, const FileInfo 
         cout << "# File " << fileName << " not found!" << endl;
         return Status::CANCELLED;
     }
+
+//    if(!fileIter->fileLock->try_lock()){
+//        cout << "# File " << fileName << " rm lock fail!" << endl;
+//        return Status::CANCELLED;
+//    }
 
     tempList.push_back(*fileIter);
 
@@ -276,7 +329,7 @@ Status NameServerImp::commitRmTransaction(ServerContext *context, const FileInfo
         cout << "# File " << request->filename() << " not found!" << endl;
         return Status::CANCELLED;
     }
-
+//    fileIter->fileLock->unlock();
     tempList.erase(fileIter);
     return Status::OK;
 }
@@ -297,7 +350,7 @@ Status NameServerImp::abortRmTransaction(ServerContext *context, const FileInfo 
         cout << "# File " << request->filename() << " not found!" << endl;
         return Status::CANCELLED;
     }
-
+//    fileIter->fileLock->unlock();
     fileList.push_back(*fileIter);
     tempList.erase(fileIter);
     return Status::OK;
@@ -327,12 +380,16 @@ Status NameServerImp::updateBlockInfo(ServerContext *context, const BlockInfo *r
         storeIter++;
     }
     if(storeIter == fileIter->storeList.end()){
-        cout << "# Block " << fileName << "_" << blockIdx << " not exists!" << endl;
+        cout << "# Block " << fileName << "." << blockIdx << " not exists!" << endl;
         return Status::CANCELLED;
     }
 
-    storeIter->first.set_blocksize(request->blocksize());
-    storeIter->first.set_blockhash(request->blockhash());
+    while(storeIter != fileIter->storeList.end() &&
+            storeIter->first.blockidx() == blockIdx){
+        storeIter->first.set_blocksize(request->blocksize());
+        storeIter->first.set_blockhash(request->blockhash());
+        storeIter++;
+    }
 
     *reply = *request;
     return Status::OK;
@@ -340,7 +397,7 @@ Status NameServerImp::updateBlockInfo(ServerContext *context, const BlockInfo *r
 
 void RunServer() {
     std::string server_address(SERVER_ADDRESS);
-    NameServerImp service(1024*1024*4);
+    NameServerImp service(1024*1024*4, 3);
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.

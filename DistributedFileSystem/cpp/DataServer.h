@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <bitset>
 #include <grpcpp/grpcpp.h>
 #include <openssl/sha.h>
 #include "DistributedFileSystem.grpc.pb.h"
@@ -21,6 +22,7 @@ using std::cout;
 using std::endl;
 using std::hex;
 using std::dec;
+using std::bitset;
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Server;
