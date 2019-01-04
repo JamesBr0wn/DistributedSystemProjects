@@ -55,7 +55,7 @@ public:
     Status get(string fileName);
     Status put(string fileName);
     Status rm(string fileName);
-    Status touch(string fileName);
+    Status ls();
 private:
     std::unique_ptr<NameService::Stub> nameStub;
     std::unique_ptr<DataService::Stub> dataStub;

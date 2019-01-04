@@ -52,6 +52,7 @@ public:
     NameServerImp(unsigned long sz, unsigned int num);
     Status startServer(ServerContext* context, const ServerInfo* request, ServerInfo* reply) override;
     Status terminateServer(ServerContext* context, const ServerInfo* request, ServerInfo* reply) override;
+    Status updateBlockInfo(ServerContext *context, const BlockInfo *request, BlockInfo *reply) override;
     Status beginGetTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter) override;
     Status commitGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
     Status abortGetTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
@@ -61,7 +62,7 @@ public:
     Status beginRmTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter) override;
     Status commitRmTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
     Status abortRmTransaction(ServerContext *context, const FileInfo *request, FileInfo *reply) override;
-    Status updateBlockInfo(ServerContext *context, const BlockInfo *request, BlockInfo *reply) override;
+    Status executeLsTransaction(ServerContext *context, const FileInfo *request, ServerWriter<FileInfo> *replyWriter) override;
 private:
     vector<ServerInfo> serverList;
     vector<FileMetaData> fileList;

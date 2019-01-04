@@ -68,6 +68,49 @@ Status NameServerImp::terminateServer(ServerContext *context, const ServerInfo *
     return Status::CANCELLED;
 }
 
+Status NameServerImp::updateBlockInfo(ServerContext *context, const BlockInfo *request, BlockInfo *reply) {
+    atomicMutex.lock();
+    string fileName = request->filename();
+    unsigned long blockIdx = request->blockidx();
+
+    auto fileIter = tempList.begin();
+    while(fileIter != tempList.end()){
+        if(fileIter->fileInfo.filename() == fileName){
+            break;
+        }
+        fileIter++;
+    }
+    if(fileIter == tempList.end()){
+        cout << "# File " << fileName << " not exists!" << endl;
+        atomicMutex.unlock();
+        return Status::CANCELLED;
+    }
+
+    auto storeIter = fileIter->storeList.begin();
+    while(storeIter != fileIter->storeList.end()){
+        if(storeIter->first.blockidx() == blockIdx){
+            break;
+        }
+        storeIter++;
+    }
+    if(storeIter == fileIter->storeList.end()){
+        cout << "# Block " << fileName << "." << blockIdx << " not exists!" << endl;
+        atomicMutex.unlock();
+        return Status::CANCELLED;
+    }
+
+    while(storeIter != fileIter->storeList.end() &&
+          storeIter->first.blockidx() == blockIdx){
+        storeIter->first.set_blocksize(request->blocksize());
+        storeIter->first.set_blockhash(request->blockhash());
+        storeIter++;
+    }
+
+    *reply = *request;
+    atomicMutex.unlock();
+    return Status::OK;
+}
+
 Status NameServerImp::beginGetTransaction(ServerContext *context, const FileInfo *request, ServerWriter<BlockStore> *replyWriter){
     atomicMutex.lock();
     string fileName = request->filename();
@@ -372,45 +415,12 @@ Status NameServerImp::abortRmTransaction(ServerContext *context, const FileInfo 
     return Status::OK;
 }
 
-Status NameServerImp::updateBlockInfo(ServerContext *context, const BlockInfo *request, BlockInfo *reply) {
+Status NameServerImp::executeLsTransaction(ServerContext *context, const FileInfo *request, ServerWriter<FileInfo> *replyWriter) {
     atomicMutex.lock();
-    string fileName = request->filename();
-    unsigned long blockIdx = request->blockidx();
-
-    auto fileIter = tempList.begin();
-    while(fileIter != tempList.end()){
-        if(fileIter->fileInfo.filename() == fileName){
-            break;
-        }
-        fileIter++;
+    cout << "$ Client " << context->peer() << " execute transaction: ls." << endl;
+    for(auto fileIter = fileList.begin(); fileIter != fileList.end(); fileIter++){
+        replyWriter->Write(fileIter->fileInfo);
     }
-    if(fileIter == tempList.end()){
-        cout << "# File " << fileName << " not exists!" << endl;
-        atomicMutex.unlock();
-        return Status::CANCELLED;
-    }
-
-    auto storeIter = fileIter->storeList.begin();
-    while(storeIter != fileIter->storeList.end()){
-        if(storeIter->first.blockidx() == blockIdx){
-            break;
-        }
-        storeIter++;
-    }
-    if(storeIter == fileIter->storeList.end()){
-        cout << "# Block " << fileName << "." << blockIdx << " not exists!" << endl;
-        atomicMutex.unlock();
-        return Status::CANCELLED;
-    }
-
-    while(storeIter != fileIter->storeList.end() &&
-            storeIter->first.blockidx() == blockIdx){
-        storeIter->first.set_blocksize(request->blocksize());
-        storeIter->first.set_blockhash(request->blockhash());
-        storeIter++;
-    }
-
-    *reply = *request;
     atomicMutex.unlock();
     return Status::OK;
 }

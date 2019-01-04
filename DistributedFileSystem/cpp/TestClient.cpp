@@ -108,9 +108,9 @@ public:
             return false;
         }
     }
-
-    bool touchTest(string fileName){
-        if(clientImp.touch(fileName).ok()){
+    
+    bool lsTest(){
+        if(clientImp.ls().ok()){
             return true;
         }else{
             return false;
@@ -126,7 +126,7 @@ public:
             case 2:
                 return rmTest(fileName);
             case 3:
-                return touchTest(fileName);
+                return lsTest();
             default:
                 cout << "# Option not valid!" << endl;
                 return false;
@@ -163,19 +163,21 @@ int main(int argc, char** argv){
     int option;
     string fileName;
     cout << "Please enter your option:" << endl;
-    cout << "0. get;\n1. put;\n2. rm;\n3. touch;\n9. exit." << endl;
+    cout << "0. get;\n1. put;\n2. rm;\n3. ls;\n9. exit." << endl;
     cin >> option;
     while(option != 9){
         while(option < 0 || (option > 3 && option != 9)){
             cout << "Option not valid, please try again!" << endl;
-            cout << "0. get;\n1. put;\n2. rm;\n3. touch;\n9. exit." << endl;
+            cout << "0. get;\n1. put;\n2. rm;\n3. ls;\n9. exit." << endl;
             cin >> option;
         }
-        cout << "Please enter the file name:" << endl;
-        cin >> fileName;
+        if(option != 3){
+            cout << "Please enter the file name:" << endl;
+            cin >> fileName;
+        }
         client.testOption(option, fileName);
         cout << "Please enter your option:" << endl;
-        cout << "0. get;\n1. put;\n2.rm\n3.touch;\n9. exit." << endl;
+        cout << "0. get;\n1. put;\n2. rm;\n3. ls;\n9. exit." << endl;
         cin >> option;
     };
     return 0;

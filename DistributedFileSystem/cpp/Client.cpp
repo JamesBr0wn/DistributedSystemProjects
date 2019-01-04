@@ -355,7 +355,7 @@ Status ClientImp::put(const string fileName){
     }
     ClientContext commit;
     nameStub->commitPutTransaction(&commit, fileInfo, &fileInfo);
-    cout << "# File put finished!" << endl;
+    cout << "$ File put finished!" << endl;
     return Status::OK;
 }
 
@@ -413,7 +413,44 @@ Status ClientImp::rm(string fileName) {
     return Status::OK;
 }
 
-Status ClientImp::touch(string fileName){
-    rm(fileName);
-    return put(fileName);
+Status ClientImp::ls() {
+    cout << "$ ls file system." << endl;
+    FileInfo fileInfo, tempInfo;
+    vector<FileInfo> fileList;
+    ClientContext execute;
+    std::unique_ptr<ClientReader<FileInfo>> fileInfoReader(
+            nameStub->executeLsTransaction(&execute, fileInfo));
+    while (fileInfoReader->Read(&tempInfo)) {
+        fileList.push_back(tempInfo);
+    }
+    Status status = fileInfoReader->Finish();
+    unsigned long size;
+    if(status.ok()){
+        cout << "Total " << fileList.size() << endl;
+        int unit = 0;
+        for(auto infoIter = fileList.begin(); infoIter != fileList.end(); infoIter++){
+            unit = 0;
+            size = infoIter->filesize();
+            while(size > 1024 && unit < 3){
+                size /= 1024;
+                unit += 1;
+            }
+            cout << size;
+            if(unit == 0){
+                cout << "B\t\t";
+            }else if(unit == 1){
+                cout << "K\t\t";
+            }else if(unit == 2 ){
+                cout << "M\t\t";
+            }else if(unit == 3){
+                cout << "G\t\t";
+            }
+            cout << infoIter->filename() << endl;
+        }
+        cout << "$ Ls finished." << endl;
+        return Status::OK;
+    }else{
+        cout << "# Ls failed!" << endl;
+        return Status::CANCELLED;
+    }
 }

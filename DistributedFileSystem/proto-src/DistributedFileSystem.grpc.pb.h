@@ -50,6 +50,13 @@ class NameService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::ServerInfo>> PrepareAsyncterminateServer(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::ServerInfo>>(PrepareAsyncterminateServerRaw(context, request, cq));
     }
+    virtual ::grpc::Status updateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::DistributedFileSystem::BlockInfo* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::BlockInfo>> AsyncupdateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::BlockInfo>>(AsyncupdateBlockInfoRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::BlockInfo>> PrepareAsyncupdateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::BlockInfo>>(PrepareAsyncupdateBlockInfoRaw(context, request, cq));
+    }
     std::unique_ptr< ::grpc::ClientReaderInterface< ::DistributedFileSystem::BlockStore>> beginGetTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request) {
       return std::unique_ptr< ::grpc::ClientReaderInterface< ::DistributedFileSystem::BlockStore>>(beginGetTransactionRaw(context, request));
     }
@@ -119,25 +126,27 @@ class NameService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::FileInfo>> PrepareAsyncabortRmTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::FileInfo>>(PrepareAsyncabortRmTransactionRaw(context, request, cq));
     }
-    virtual ::grpc::Status updateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::DistributedFileSystem::BlockInfo* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::BlockInfo>> AsyncupdateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::BlockInfo>>(AsyncupdateBlockInfoRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientReaderInterface< ::DistributedFileSystem::FileInfo>> executeLsTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request) {
+      return std::unique_ptr< ::grpc::ClientReaderInterface< ::DistributedFileSystem::FileInfo>>(executeLsTransactionRaw(context, request));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::BlockInfo>> PrepareAsyncupdateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::BlockInfo>>(PrepareAsyncupdateBlockInfoRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::DistributedFileSystem::FileInfo>> AsyncexecuteLsTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::DistributedFileSystem::FileInfo>>(AsyncexecuteLsTransactionRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::DistributedFileSystem::FileInfo>> PrepareAsyncexecuteLsTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReaderInterface< ::DistributedFileSystem::FileInfo>>(PrepareAsyncexecuteLsTransactionRaw(context, request, cq));
     }
     class experimental_async_interface {
      public:
       virtual ~experimental_async_interface() {}
       virtual void startServer(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo* request, ::DistributedFileSystem::ServerInfo* response, std::function<void(::grpc::Status)>) = 0;
       virtual void terminateServer(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo* request, ::DistributedFileSystem::ServerInfo* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void updateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response, std::function<void(::grpc::Status)>) = 0;
       virtual void commitGetTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)>) = 0;
       virtual void abortGetTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)>) = 0;
       virtual void commitPutTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)>) = 0;
       virtual void abortPutTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)>) = 0;
       virtual void commitRmTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)>) = 0;
       virtual void abortRmTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void updateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response, std::function<void(::grpc::Status)>) = 0;
     };
     virtual class experimental_async_interface* experimental_async() { return nullptr; }
   private:
@@ -145,6 +154,8 @@ class NameService final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::ServerInfo>* PrepareAsyncstartServerRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::ServerInfo>* AsyncterminateServerRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::ServerInfo>* PrepareAsyncterminateServerRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::BlockInfo>* AsyncupdateBlockInfoRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::BlockInfo>* PrepareAsyncupdateBlockInfoRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientReaderInterface< ::DistributedFileSystem::BlockStore>* beginGetTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::DistributedFileSystem::BlockStore>* AsyncbeginGetTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::DistributedFileSystem::BlockStore>* PrepareAsyncbeginGetTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) = 0;
@@ -166,8 +177,9 @@ class NameService final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::FileInfo>* PrepareAsynccommitRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::FileInfo>* AsyncabortRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::FileInfo>* PrepareAsyncabortRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::BlockInfo>* AsyncupdateBlockInfoRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::DistributedFileSystem::BlockInfo>* PrepareAsyncupdateBlockInfoRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientReaderInterface< ::DistributedFileSystem::FileInfo>* executeLsTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::DistributedFileSystem::FileInfo>* AsyncexecuteLsTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
+    virtual ::grpc::ClientAsyncReaderInterface< ::DistributedFileSystem::FileInfo>* PrepareAsyncexecuteLsTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -185,6 +197,13 @@ class NameService final {
     }
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::ServerInfo>> PrepareAsyncterminateServer(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::ServerInfo>>(PrepareAsyncterminateServerRaw(context, request, cq));
+    }
+    ::grpc::Status updateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::DistributedFileSystem::BlockInfo* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::BlockInfo>> AsyncupdateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::BlockInfo>>(AsyncupdateBlockInfoRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::BlockInfo>> PrepareAsyncupdateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::BlockInfo>>(PrepareAsyncupdateBlockInfoRaw(context, request, cq));
     }
     std::unique_ptr< ::grpc::ClientReader< ::DistributedFileSystem::BlockStore>> beginGetTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request) {
       return std::unique_ptr< ::grpc::ClientReader< ::DistributedFileSystem::BlockStore>>(beginGetTransactionRaw(context, request));
@@ -255,25 +274,27 @@ class NameService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>> PrepareAsyncabortRmTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>>(PrepareAsyncabortRmTransactionRaw(context, request, cq));
     }
-    ::grpc::Status updateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::DistributedFileSystem::BlockInfo* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::BlockInfo>> AsyncupdateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::BlockInfo>>(AsyncupdateBlockInfoRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientReader< ::DistributedFileSystem::FileInfo>> executeLsTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request) {
+      return std::unique_ptr< ::grpc::ClientReader< ::DistributedFileSystem::FileInfo>>(executeLsTransactionRaw(context, request));
     }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::BlockInfo>> PrepareAsyncupdateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::BlockInfo>>(PrepareAsyncupdateBlockInfoRaw(context, request, cq));
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::DistributedFileSystem::FileInfo>> AsyncexecuteLsTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq, void* tag) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::DistributedFileSystem::FileInfo>>(AsyncexecuteLsTransactionRaw(context, request, cq, tag));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncReader< ::DistributedFileSystem::FileInfo>> PrepareAsyncexecuteLsTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncReader< ::DistributedFileSystem::FileInfo>>(PrepareAsyncexecuteLsTransactionRaw(context, request, cq));
     }
     class experimental_async final :
       public StubInterface::experimental_async_interface {
      public:
       void startServer(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo* request, ::DistributedFileSystem::ServerInfo* response, std::function<void(::grpc::Status)>) override;
       void terminateServer(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo* request, ::DistributedFileSystem::ServerInfo* response, std::function<void(::grpc::Status)>) override;
+      void updateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response, std::function<void(::grpc::Status)>) override;
       void commitGetTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)>) override;
       void abortGetTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)>) override;
       void commitPutTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)>) override;
       void abortPutTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)>) override;
       void commitRmTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)>) override;
       void abortRmTransaction(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, std::function<void(::grpc::Status)>) override;
-      void updateBlockInfo(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response, std::function<void(::grpc::Status)>) override;
      private:
       friend class Stub;
       explicit experimental_async(Stub* stub): stub_(stub) { }
@@ -289,6 +310,8 @@ class NameService final {
     ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::ServerInfo>* PrepareAsyncstartServerRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::ServerInfo>* AsyncterminateServerRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::ServerInfo>* PrepareAsyncterminateServerRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::ServerInfo& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::BlockInfo>* AsyncupdateBlockInfoRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::BlockInfo>* PrepareAsyncupdateBlockInfoRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientReader< ::DistributedFileSystem::BlockStore>* beginGetTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request) override;
     ::grpc::ClientAsyncReader< ::DistributedFileSystem::BlockStore>* AsyncbeginGetTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq, void* tag) override;
     ::grpc::ClientAsyncReader< ::DistributedFileSystem::BlockStore>* PrepareAsyncbeginGetTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) override;
@@ -310,10 +333,12 @@ class NameService final {
     ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>* PrepareAsynccommitRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>* AsyncabortRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::FileInfo>* PrepareAsyncabortRmTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::BlockInfo>* AsyncupdateBlockInfoRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::DistributedFileSystem::BlockInfo>* PrepareAsyncupdateBlockInfoRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::BlockInfo& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientReader< ::DistributedFileSystem::FileInfo>* executeLsTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request) override;
+    ::grpc::ClientAsyncReader< ::DistributedFileSystem::FileInfo>* AsyncexecuteLsTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq, void* tag) override;
+    ::grpc::ClientAsyncReader< ::DistributedFileSystem::FileInfo>* PrepareAsyncexecuteLsTransactionRaw(::grpc::ClientContext* context, const ::DistributedFileSystem::FileInfo& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_startServer_;
     const ::grpc::internal::RpcMethod rpcmethod_terminateServer_;
+    const ::grpc::internal::RpcMethod rpcmethod_updateBlockInfo_;
     const ::grpc::internal::RpcMethod rpcmethod_beginGetTransaction_;
     const ::grpc::internal::RpcMethod rpcmethod_commitGetTransaction_;
     const ::grpc::internal::RpcMethod rpcmethod_abortGetTransaction_;
@@ -323,7 +348,7 @@ class NameService final {
     const ::grpc::internal::RpcMethod rpcmethod_beginRmTransaction_;
     const ::grpc::internal::RpcMethod rpcmethod_commitRmTransaction_;
     const ::grpc::internal::RpcMethod rpcmethod_abortRmTransaction_;
-    const ::grpc::internal::RpcMethod rpcmethod_updateBlockInfo_;
+    const ::grpc::internal::RpcMethod rpcmethod_executeLsTransaction_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -333,6 +358,7 @@ class NameService final {
     virtual ~Service();
     virtual ::grpc::Status startServer(::grpc::ServerContext* context, const ::DistributedFileSystem::ServerInfo* request, ::DistributedFileSystem::ServerInfo* response);
     virtual ::grpc::Status terminateServer(::grpc::ServerContext* context, const ::DistributedFileSystem::ServerInfo* request, ::DistributedFileSystem::ServerInfo* response);
+    virtual ::grpc::Status updateBlockInfo(::grpc::ServerContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response);
     virtual ::grpc::Status beginGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer);
     virtual ::grpc::Status commitGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response);
     virtual ::grpc::Status abortGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response);
@@ -342,7 +368,7 @@ class NameService final {
     virtual ::grpc::Status beginRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer);
     virtual ::grpc::Status commitRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response);
     virtual ::grpc::Status abortRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response);
-    virtual ::grpc::Status updateBlockInfo(::grpc::ServerContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response);
+    virtual ::grpc::Status executeLsTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::FileInfo>* writer);
   };
   template <class BaseClass>
   class WithAsyncMethod_startServer : public BaseClass {
@@ -385,192 +411,12 @@ class NameService final {
     }
   };
   template <class BaseClass>
-  class WithAsyncMethod_beginGetTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_beginGetTransaction() {
-      ::grpc::Service::MarkMethodAsync(2);
-    }
-    ~WithAsyncMethod_beginGetTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status beginGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestbeginGetTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncWriter< ::DistributedFileSystem::BlockStore>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_commitGetTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_commitGetTransaction() {
-      ::grpc::Service::MarkMethodAsync(3);
-    }
-    ~WithAsyncMethod_commitGetTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status commitGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestcommitGetTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_abortGetTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_abortGetTransaction() {
-      ::grpc::Service::MarkMethodAsync(4);
-    }
-    ~WithAsyncMethod_abortGetTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status abortGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestabortGetTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_beginPutTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_beginPutTransaction() {
-      ::grpc::Service::MarkMethodAsync(5);
-    }
-    ~WithAsyncMethod_beginPutTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status beginPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestbeginPutTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncWriter< ::DistributedFileSystem::BlockStore>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(5, context, request, writer, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_commitPutTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_commitPutTransaction() {
-      ::grpc::Service::MarkMethodAsync(6);
-    }
-    ~WithAsyncMethod_commitPutTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status commitPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestcommitPutTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_abortPutTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_abortPutTransaction() {
-      ::grpc::Service::MarkMethodAsync(7);
-    }
-    ~WithAsyncMethod_abortPutTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status abortPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestabortPutTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_beginRmTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_beginRmTransaction() {
-      ::grpc::Service::MarkMethodAsync(8);
-    }
-    ~WithAsyncMethod_beginRmTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status beginRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestbeginRmTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncWriter< ::DistributedFileSystem::BlockStore>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(8, context, request, writer, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_commitRmTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_commitRmTransaction() {
-      ::grpc::Service::MarkMethodAsync(9);
-    }
-    ~WithAsyncMethod_commitRmTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status commitRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestcommitRmTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_abortRmTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithAsyncMethod_abortRmTransaction() {
-      ::grpc::Service::MarkMethodAsync(10);
-    }
-    ~WithAsyncMethod_abortRmTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status abortRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestabortRmTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
   class WithAsyncMethod_updateBlockInfo : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithAsyncMethod_updateBlockInfo() {
-      ::grpc::Service::MarkMethodAsync(11);
+      ::grpc::Service::MarkMethodAsync(2);
     }
     ~WithAsyncMethod_updateBlockInfo() override {
       BaseClassMustBeDerivedFromService(this);
@@ -581,10 +427,210 @@ class NameService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestupdateBlockInfo(::grpc::ServerContext* context, ::DistributedFileSystem::BlockInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::BlockInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_beginGetTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_beginGetTransaction() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_beginGetTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status beginGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestbeginGetTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncWriter< ::DistributedFileSystem::BlockStore>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_commitGetTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_commitGetTransaction() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_commitGetTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status commitGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestcommitGetTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_abortGetTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_abortGetTransaction() {
+      ::grpc::Service::MarkMethodAsync(5);
+    }
+    ~WithAsyncMethod_abortGetTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status abortGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestabortGetTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_beginPutTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_beginPutTransaction() {
+      ::grpc::Service::MarkMethodAsync(6);
+    }
+    ~WithAsyncMethod_beginPutTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status beginPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestbeginPutTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncWriter< ::DistributedFileSystem::BlockStore>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(6, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_commitPutTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_commitPutTransaction() {
+      ::grpc::Service::MarkMethodAsync(7);
+    }
+    ~WithAsyncMethod_commitPutTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status commitPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestcommitPutTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_abortPutTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_abortPutTransaction() {
+      ::grpc::Service::MarkMethodAsync(8);
+    }
+    ~WithAsyncMethod_abortPutTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status abortPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestabortPutTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_beginRmTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_beginRmTransaction() {
+      ::grpc::Service::MarkMethodAsync(9);
+    }
+    ~WithAsyncMethod_beginRmTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status beginRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestbeginRmTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncWriter< ::DistributedFileSystem::BlockStore>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(9, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_commitRmTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_commitRmTransaction() {
+      ::grpc::Service::MarkMethodAsync(10);
+    }
+    ~WithAsyncMethod_commitRmTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status commitRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestcommitRmTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_abortRmTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_abortRmTransaction() {
+      ::grpc::Service::MarkMethodAsync(11);
+    }
+    ~WithAsyncMethod_abortRmTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status abortRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestabortRmTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncResponseWriter< ::DistributedFileSystem::FileInfo>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_startServer<WithAsyncMethod_terminateServer<WithAsyncMethod_beginGetTransaction<WithAsyncMethod_commitGetTransaction<WithAsyncMethod_abortGetTransaction<WithAsyncMethod_beginPutTransaction<WithAsyncMethod_commitPutTransaction<WithAsyncMethod_abortPutTransaction<WithAsyncMethod_beginRmTransaction<WithAsyncMethod_commitRmTransaction<WithAsyncMethod_abortRmTransaction<WithAsyncMethod_updateBlockInfo<Service > > > > > > > > > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_executeLsTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_executeLsTransaction() {
+      ::grpc::Service::MarkMethodAsync(12);
+    }
+    ~WithAsyncMethod_executeLsTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status executeLsTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::FileInfo>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestexecuteLsTransaction(::grpc::ServerContext* context, ::DistributedFileSystem::FileInfo* request, ::grpc::ServerAsyncWriter< ::DistributedFileSystem::FileInfo>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(12, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_startServer<WithAsyncMethod_terminateServer<WithAsyncMethod_updateBlockInfo<WithAsyncMethod_beginGetTransaction<WithAsyncMethod_commitGetTransaction<WithAsyncMethod_abortGetTransaction<WithAsyncMethod_beginPutTransaction<WithAsyncMethod_commitPutTransaction<WithAsyncMethod_abortPutTransaction<WithAsyncMethod_beginRmTransaction<WithAsyncMethod_commitRmTransaction<WithAsyncMethod_abortRmTransaction<WithAsyncMethod_executeLsTransaction<Service > > > > > > > > > > > > > AsyncService;
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_startServer : public BaseClass {
    private:
@@ -636,6 +682,31 @@ class NameService final {
     virtual void terminateServer(::grpc::ServerContext* context, const ::DistributedFileSystem::ServerInfo* request, ::DistributedFileSystem::ServerInfo* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
+  class ExperimentalWithCallbackMethod_updateBlockInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithCallbackMethod_updateBlockInfo() {
+      ::grpc::Service::experimental().MarkMethodCallback(2,
+        new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithCallbackMethod_updateBlockInfo<BaseClass>, ::DistributedFileSystem::BlockInfo, ::DistributedFileSystem::BlockInfo>(
+          [this](::grpc::ServerContext* context,
+                 const ::DistributedFileSystem::BlockInfo* request,
+                 ::DistributedFileSystem::BlockInfo* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   this->updateBlockInfo(context, request, response, controller);
+                 }, this));
+    }
+    ~ExperimentalWithCallbackMethod_updateBlockInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status updateBlockInfo(::grpc::ServerContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void updateBlockInfo(::grpc::ServerContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  template <class BaseClass>
   class ExperimentalWithCallbackMethod_beginGetTransaction : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
@@ -657,7 +728,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     ExperimentalWithCallbackMethod_commitGetTransaction() {
-      ::grpc::Service::experimental().MarkMethodCallback(3,
+      ::grpc::Service::experimental().MarkMethodCallback(4,
         new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithCallbackMethod_commitGetTransaction<BaseClass>, ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(
           [this](::grpc::ServerContext* context,
                  const ::DistributedFileSystem::FileInfo* request,
@@ -682,7 +753,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     ExperimentalWithCallbackMethod_abortGetTransaction() {
-      ::grpc::Service::experimental().MarkMethodCallback(4,
+      ::grpc::Service::experimental().MarkMethodCallback(5,
         new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithCallbackMethod_abortGetTransaction<BaseClass>, ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(
           [this](::grpc::ServerContext* context,
                  const ::DistributedFileSystem::FileInfo* request,
@@ -723,7 +794,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     ExperimentalWithCallbackMethod_commitPutTransaction() {
-      ::grpc::Service::experimental().MarkMethodCallback(6,
+      ::grpc::Service::experimental().MarkMethodCallback(7,
         new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithCallbackMethod_commitPutTransaction<BaseClass>, ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(
           [this](::grpc::ServerContext* context,
                  const ::DistributedFileSystem::FileInfo* request,
@@ -748,7 +819,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     ExperimentalWithCallbackMethod_abortPutTransaction() {
-      ::grpc::Service::experimental().MarkMethodCallback(7,
+      ::grpc::Service::experimental().MarkMethodCallback(8,
         new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithCallbackMethod_abortPutTransaction<BaseClass>, ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(
           [this](::grpc::ServerContext* context,
                  const ::DistributedFileSystem::FileInfo* request,
@@ -789,7 +860,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     ExperimentalWithCallbackMethod_commitRmTransaction() {
-      ::grpc::Service::experimental().MarkMethodCallback(9,
+      ::grpc::Service::experimental().MarkMethodCallback(10,
         new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithCallbackMethod_commitRmTransaction<BaseClass>, ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(
           [this](::grpc::ServerContext* context,
                  const ::DistributedFileSystem::FileInfo* request,
@@ -814,7 +885,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     ExperimentalWithCallbackMethod_abortRmTransaction() {
-      ::grpc::Service::experimental().MarkMethodCallback(10,
+      ::grpc::Service::experimental().MarkMethodCallback(11,
         new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithCallbackMethod_abortRmTransaction<BaseClass>, ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(
           [this](::grpc::ServerContext* context,
                  const ::DistributedFileSystem::FileInfo* request,
@@ -834,31 +905,22 @@ class NameService final {
     virtual void abortRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
-  class ExperimentalWithCallbackMethod_updateBlockInfo : public BaseClass {
+  class ExperimentalWithCallbackMethod_executeLsTransaction : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
-    ExperimentalWithCallbackMethod_updateBlockInfo() {
-      ::grpc::Service::experimental().MarkMethodCallback(11,
-        new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithCallbackMethod_updateBlockInfo<BaseClass>, ::DistributedFileSystem::BlockInfo, ::DistributedFileSystem::BlockInfo>(
-          [this](::grpc::ServerContext* context,
-                 const ::DistributedFileSystem::BlockInfo* request,
-                 ::DistributedFileSystem::BlockInfo* response,
-                 ::grpc::experimental::ServerCallbackRpcController* controller) {
-                   this->updateBlockInfo(context, request, response, controller);
-                 }, this));
+    ExperimentalWithCallbackMethod_executeLsTransaction() {
     }
-    ~ExperimentalWithCallbackMethod_updateBlockInfo() override {
+    ~ExperimentalWithCallbackMethod_executeLsTransaction() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status updateBlockInfo(::grpc::ServerContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response) override {
+    ::grpc::Status executeLsTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::FileInfo>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void updateBlockInfo(::grpc::ServerContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
-  typedef ExperimentalWithCallbackMethod_startServer<ExperimentalWithCallbackMethod_terminateServer<ExperimentalWithCallbackMethod_beginGetTransaction<ExperimentalWithCallbackMethod_commitGetTransaction<ExperimentalWithCallbackMethod_abortGetTransaction<ExperimentalWithCallbackMethod_beginPutTransaction<ExperimentalWithCallbackMethod_commitPutTransaction<ExperimentalWithCallbackMethod_abortPutTransaction<ExperimentalWithCallbackMethod_beginRmTransaction<ExperimentalWithCallbackMethod_commitRmTransaction<ExperimentalWithCallbackMethod_abortRmTransaction<ExperimentalWithCallbackMethod_updateBlockInfo<Service > > > > > > > > > > > > ExperimentalCallbackService;
+  typedef ExperimentalWithCallbackMethod_startServer<ExperimentalWithCallbackMethod_terminateServer<ExperimentalWithCallbackMethod_updateBlockInfo<ExperimentalWithCallbackMethod_beginGetTransaction<ExperimentalWithCallbackMethod_commitGetTransaction<ExperimentalWithCallbackMethod_abortGetTransaction<ExperimentalWithCallbackMethod_beginPutTransaction<ExperimentalWithCallbackMethod_commitPutTransaction<ExperimentalWithCallbackMethod_abortPutTransaction<ExperimentalWithCallbackMethod_beginRmTransaction<ExperimentalWithCallbackMethod_commitRmTransaction<ExperimentalWithCallbackMethod_abortRmTransaction<ExperimentalWithCallbackMethod_executeLsTransaction<Service > > > > > > > > > > > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_startServer : public BaseClass {
    private:
@@ -894,12 +956,29 @@ class NameService final {
     }
   };
   template <class BaseClass>
+  class WithGenericMethod_updateBlockInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_updateBlockInfo() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_updateBlockInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status updateBlockInfo(::grpc::ServerContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
   class WithGenericMethod_beginGetTransaction : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithGenericMethod_beginGetTransaction() {
-      ::grpc::Service::MarkMethodGeneric(2);
+      ::grpc::Service::MarkMethodGeneric(3);
     }
     ~WithGenericMethod_beginGetTransaction() override {
       BaseClassMustBeDerivedFromService(this);
@@ -916,7 +995,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithGenericMethod_commitGetTransaction() {
-      ::grpc::Service::MarkMethodGeneric(3);
+      ::grpc::Service::MarkMethodGeneric(4);
     }
     ~WithGenericMethod_commitGetTransaction() override {
       BaseClassMustBeDerivedFromService(this);
@@ -933,7 +1012,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithGenericMethod_abortGetTransaction() {
-      ::grpc::Service::MarkMethodGeneric(4);
+      ::grpc::Service::MarkMethodGeneric(5);
     }
     ~WithGenericMethod_abortGetTransaction() override {
       BaseClassMustBeDerivedFromService(this);
@@ -950,7 +1029,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithGenericMethod_beginPutTransaction() {
-      ::grpc::Service::MarkMethodGeneric(5);
+      ::grpc::Service::MarkMethodGeneric(6);
     }
     ~WithGenericMethod_beginPutTransaction() override {
       BaseClassMustBeDerivedFromService(this);
@@ -967,7 +1046,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithGenericMethod_commitPutTransaction() {
-      ::grpc::Service::MarkMethodGeneric(6);
+      ::grpc::Service::MarkMethodGeneric(7);
     }
     ~WithGenericMethod_commitPutTransaction() override {
       BaseClassMustBeDerivedFromService(this);
@@ -984,7 +1063,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithGenericMethod_abortPutTransaction() {
-      ::grpc::Service::MarkMethodGeneric(7);
+      ::grpc::Service::MarkMethodGeneric(8);
     }
     ~WithGenericMethod_abortPutTransaction() override {
       BaseClassMustBeDerivedFromService(this);
@@ -1001,7 +1080,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithGenericMethod_beginRmTransaction() {
-      ::grpc::Service::MarkMethodGeneric(8);
+      ::grpc::Service::MarkMethodGeneric(9);
     }
     ~WithGenericMethod_beginRmTransaction() override {
       BaseClassMustBeDerivedFromService(this);
@@ -1018,7 +1097,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithGenericMethod_commitRmTransaction() {
-      ::grpc::Service::MarkMethodGeneric(9);
+      ::grpc::Service::MarkMethodGeneric(10);
     }
     ~WithGenericMethod_commitRmTransaction() override {
       BaseClassMustBeDerivedFromService(this);
@@ -1035,7 +1114,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithGenericMethod_abortRmTransaction() {
-      ::grpc::Service::MarkMethodGeneric(10);
+      ::grpc::Service::MarkMethodGeneric(11);
     }
     ~WithGenericMethod_abortRmTransaction() override {
       BaseClassMustBeDerivedFromService(this);
@@ -1047,18 +1126,18 @@ class NameService final {
     }
   };
   template <class BaseClass>
-  class WithGenericMethod_updateBlockInfo : public BaseClass {
+  class WithGenericMethod_executeLsTransaction : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
-    WithGenericMethod_updateBlockInfo() {
-      ::grpc::Service::MarkMethodGeneric(11);
+    WithGenericMethod_executeLsTransaction() {
+      ::grpc::Service::MarkMethodGeneric(12);
     }
-    ~WithGenericMethod_updateBlockInfo() override {
+    ~WithGenericMethod_executeLsTransaction() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status updateBlockInfo(::grpc::ServerContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response) override {
+    ::grpc::Status executeLsTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::FileInfo>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1104,192 +1183,12 @@ class NameService final {
     }
   };
   template <class BaseClass>
-  class WithRawMethod_beginGetTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithRawMethod_beginGetTransaction() {
-      ::grpc::Service::MarkMethodRaw(2);
-    }
-    ~WithRawMethod_beginGetTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status beginGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestbeginGetTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(2, context, request, writer, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_commitGetTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithRawMethod_commitGetTransaction() {
-      ::grpc::Service::MarkMethodRaw(3);
-    }
-    ~WithRawMethod_commitGetTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status commitGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestcommitGetTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_abortGetTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithRawMethod_abortGetTransaction() {
-      ::grpc::Service::MarkMethodRaw(4);
-    }
-    ~WithRawMethod_abortGetTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status abortGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestabortGetTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_beginPutTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithRawMethod_beginPutTransaction() {
-      ::grpc::Service::MarkMethodRaw(5);
-    }
-    ~WithRawMethod_beginPutTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status beginPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestbeginPutTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(5, context, request, writer, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_commitPutTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithRawMethod_commitPutTransaction() {
-      ::grpc::Service::MarkMethodRaw(6);
-    }
-    ~WithRawMethod_commitPutTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status commitPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestcommitPutTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_abortPutTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithRawMethod_abortPutTransaction() {
-      ::grpc::Service::MarkMethodRaw(7);
-    }
-    ~WithRawMethod_abortPutTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status abortPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestabortPutTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_beginRmTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithRawMethod_beginRmTransaction() {
-      ::grpc::Service::MarkMethodRaw(8);
-    }
-    ~WithRawMethod_beginRmTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status beginRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestbeginRmTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncServerStreaming(8, context, request, writer, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_commitRmTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithRawMethod_commitRmTransaction() {
-      ::grpc::Service::MarkMethodRaw(9);
-    }
-    ~WithRawMethod_commitRmTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status commitRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestcommitRmTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_abortRmTransaction : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithRawMethod_abortRmTransaction() {
-      ::grpc::Service::MarkMethodRaw(10);
-    }
-    ~WithRawMethod_abortRmTransaction() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status abortRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestabortRmTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
   class WithRawMethod_updateBlockInfo : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithRawMethod_updateBlockInfo() {
-      ::grpc::Service::MarkMethodRaw(11);
+      ::grpc::Service::MarkMethodRaw(2);
     }
     ~WithRawMethod_updateBlockInfo() override {
       BaseClassMustBeDerivedFromService(this);
@@ -1300,7 +1199,207 @@ class NameService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestupdateBlockInfo(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_beginGetTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_beginGetTransaction() {
+      ::grpc::Service::MarkMethodRaw(3);
+    }
+    ~WithRawMethod_beginGetTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status beginGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestbeginGetTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(3, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_commitGetTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_commitGetTransaction() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_commitGetTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status commitGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestcommitGetTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_abortGetTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_abortGetTransaction() {
+      ::grpc::Service::MarkMethodRaw(5);
+    }
+    ~WithRawMethod_abortGetTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status abortGetTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestabortGetTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_beginPutTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_beginPutTransaction() {
+      ::grpc::Service::MarkMethodRaw(6);
+    }
+    ~WithRawMethod_beginPutTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status beginPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestbeginPutTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(6, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_commitPutTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_commitPutTransaction() {
+      ::grpc::Service::MarkMethodRaw(7);
+    }
+    ~WithRawMethod_commitPutTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status commitPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestcommitPutTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_abortPutTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_abortPutTransaction() {
+      ::grpc::Service::MarkMethodRaw(8);
+    }
+    ~WithRawMethod_abortPutTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status abortPutTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestabortPutTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_beginRmTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_beginRmTransaction() {
+      ::grpc::Service::MarkMethodRaw(9);
+    }
+    ~WithRawMethod_beginRmTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status beginRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::BlockStore>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestbeginRmTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(9, context, request, writer, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_commitRmTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_commitRmTransaction() {
+      ::grpc::Service::MarkMethodRaw(10);
+    }
+    ~WithRawMethod_commitRmTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status commitRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestcommitRmTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_abortRmTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_abortRmTransaction() {
+      ::grpc::Service::MarkMethodRaw(11);
+    }
+    ~WithRawMethod_abortRmTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status abortRmTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::DistributedFileSystem::FileInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestabortRmTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(11, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_executeLsTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithRawMethod_executeLsTransaction() {
+      ::grpc::Service::MarkMethodRaw(12);
+    }
+    ~WithRawMethod_executeLsTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status executeLsTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::FileInfo>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestexecuteLsTransaction(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncWriter< ::grpc::ByteBuffer>* writer, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncServerStreaming(12, context, request, writer, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1354,6 +1453,31 @@ class NameService final {
     virtual void terminateServer(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
+  class ExperimentalWithRawCallbackMethod_updateBlockInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    ExperimentalWithRawCallbackMethod_updateBlockInfo() {
+      ::grpc::Service::experimental().MarkMethodRawCallback(2,
+        new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithRawCallbackMethod_updateBlockInfo<BaseClass>, ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+          [this](::grpc::ServerContext* context,
+                 const ::grpc::ByteBuffer* request,
+                 ::grpc::ByteBuffer* response,
+                 ::grpc::experimental::ServerCallbackRpcController* controller) {
+                   this->updateBlockInfo(context, request, response, controller);
+                 }, this));
+    }
+    ~ExperimentalWithRawCallbackMethod_updateBlockInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status updateBlockInfo(::grpc::ServerContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual void updateBlockInfo(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+  };
+  template <class BaseClass>
   class ExperimentalWithRawCallbackMethod_beginGetTransaction : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
@@ -1375,7 +1499,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     ExperimentalWithRawCallbackMethod_commitGetTransaction() {
-      ::grpc::Service::experimental().MarkMethodRawCallback(3,
+      ::grpc::Service::experimental().MarkMethodRawCallback(4,
         new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithRawCallbackMethod_commitGetTransaction<BaseClass>, ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
           [this](::grpc::ServerContext* context,
                  const ::grpc::ByteBuffer* request,
@@ -1400,7 +1524,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     ExperimentalWithRawCallbackMethod_abortGetTransaction() {
-      ::grpc::Service::experimental().MarkMethodRawCallback(4,
+      ::grpc::Service::experimental().MarkMethodRawCallback(5,
         new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithRawCallbackMethod_abortGetTransaction<BaseClass>, ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
           [this](::grpc::ServerContext* context,
                  const ::grpc::ByteBuffer* request,
@@ -1441,7 +1565,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     ExperimentalWithRawCallbackMethod_commitPutTransaction() {
-      ::grpc::Service::experimental().MarkMethodRawCallback(6,
+      ::grpc::Service::experimental().MarkMethodRawCallback(7,
         new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithRawCallbackMethod_commitPutTransaction<BaseClass>, ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
           [this](::grpc::ServerContext* context,
                  const ::grpc::ByteBuffer* request,
@@ -1466,7 +1590,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     ExperimentalWithRawCallbackMethod_abortPutTransaction() {
-      ::grpc::Service::experimental().MarkMethodRawCallback(7,
+      ::grpc::Service::experimental().MarkMethodRawCallback(8,
         new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithRawCallbackMethod_abortPutTransaction<BaseClass>, ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
           [this](::grpc::ServerContext* context,
                  const ::grpc::ByteBuffer* request,
@@ -1507,7 +1631,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     ExperimentalWithRawCallbackMethod_commitRmTransaction() {
-      ::grpc::Service::experimental().MarkMethodRawCallback(9,
+      ::grpc::Service::experimental().MarkMethodRawCallback(10,
         new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithRawCallbackMethod_commitRmTransaction<BaseClass>, ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
           [this](::grpc::ServerContext* context,
                  const ::grpc::ByteBuffer* request,
@@ -1532,7 +1656,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     ExperimentalWithRawCallbackMethod_abortRmTransaction() {
-      ::grpc::Service::experimental().MarkMethodRawCallback(10,
+      ::grpc::Service::experimental().MarkMethodRawCallback(11,
         new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithRawCallbackMethod_abortRmTransaction<BaseClass>, ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
           [this](::grpc::ServerContext* context,
                  const ::grpc::ByteBuffer* request,
@@ -1552,29 +1676,20 @@ class NameService final {
     virtual void abortRmTransaction(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
-  class ExperimentalWithRawCallbackMethod_updateBlockInfo : public BaseClass {
+  class ExperimentalWithRawCallbackMethod_executeLsTransaction : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
-    ExperimentalWithRawCallbackMethod_updateBlockInfo() {
-      ::grpc::Service::experimental().MarkMethodRawCallback(11,
-        new ::grpc::internal::CallbackUnaryHandler< ExperimentalWithRawCallbackMethod_updateBlockInfo<BaseClass>, ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-          [this](::grpc::ServerContext* context,
-                 const ::grpc::ByteBuffer* request,
-                 ::grpc::ByteBuffer* response,
-                 ::grpc::experimental::ServerCallbackRpcController* controller) {
-                   this->updateBlockInfo(context, request, response, controller);
-                 }, this));
+    ExperimentalWithRawCallbackMethod_executeLsTransaction() {
     }
-    ~ExperimentalWithRawCallbackMethod_updateBlockInfo() override {
+    ~ExperimentalWithRawCallbackMethod_executeLsTransaction() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status updateBlockInfo(::grpc::ServerContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response) override {
+    ::grpc::Status executeLsTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::FileInfo>* writer) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void updateBlockInfo(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_startServer : public BaseClass {
@@ -1617,12 +1732,32 @@ class NameService final {
     virtual ::grpc::Status StreamedterminateServer(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::DistributedFileSystem::ServerInfo,::DistributedFileSystem::ServerInfo>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
+  class WithStreamedUnaryMethod_updateBlockInfo : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithStreamedUnaryMethod_updateBlockInfo() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::StreamedUnaryHandler< ::DistributedFileSystem::BlockInfo, ::DistributedFileSystem::BlockInfo>(std::bind(&WithStreamedUnaryMethod_updateBlockInfo<BaseClass>::StreamedupdateBlockInfo, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_updateBlockInfo() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status updateBlockInfo(::grpc::ServerContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedupdateBlockInfo(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::DistributedFileSystem::BlockInfo,::DistributedFileSystem::BlockInfo>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_commitGetTransaction : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithStreamedUnaryMethod_commitGetTransaction() {
-      ::grpc::Service::MarkMethodStreamed(3,
+      ::grpc::Service::MarkMethodStreamed(4,
         new ::grpc::internal::StreamedUnaryHandler< ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(std::bind(&WithStreamedUnaryMethod_commitGetTransaction<BaseClass>::StreamedcommitGetTransaction, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithStreamedUnaryMethod_commitGetTransaction() override {
@@ -1642,7 +1777,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithStreamedUnaryMethod_abortGetTransaction() {
-      ::grpc::Service::MarkMethodStreamed(4,
+      ::grpc::Service::MarkMethodStreamed(5,
         new ::grpc::internal::StreamedUnaryHandler< ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(std::bind(&WithStreamedUnaryMethod_abortGetTransaction<BaseClass>::StreamedabortGetTransaction, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithStreamedUnaryMethod_abortGetTransaction() override {
@@ -1662,7 +1797,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithStreamedUnaryMethod_commitPutTransaction() {
-      ::grpc::Service::MarkMethodStreamed(6,
+      ::grpc::Service::MarkMethodStreamed(7,
         new ::grpc::internal::StreamedUnaryHandler< ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(std::bind(&WithStreamedUnaryMethod_commitPutTransaction<BaseClass>::StreamedcommitPutTransaction, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithStreamedUnaryMethod_commitPutTransaction() override {
@@ -1682,7 +1817,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithStreamedUnaryMethod_abortPutTransaction() {
-      ::grpc::Service::MarkMethodStreamed(7,
+      ::grpc::Service::MarkMethodStreamed(8,
         new ::grpc::internal::StreamedUnaryHandler< ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(std::bind(&WithStreamedUnaryMethod_abortPutTransaction<BaseClass>::StreamedabortPutTransaction, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithStreamedUnaryMethod_abortPutTransaction() override {
@@ -1702,7 +1837,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithStreamedUnaryMethod_commitRmTransaction() {
-      ::grpc::Service::MarkMethodStreamed(9,
+      ::grpc::Service::MarkMethodStreamed(10,
         new ::grpc::internal::StreamedUnaryHandler< ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(std::bind(&WithStreamedUnaryMethod_commitRmTransaction<BaseClass>::StreamedcommitRmTransaction, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithStreamedUnaryMethod_commitRmTransaction() override {
@@ -1722,7 +1857,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithStreamedUnaryMethod_abortRmTransaction() {
-      ::grpc::Service::MarkMethodStreamed(10,
+      ::grpc::Service::MarkMethodStreamed(11,
         new ::grpc::internal::StreamedUnaryHandler< ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(std::bind(&WithStreamedUnaryMethod_abortRmTransaction<BaseClass>::StreamedabortRmTransaction, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithStreamedUnaryMethod_abortRmTransaction() override {
@@ -1736,34 +1871,14 @@ class NameService final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedabortRmTransaction(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::DistributedFileSystem::FileInfo,::DistributedFileSystem::FileInfo>* server_unary_streamer) = 0;
   };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_updateBlockInfo : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
-   public:
-    WithStreamedUnaryMethod_updateBlockInfo() {
-      ::grpc::Service::MarkMethodStreamed(11,
-        new ::grpc::internal::StreamedUnaryHandler< ::DistributedFileSystem::BlockInfo, ::DistributedFileSystem::BlockInfo>(std::bind(&WithStreamedUnaryMethod_updateBlockInfo<BaseClass>::StreamedupdateBlockInfo, this, std::placeholders::_1, std::placeholders::_2)));
-    }
-    ~WithStreamedUnaryMethod_updateBlockInfo() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status updateBlockInfo(::grpc::ServerContext* context, const ::DistributedFileSystem::BlockInfo* request, ::DistributedFileSystem::BlockInfo* response) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedupdateBlockInfo(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::DistributedFileSystem::BlockInfo,::DistributedFileSystem::BlockInfo>* server_unary_streamer) = 0;
-  };
-  typedef WithStreamedUnaryMethod_startServer<WithStreamedUnaryMethod_terminateServer<WithStreamedUnaryMethod_commitGetTransaction<WithStreamedUnaryMethod_abortGetTransaction<WithStreamedUnaryMethod_commitPutTransaction<WithStreamedUnaryMethod_abortPutTransaction<WithStreamedUnaryMethod_commitRmTransaction<WithStreamedUnaryMethod_abortRmTransaction<WithStreamedUnaryMethod_updateBlockInfo<Service > > > > > > > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_startServer<WithStreamedUnaryMethod_terminateServer<WithStreamedUnaryMethod_updateBlockInfo<WithStreamedUnaryMethod_commitGetTransaction<WithStreamedUnaryMethod_abortGetTransaction<WithStreamedUnaryMethod_commitPutTransaction<WithStreamedUnaryMethod_abortPutTransaction<WithStreamedUnaryMethod_commitRmTransaction<WithStreamedUnaryMethod_abortRmTransaction<Service > > > > > > > > > StreamedUnaryService;
   template <class BaseClass>
   class WithSplitStreamingMethod_beginGetTransaction : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithSplitStreamingMethod_beginGetTransaction() {
-      ::grpc::Service::MarkMethodStreamed(2,
+      ::grpc::Service::MarkMethodStreamed(3,
         new ::grpc::internal::SplitServerStreamingHandler< ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::BlockStore>(std::bind(&WithSplitStreamingMethod_beginGetTransaction<BaseClass>::StreamedbeginGetTransaction, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithSplitStreamingMethod_beginGetTransaction() override {
@@ -1783,7 +1898,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithSplitStreamingMethod_beginPutTransaction() {
-      ::grpc::Service::MarkMethodStreamed(5,
+      ::grpc::Service::MarkMethodStreamed(6,
         new ::grpc::internal::SplitServerStreamingHandler< ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::BlockStore>(std::bind(&WithSplitStreamingMethod_beginPutTransaction<BaseClass>::StreamedbeginPutTransaction, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithSplitStreamingMethod_beginPutTransaction() override {
@@ -1803,7 +1918,7 @@ class NameService final {
     void BaseClassMustBeDerivedFromService(const Service *service) {}
    public:
     WithSplitStreamingMethod_beginRmTransaction() {
-      ::grpc::Service::MarkMethodStreamed(8,
+      ::grpc::Service::MarkMethodStreamed(9,
         new ::grpc::internal::SplitServerStreamingHandler< ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::BlockStore>(std::bind(&WithSplitStreamingMethod_beginRmTransaction<BaseClass>::StreamedbeginRmTransaction, this, std::placeholders::_1, std::placeholders::_2)));
     }
     ~WithSplitStreamingMethod_beginRmTransaction() override {
@@ -1817,8 +1932,28 @@ class NameService final {
     // replace default version of method with split streamed
     virtual ::grpc::Status StreamedbeginRmTransaction(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::DistributedFileSystem::FileInfo,::DistributedFileSystem::BlockStore>* server_split_streamer) = 0;
   };
-  typedef WithSplitStreamingMethod_beginGetTransaction<WithSplitStreamingMethod_beginPutTransaction<WithSplitStreamingMethod_beginRmTransaction<Service > > > SplitStreamedService;
-  typedef WithStreamedUnaryMethod_startServer<WithStreamedUnaryMethod_terminateServer<WithSplitStreamingMethod_beginGetTransaction<WithStreamedUnaryMethod_commitGetTransaction<WithStreamedUnaryMethod_abortGetTransaction<WithSplitStreamingMethod_beginPutTransaction<WithStreamedUnaryMethod_commitPutTransaction<WithStreamedUnaryMethod_abortPutTransaction<WithSplitStreamingMethod_beginRmTransaction<WithStreamedUnaryMethod_commitRmTransaction<WithStreamedUnaryMethod_abortRmTransaction<WithStreamedUnaryMethod_updateBlockInfo<Service > > > > > > > > > > > > StreamedService;
+  template <class BaseClass>
+  class WithSplitStreamingMethod_executeLsTransaction : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithSplitStreamingMethod_executeLsTransaction() {
+      ::grpc::Service::MarkMethodStreamed(12,
+        new ::grpc::internal::SplitServerStreamingHandler< ::DistributedFileSystem::FileInfo, ::DistributedFileSystem::FileInfo>(std::bind(&WithSplitStreamingMethod_executeLsTransaction<BaseClass>::StreamedexecuteLsTransaction, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithSplitStreamingMethod_executeLsTransaction() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status executeLsTransaction(::grpc::ServerContext* context, const ::DistributedFileSystem::FileInfo* request, ::grpc::ServerWriter< ::DistributedFileSystem::FileInfo>* writer) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with split streamed
+    virtual ::grpc::Status StreamedexecuteLsTransaction(::grpc::ServerContext* context, ::grpc::ServerSplitStreamer< ::DistributedFileSystem::FileInfo,::DistributedFileSystem::FileInfo>* server_split_streamer) = 0;
+  };
+  typedef WithSplitStreamingMethod_beginGetTransaction<WithSplitStreamingMethod_beginPutTransaction<WithSplitStreamingMethod_beginRmTransaction<WithSplitStreamingMethod_executeLsTransaction<Service > > > > SplitStreamedService;
+  typedef WithStreamedUnaryMethod_startServer<WithStreamedUnaryMethod_terminateServer<WithStreamedUnaryMethod_updateBlockInfo<WithSplitStreamingMethod_beginGetTransaction<WithStreamedUnaryMethod_commitGetTransaction<WithStreamedUnaryMethod_abortGetTransaction<WithSplitStreamingMethod_beginPutTransaction<WithStreamedUnaryMethod_commitPutTransaction<WithStreamedUnaryMethod_abortPutTransaction<WithSplitStreamingMethod_beginRmTransaction<WithStreamedUnaryMethod_commitRmTransaction<WithStreamedUnaryMethod_abortRmTransaction<WithSplitStreamingMethod_executeLsTransaction<Service > > > > > > > > > > > > > StreamedService;
 };
 
 class DataService final {

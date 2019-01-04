@@ -5,16 +5,21 @@ package DistributedFileSystem;
 service NameService{
     rpc startServer(ServerInfo) returns(ServerInfo) {}
     rpc terminateServer(ServerInfo) returns(ServerInfo) {}
+    rpc updateBlockInfo(BlockInfo) returns(BlockInfo) {}
+
     rpc beginGetTransaction(FileInfo) returns(stream BlockStore) {}
     rpc commitGetTransaction(FileInfo) returns(FileInfo) {}
     rpc abortGetTransaction(FileInfo) returns(FileInfo) {}
+
     rpc beginPutTransaction(FileInfo) returns(stream BlockStore) {}
     rpc commitPutTransaction(FileInfo) returns(FileInfo) {}
     rpc abortPutTransaction(FileInfo) returns(FileInfo) {}
+
     rpc beginRmTransaction(FileInfo) returns(stream BlockStore) {}
     rpc commitRmTransaction(FileInfo) returns(FileInfo) {}
     rpc abortRmTransaction(FileInfo) returns(FileInfo) {}
-    rpc updateBlockInfo(BlockInfo) returns(BlockInfo) {}
+    
+    rpc executeLsTransaction(FileInfo) returns(stream FileInfo) {}
 }
 
 service DataService{
