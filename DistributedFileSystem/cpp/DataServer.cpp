@@ -245,7 +245,7 @@ void RunServer() {
     std::string server_address(DATA_ADDRESS);
     DataServerImp service(grpc::CreateChannel(
     std::string(NAME_ADDRESS), grpc::InsecureChannelCredentials()),
-                          STORE_DIR, 256 * 1024);
+                          STORE_DIR, 1024 * 1024);
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.

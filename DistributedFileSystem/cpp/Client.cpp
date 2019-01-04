@@ -117,6 +117,26 @@ Status ClientImp::putBlock(const BlockInfo request){
             return Status::CANCELLED;
         }
 
+        auto cacheIter = cacheList.begin();
+        while(cacheIter != cacheList.end()){
+            if(cacheIter->fileInfo.filename() == request.filename()){
+                break;
+            }
+            cacheIter++;
+        }
+        if(cacheIter != cacheList.end()){
+            auto storeIter = cacheIter->storeList.begin();
+            while(storeIter != cacheIter->storeList.end() &&
+                  storeIter->first.blockidx() != request.blockidx()){
+                storeIter++;
+            }
+            while(storeIter != cacheIter->storeList.end() &&
+                  storeIter->first.blockidx() == request.blockidx()){
+                storeIter->first.set_blockhash(hash, SHA256_DIGEST_LENGTH);
+                storeIter++;
+            }
+        }
+
         cout << "$ Block put finished!" << endl;
         return Status::OK;
     } else {
@@ -156,6 +176,41 @@ Status ClientImp::get(const string fileName){
     status = blockStoreReader->Finish();
     if(!status.ok()){
         cout << "# File " << fileInfo.filename() << " get block list fail!" << endl;
+    }
+    auto cacheIter = cacheList.begin();
+    while(cacheIter != cacheList.end()){
+        if(cacheIter->fileInfo.filename() == storeList[0].filename()){
+            break;
+        }
+        cacheIter++;
+    }
+    if(cacheIter != cacheList.end()){
+        bool cached = true;
+        if(cacheIter->storeList.size() == storeList.size()){
+            for(unsigned long i = 0; i < storeList.size(); i++) {
+                if(cacheIter->storeList[i].first.blockhash() != storeList[i].blockhash()){
+                    for(int j = 0; j < SHA256_DIGEST_LENGTH; j++){
+                        cout << (int)(cacheIter->storeList[i].first.blockhash()[j]) << " ";
+                    }
+                    cout << endl;
+                    for(int j = 0; j < SHA256_DIGEST_LENGTH; j++){
+                        cout << (int)(storeList[i].blockhash()[j]) << " ";
+                    }
+                    cout << endl;
+                    cached = false;
+                    cout << "Cache Block hash mismatch!" << endl;
+                    break;
+                }
+            }
+        }else{
+            cached = false;
+        }
+        if(cached){
+            cout << "# File " << fileName << " already cached!" << endl;
+            ClientContext commit;
+            nameStub->commitGetTransaction(&commit, fileInfo, &fileInfo);
+            return Status::OK;
+        }
     }
 
     BlockInfo tempInfo;
@@ -215,6 +270,9 @@ Status ClientImp::get(const string fileName){
 }
 
 Status ClientImp::put(const string fileName){
+    rename((cacheDirectory + fileName).data(), (cacheDirectory + fileName + ".bak").data());
+    rm(fileName);
+    rename((cacheDirectory + fileName + ".bak").data(), (cacheDirectory + fileName).data());
     cout << "$ Put file " << fileName << "." << endl;
     FileInfo fileInfo;
     fileInfo.set_filename(fileName);
@@ -237,7 +295,8 @@ Status ClientImp::put(const string fileName){
     if(!status.ok()){
         cout << "# File " << fileInfo.filename() << " get block list fail!" << endl;
     }
-
+    FileMetaData fileMetaData;
+    fileMetaData.fileInfo = fileInfo;
     ifstream ffs;
     ofstream bfs;
     unsigned long blockSize;
@@ -264,10 +323,15 @@ Status ClientImp::put(const string fileName){
     ffs.close();
 
     BlockInfo tempInfo;
+    ServerInfo tempSev;
+    cacheList.push_back(fileMetaData);
     for(auto it = storeList.begin(); it != storeList.end(); it++){
         tempInfo.set_filename(fileName);
         tempInfo.set_blockidx(it->blockidx());
         tempInfo.set_blocksize(it->blocksize());
+        tempSev.set_address(it->serveraddress());
+        tempSev.set_hash(it->serverhash());
+        cacheList[cacheList.size()-1].storeList.push_back(pair<BlockInfo, ServerInfo>(tempInfo, tempSev));
         dataStub = DataService::NewStub(grpc::CreateChannel(it->serveraddress(), grpc::InsecureChannelCredentials()));
         if(!putBlock(tempInfo).ok()){
             ClientContext abort;
@@ -289,7 +353,6 @@ Status ClientImp::put(const string fileName){
         }
         lastBlockIdx++;
     }
-
     ClientContext commit;
     nameStub->commitPutTransaction(&commit, fileInfo, &fileInfo);
     cout << "# File put finished!" << endl;
@@ -298,6 +361,13 @@ Status ClientImp::put(const string fileName){
 
 Status ClientImp::rm(string fileName) {
     cout << "$ Rm file " << fileName << "." << endl;
+    for(auto cacheIter = cacheList.begin(); cacheIter != cacheList.end(); cacheIter++){
+        if(cacheIter->fileInfo.filename() == fileName){
+            cacheList.erase(cacheIter);
+            cout << "# Remove cache " + fileName + "." << endl;
+            break;
+        }
+    }
     FileInfo fileInfo;
     fileInfo.set_filename(fileName);
     BlockStore blockStore;
@@ -341,4 +411,9 @@ Status ClientImp::rm(string fileName) {
     nameStub->commitRmTransaction(&commit, fileInfo, &fileInfo);
     cout << "$ File rm finished!" << endl;
     return Status::OK;
+}
+
+Status ClientImp::touch(string fileName){
+    rm(fileName);
+    return put(fileName);
 }

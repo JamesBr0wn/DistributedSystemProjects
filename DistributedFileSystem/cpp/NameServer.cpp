@@ -182,11 +182,14 @@ Status NameServerImp::beginPutTransaction(ServerContext *context, const FileInfo
             SHA256_Final(hash, &stx);
 
             auto serverIter = serverList.begin();
-            while(serverIter != serverList.end()-1){
+            while(serverIter != serverList.end()){
                 if(memcmp((char*)hash, serverIter->hash().data(), SHA256_DIGEST_LENGTH) <= 0){
                     break;
                 }
                 serverIter++;
+            }
+            if(serverIter == serverList.end()){
+                serverIter = serverList.begin();
             }
 
             BlockInfo blockInfo;
@@ -414,7 +417,7 @@ Status NameServerImp::updateBlockInfo(ServerContext *context, const BlockInfo *r
 
 void RunServer() {
     std::string server_address(SERVER_ADDRESS);
-    NameServerImp service(1024*1024*4, 3);
+    NameServerImp service(1024*1024*128, 3);
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.

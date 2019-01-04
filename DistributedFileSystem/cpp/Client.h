@@ -10,12 +10,14 @@
 #include <fstream>
 #include <cstring>
 #include <vector>
+#include <cstdio>
 #include <grpc++/grpc++.h>
 #include <openssl/sha.h>
 #include "DistributedFileSystem.grpc.pb.h"
 
 using std::string;
 using std::vector;
+using std::pair;
 using std::to_string;
 using std::ifstream;
 using std::ofstream;
@@ -38,6 +40,11 @@ using DistributedFileSystem::FileInfo;
 using DistributedFileSystem::ServerInfo;
 using DistributedFileSystem::BlockStore;
 
+struct FileMetaData{
+    FileInfo fileInfo;
+    vector<pair<BlockInfo, ServerInfo>> storeList;
+};
+
 class ClientImp{
 public:
     ClientImp(std::shared_ptr<Channel> channel, string dir, size_t sz)
@@ -48,10 +55,12 @@ public:
     Status get(string fileName);
     Status put(string fileName);
     Status rm(string fileName);
+    Status touch(string fileName);
 private:
     std::unique_ptr<NameService::Stub> nameStub;
     std::unique_ptr<DataService::Stub> dataStub;
     string cacheDirectory;
+    vector<FileMetaData> cacheList;
     size_t unitSize;
 };
 
