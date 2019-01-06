@@ -400,12 +400,7 @@ Status ClientImp::rm(string fileName) {
         }
     }
 
-    if(remove((cacheDirectory + fileName).data())){
-        cout << "# File " << fileName << " remove fail!" << endl;
-        ClientContext abort;
-        nameStub->abortRmTransaction(&abort, fileInfo, &fileInfo);
-        return Status::CANCELLED;
-    }
+    remove((cacheDirectory + fileName).data());
 
     ClientContext commit;
     nameStub->commitRmTransaction(&commit, fileInfo, &fileInfo);

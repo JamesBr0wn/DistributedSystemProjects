@@ -216,14 +216,6 @@ Status DataServerImp::rmBlock(ServerContext* context, const BlockInfo* request, 
     // 检查Hash值是否相等
     SHA256_Final(hash, &stx);
     if(memcmp(hash, request->blockhash().data(), SHA256_DIGEST_LENGTH) != 0){
-        for(int i = 0; i < SHA256_DIGEST_LENGTH; i++){
-            cout << (int)(request->blockhash()[i]) << endl;
-        }
-        cout << endl;
-        for(int i = 0; i < SHA256_DIGEST_LENGTH; i++){
-            cout << (int)(hash[i]) << endl;
-        }
-        cout << endl;
         cout << "# Block " << blockName << " hash mismatch!" << endl;
         return Status::CANCELLED;
     }
